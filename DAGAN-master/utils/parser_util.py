@@ -40,3 +40,18 @@ def get_args():
     args = Bunch(args_dict)
 
     return batch_size, num_gpus, args
+
+
+class ArgsMimicker(object):
+    def __init__(self, batch_size,generator_inner_layers, discriminator_inner_layers, num_generations, experiment_title,
+                 num_of_gpus, z_dim, dropout_rate_value,continue_from_epoch=-1, use_wide_connections=False):
+        self.generator_inner_layers = generator_inner_layers
+        self.discriminator_inner_layers = discriminator_inner_layers
+        self.num_generations = num_generations
+        self.experiment_title = experiment_title
+        self.num_of_gpus = num_of_gpus
+        self.z_dim = z_dim
+        self.dropout_rate_value = dropout_rate_value
+        self.continue_from_epoch = continue_from_epoch
+        self.use_wide_connections = use_wide_connections
+        self.batch_size = batch_size
