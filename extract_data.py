@@ -3,6 +3,8 @@ import pandas as pd
 import csv
 import shutil
 import argparse
+import pandas as pd
+import numpy as np
 
 parser=argparse.ArgumentParser()
 parser.add_argument('-i', '--iinput', action='store', dest='iinput')
@@ -53,3 +55,12 @@ for f in files:
 	if os.path.isfile(file):
 		if not os.path.isfile(file2):
 			shutil.copy2(file, './'+output)
+
+# artists is a list containing the artist labels in the right order and artist is the same but with a numpy array structure
+t = pd.read_csv('reduced_data.csv')
+artists = t['artist'].tolist()
+artist = np.asarray(artists)
+print(artist)
+
+
+
