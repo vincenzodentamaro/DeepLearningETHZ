@@ -5,6 +5,8 @@ import shutil
 import argparse
 import pandas as pd
 import numpy as np
+import scipy.misc
+
 
 parser=argparse.ArgumentParser()
 parser.add_argument('-i', '--iinput', action='store', dest='iinput')
@@ -50,17 +52,17 @@ files = data['new_filename']
 
 
 for f in files:
-	file = './'+iinput+'/'+f # train_8 is the name of the downloaded data file from Kaggle which we want to extract the relevant paintings from.
-	file2 = './'+output+'/'+f # TEST is the name of the directory where our own usable data will be stored
-	if os.path.isfile(file):
-		if not os.path.isfile(file2):
-			shutil.copy2(file, './'+output)
+  file = './'+iinput+'/'+f # train_8 is the name of the downloaded data file from Kaggle which we want to extract the relevant paintings from.
+  file2 = './'+output+'/'+f # TEST is the name of the directory where our own usable data will be stored
+  if os.path.isfile(file):
+    if not os.path.isfile(file2):
+      tt= scipy.misc.imread(file).astype(np.float)
+      #print(tt.shape)
+      if len(tt.shape)==3:
+        shutil.copy2(file, './'+output)
 
 # artists is a list containing the artist labels in the right order and artist is the same but with a numpy array structure
 t = pd.read_csv('reduced_data.csv')
 artists = t['artist'].tolist()
 artist = np.asarray(artists)
 print(artist)
-
-
-
