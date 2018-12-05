@@ -3,8 +3,6 @@ import csv
 import shutil
 import argparse
 import pandas as pd
-import numpy as np
-import scipy.misc
 from skimage import io
 
 # Command line inputs
@@ -48,21 +46,9 @@ for f in files:
                     outcsv.writerow(f)
 
 
-        # else:
-        #     raise RuntimeWarning('file present already present in outputfolder: {}'.format(file_input))
+# make new info file with the rows of the skipped files removed from the info file
 
-# # artists is a list containing the artist labels in the right order and artist is the same but with a numpy array structure
-# t = pd.read_csv('reduced_data.csv')
-# artists = t['artist'].tolist()
-# artist = np.asarray(artists)
-# print(artist)
-
-#
-# def is_grey_scale(img_path="lena.jpg"):
-#     im = Image.open(img_path).convert('RGB')
-#     w,h = im.size
-#     for i in range(w):
-#         for j in range(h):
-#             r,g,b = im.getpixel((i,j))
-#             if r != g != b: return False
-#     return True
+info_file = pd.read_csv('./reduced_train_info.csv')
+removed_files = pd.read_csv('./removed_files.csv')
+info_file_removed = info_file.loc[~(info_file.new_filename.isin(removed_files['new_filename'])), :]
+info_file_removed.to_csv('./final_train_info.csv', index=False)

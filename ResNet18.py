@@ -27,3 +27,6 @@ data_transforms = {
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ]),
 }
+
+data_dir = os.path.join(os.path.curdir,'train_reduced')
+
