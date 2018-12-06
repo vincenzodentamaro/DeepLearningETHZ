@@ -58,9 +58,30 @@ class PaintingDataset(Dataset):
 
         return data_train, data_val
 
+    def split_train_val_test(self, val_percentile, test_percentile):
+        """
+        Split dataset in a training set and validation set
+        :param val_percentile: percentage of validation data
+        :return: training dataset and validation dataset
+        """
+        idx_val = math.ceil((1-val_percentile-test_percentile)*len(self))
+        idx_test = math.ceil((1-test_percentile)*len(self))
+        info_file_train = self.info_file.loc[0:idx_val-1, :]
+        info_file_val = self.info_file.loc[idx_val:idx_test-1, :]
+        info_file_test = self.info_file.loc[idx_test:, :]
+        info_file_train.to_csv('./info_file_train.csv', index=False)
+        info_file_val.to_csv('./info_file_val.csv', index=False)
+        info_file_test.to_csv('./info_file_test.csv', index=False)
+
+        data_train = PaintingDataset(csv_file='./info_file_train.csv',root_dir=self.root_dir, transform=self.transform)
+        data_val = PaintingDataset(csv_file='./info_file_val.csv', root_dir=self.root_dir,transform=self.transform)
+        data_test = PaintingDataset(csv_file='./info_file_test.csv', root_dir=self.root_dir,transform=self.transform)
+
+        return data_train, data_val, data_test
+
     def find_classes(self):
         df = self.info_file
-        classes = list(df['style'].str.upper().unique())
+        classes = list(df['style'].unique())
         classes.sort()
         class_to_idx = {val: idx for (idx, val) in enumerate(classes)}
         idx_to_class = {idx: val for (idx, val) in enumerate(classes)}
@@ -69,6 +90,6 @@ class PaintingDataset(Dataset):
 dataset = PaintingDataset(root_dir='train_reduced',csv_file='final_train_info.csv', transform=None)
 
 test_idx = dataset[5]
-dataset_train, dataset_val = dataset.split_train_val(0.3)
+dataset_train, dataset_val, dataset_test = dataset.split_train_val_test(0.15,0.15)
 
 
