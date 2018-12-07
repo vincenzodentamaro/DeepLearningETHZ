@@ -1,10 +1,7 @@
 import os
 import csv
-import shutil
 import argparse
-import pandas as pd
-import numpy as np
-import scipy.misc
+
 
 # Command line inputs
 parser = argparse.ArgumentParser()
