@@ -1,2 +1,8 @@
 *.npy
 **/DAGAN-master/omniglot
+**/image_folder_test
+*.xml
+*.pyc
+**/train
+**/test
+**/train_reduced
