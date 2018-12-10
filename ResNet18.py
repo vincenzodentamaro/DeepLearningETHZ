@@ -47,10 +47,10 @@ print_every = 100
 ## ALL MAIN ARGUMENTS FOR THE SCRIPT ##
 
 # dat_folder = os.path.join(os.path.curdir,'train_reduced')
-img_folder = os.path.join(os.path.curdir, '../DeeplearningData/train_reduced')
-data_csv_file = os.path.join(os.path.curdir, 'final_train_info.csv')
-# img_folder = os.path.join(os.path.curdir, args.datafolder)
-# data_csv_file = os.path.join(os.path.curdir, args.infofile)
+# img_folder = os.path.join(os.path.curdir, '../DeeplearningData/train_reduced')
+# data_csv_file = os.path.join(os.path.curdir, 'final_train_info.csv')
+img_folder = os.path.join(os.path.curdir, args.datafolder)
+data_csv_file = os.path.join(os.path.curdir, args.infofile)
 num_workers = 1
 
 
