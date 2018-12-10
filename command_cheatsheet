@@ -1,0 +1,6 @@
+python -m pip install --user tqdm 
+rsync -Pav /home/username/directory/ abally@login.leonhard.ethz.ch:/cluster/home/username/directory
+acces hard drive through terminal: 
+lsblk
+go to path that appears (cd /run/media/ameulema/Elements)
+
