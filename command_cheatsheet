@@ -4,3 +4,8 @@ acces hard drive through terminal:
 lsblk
 go to path that appears (cd /run/media/ameulema/Elements)
 
+submit job:
+bsub -n 1 -W 4:00 -R "rusage[mem=2048, ngpus_excl_p=1]" python tftest1.py
+bjobs
+1023622 
+
