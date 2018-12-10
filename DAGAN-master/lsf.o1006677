@@ -1,0 +1,46 @@
+Sender: LSF System <lsfadmin@lo-s4-020>
+Subject: Job 1006677: <python train_omniglot_dagan.py --batch_size 32 --generator_inner_layers 3 --discriminator_inner_layers 5 --num_generations 64 --experiment_title omniglot_dagan_experiment_default --num_of_gpus 1 --z_dim 100 --dropout_rate_value 0.5> in cluster <leonhard> Exited
+
+Job <python train_omniglot_dagan.py --batch_size 32 --generator_inner_layers 3 --discriminator_inner_layers 5 --num_generations 64 --experiment_title omniglot_dagan_experiment_default --num_of_gpus 1 --z_dim 100 --dropout_rate_value 0.5> was submitted from host <lo-login-02> by user <ameulema> in cluster <leonhard> at Mon Dec  3 14:15:18 2018
+Job was executed on host(s) <lo-s4-020>, in queue <gpu.4h>, as user <ameulema> in cluster <leonhard> at Mon Dec  3 14:15:25 2018
+</cluster/home/ameulema> was used as the home directory.
+</cluster/home/ameulema/DeepLearningETHZ/DeepLearningETHZ/DAGAN-master> was used as the working directory.
+Started at Mon Dec  3 14:15:25 2018
+Terminated at Mon Dec  3 14:17:13 2018
+Results reported at Mon Dec  3 14:17:13 2018
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+python train_omniglot_dagan.py --batch_size 32 --generator_inner_layers 3 --discriminator_inner_layers 5 --num_generations 64 --experiment_title omniglot_dagan_experiment_default --num_of_gpus 1 --z_dim 100 --dropout_rate_value 0.5
+------------------------------------------------------------
+
+TERM_MEMLIMIT: job killed after reaching LSF memory usage limit.
+Exited with exit code 137.
+
+Resource usage summary:
+
+    CPU time :                                   103.34 sec.
+    Max Memory :                                 1024 MB
+    Average Memory :                             739.00 MB
+    Total Requested Memory :                     1024.00 MB
+    Delta Memory :                               0.00 MB
+    Max Swap :                                   -
+    Max Processes :                              3
+    Max Threads :                                4
+    Run time :                                   115 sec.
+    Turnaround time :                            115 sec.
+
+The output (if any) follows:
+
+WARNING:tensorflow:From /cluster/apps/python/3.6.4/lib64/python3.6/site-packages/tensorflow/contrib/learn/python/learn/datasets/base.py:198: retry (from tensorflow.contrib.learn.python.learn.datasets.base) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use the retry module or similar alternatives.
+2018-12-03 14:17:11.998283: I tensorflow/core/platform/cpu_feature_guard.cc:140] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+2018-12-03 14:17:12.337150: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1344] Found device 0 with properties: 
+name: GeForce GTX 1080 major: 6 minor: 1 memoryClockRate(GHz): 1.7335
+pciBusID: 0000:06:00.0
+totalMemory: 7.93GiB freeMemory: 7.81GiB
+2018-12-03 14:17:12.337192: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1423] Adding visible gpu devices: 0
+/cluster/shadow/.lsbatch/1543842918.1006677: line 8: 17047 Killed                  python train_omniglot_dagan.py --batch_size 32 --generator_inner_layers 3 --discriminator_inner_layers 5 --num_generations 64 --experiment_title omniglot_dagan_experiment_default --num_of_gpus 1 --z_dim 100 --dropout_rate_value 0.5
