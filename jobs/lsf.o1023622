@@ -1,0 +1,64 @@
+Sender: LSF System <lsfadmin@lo-s4-039>
+Subject: Job 1023622: <python ResNet18.py> in cluster <leonhard> Exited
+
+Job <python ResNet18.py> was submitted from host <lo-login-01> by user <ameulema> in cluster <leonhard> at Mon Dec 10 20:02:01 2018
+Job was executed on host(s) <lo-s4-039>, in queue <gpu.4h>, as user <ameulema> in cluster <leonhard> at Tue Dec 11 16:41:38 2018
+</cluster/home/ameulema> was used as the home directory.
+</cluster/home/ameulema/DeepLearningETHZ/DeepLearningETHZ> was used as the working directory.
+Started at Tue Dec 11 16:41:38 2018
+Terminated at Tue Dec 11 16:41:54 2018
+Results reported at Tue Dec 11 16:41:54 2018
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+python ResNet18.py
+------------------------------------------------------------
+
+Exited with exit code 1.
+
+Resource usage summary:
+
+    CPU time :                                   9.25 sec.
+    Max Memory :                                 1917 MB
+    Average Memory :                             211.00 MB
+    Total Requested Memory :                     2048.00 MB
+    Delta Memory :                               131.00 MB
+    Max Swap :                                   -
+    Max Processes :                              3
+    Max Threads :                                4
+    Run time :                                   35 sec.
+    Turnaround time :                            74393 sec.
+
+The output (if any) follows:
+
+<class 'torch.LongTensor'>
+<class 'torch.cuda.FloatTensor'>
+<class 'torch.LongTensor'>
+<class 'torch.cuda.FloatTensor'>
+Starting epoch 1 / 5
+Traceback (most recent call last):
+  File "ResNet18.py", line 127, in <module>
+    results = train(model_conv, loss_fn, optimizer_conv, loader_train, loader_val, train_acc, val_acc, num_epochs = 5)
+  File "/cluster/home/ameulema/DeepLearningETHZ/DeepLearningETHZ/helper_functions.py", line 34, in train
+    for t, (x, y) in enumerate(loader_train):
+  File "/cluster/apps/python/3.6.4/lib64/python3.6/site-packages/torch/utils/data/dataloader.py", line 336, in __next__
+    return self._process_next_batch(batch)
+  File "/cluster/apps/python/3.6.4/lib64/python3.6/site-packages/torch/utils/data/dataloader.py", line 357, in _process_next_batch
+    raise batch.exc_type(batch.exc_msg)
+TypeError: Traceback (most recent call last):
+  File "/cluster/apps/python/3.6.4/lib64/python3.6/site-packages/torch/utils/data/dataloader.py", line 106, in _worker_loop
+    samples = collate_fn([dataset[i] for i in batch_indices])
+  File "/cluster/apps/python/3.6.4/lib64/python3.6/site-packages/torch/utils/data/dataloader.py", line 106, in <listcomp>
+    samples = collate_fn([dataset[i] for i in batch_indices])
+  File "/cluster/home/ameulema/DeepLearningETHZ/DeepLearningETHZ/Dataset.py", line 40, in __getitem__
+    image = self.transform(image)
+  File "/cluster/apps/python/3.6.4/lib64/python3.6/site-packages/torchvision/transforms/transforms.py", line 49, in __call__
+    img = t(img)
+  File "/cluster/apps/python/3.6.4/lib64/python3.6/site-packages/torchvision/transforms/transforms.py", line 545, in __call__
+    i, j, h, w = self.get_params(img, self.scale, self.ratio)
+  File "/cluster/apps/python/3.6.4/lib64/python3.6/site-packages/torchvision/transforms/transforms.py", line 516, in get_params
+    area = img.size[0] * img.size[1]
+TypeError: 'int' object is not subscriptable
+
