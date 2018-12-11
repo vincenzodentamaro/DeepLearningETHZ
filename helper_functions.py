@@ -4,14 +4,19 @@ from torch.autograd import Variable
 import timeit
 import pandas as pd
 
-dtype = torch.FloatTensor
-ytype = torch.LongTensor
-ytype_cuda = torch.cuda.LongTensor
-if (torch.cuda.is_available()):
-    dtype = torch.cuda.FloatTensor
-print(ytype)
-print(dtype)
-print_every = 100
+
+def main():
+    dtype = torch.FloatTensor
+    ytype = torch.LongTensor
+    ytype_cuda = torch.cuda.LongTensor
+    if (torch.cuda.is_available()):
+        dtype = torch.cuda.FloatTensor
+    print(ytype)
+    print(dtype)
+    print_every = 100
+
+if __name__ == '__main__':
+    main()
 
 class Flatten(nn.Module):
     def forward(self, x):
@@ -24,9 +29,19 @@ def reset(m):
         m.reset_parameters()
 
 
-def train(model, loss_fn, optimizer, loader_train, loader_val, train_acc, val_acc, num_epochs=1):
+def train(model, loss_fn, optimizer, loader_train, loader_val, num_epochs=1):
+    dtype = torch.FloatTensor
+    ytype = torch.LongTensor
+    ytype_cuda = torch.cuda.LongTensor
+    if (torch.cuda.is_available()):
+        dtype = torch.cuda.FloatTensor
+    # print(ytype)
+    # print(dtype)
+    print_every = 100
     train_loss_hist = []
     train_time = []
+    train_acc = []
+    val_acc = []
     for epoch in range(num_epochs):
         print('Starting epoch %d / %d' % (epoch + 1, num_epochs))
         model.train()
@@ -44,7 +59,7 @@ def train(model, loss_fn, optimizer, loader_train, loader_val, train_acc, val_ac
         # record epoch time
         train_time.append(timeit.default_timer() - start_time) #TODO remove print statement when timing results
         # record training loss history
-        train_loss_hist.append(loss)
+        train_loss_hist.append(loss.item())
 
         # record training and validation accuracy at the end of each epoch
         train_acc.append(check_accuracy(model, loader_train))
@@ -54,13 +69,17 @@ def train(model, loss_fn, optimizer, loader_train, loader_val, train_acc, val_ac
 
 
 def check_accuracy(model, loader):
+    dtype = torch.FloatTensor
+    ytype = torch.LongTensor
+    ytype_cuda = torch.cuda.LongTensor
+    if (torch.cuda.is_available()):
+        dtype = torch.cuda.FloatTensor
     print('Checking accuracy!')
     num_correct = 0
     num_samples = 0
     model.eval()  # Put the model in test mode (the opposite of model.train(), essentially)
     for x, y in loader:
-        y = y.view(-1, 1).type(ytype)
-        x_var = Variable(x.type(dtype), volatile=True)
+        x_var = Variable(x.type(dtype))#, volatile=True)
         scores = model(x_var)
         _, preds = scores.data.cpu().max(1)
 
@@ -73,6 +92,11 @@ def check_accuracy(model, loader):
 
 
 def confusion_matrix(model, loader, conf):
+    dtype = torch.FloatTensor
+    ytype = torch.LongTensor
+    ytype_cuda = torch.cuda.LongTensor
+    if (torch.cuda.is_available()):
+        dtype = torch.cuda.FloatTensor
     model.eval()  # Put the model in test mode (the opposite of model.train(), essentially)
     for x, y in loader:
         y = y.view(-1, 1).type(ytype)

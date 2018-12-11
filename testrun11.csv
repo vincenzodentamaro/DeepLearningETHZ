@@ -1,0 +1,6 @@
+,epoch,accuracy_train,accuracy_val,training_loss,runtime
+0,0,536.3636363636364,200.0,"tensor(0.7463, device='cuda:0', grad_fn=<NllLossBackward>)",12.229596871748154
+1,1,545.4545454545454,200.0,"tensor(0.6817, device='cuda:0', grad_fn=<NllLossBackward>)",10.716851015346545
+2,2,536.3636363636364,200.0,"tensor(0.6507, device='cuda:0', grad_fn=<NllLossBackward>)",10.86216871163463
+3,3,545.4545454545454,100.0,"tensor(0.6105, device='cuda:0', grad_fn=<NllLossBackward>)",10.599739101646847
+4,4,536.3636363636364,0.0,"tensor(0.5136, device='cuda:0', grad_fn=<NllLossBackward>)",10.70056106578005

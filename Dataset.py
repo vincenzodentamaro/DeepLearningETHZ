@@ -157,3 +157,65 @@ class AugmentedPaintingDataset(Dataset):
         data_val = AugmentedPaintingDataset(data_val_main, data_val_extra)
 
         return data_train, data_val
+
+
+if __name__ == '__main__':
+    import torch
+    import torch.nn as nn
+    import torch.optim as optim
+    from torch.utils.data import DataLoader
+    from Dataset import PaintingDataset
+    import os
+    import torchvision
+    import torchvision.transforms as T
+    import timeit
+    from helper_functions import train, check_accuracy, confusion_matrix, reset, Flatten, ImplementationError, \
+        write_results
+    import numpy as np
+    import argparse
+    import pandas as pd
+    b_size = 32 # batch size for the data loaders
+    num_workers = 1
+    data_augmentation = 'standard'
+
+    mean_resnet = np.array([0.485, 0.456, 0.406]) # This I found from internet (mean values for ImageNet, we can check if this is correct)
+    std_resnet = np.array([0.229, 0.224, 0.225])
+
+    if data_augmentation == 'standard':
+        train_transform = T.Compose([
+            T.ToPILImage(),
+            T.RandomResizedCrop(224),
+            T.RandomHorizontalFlip(),
+            T.ToTensor(),
+            T.Normalize(mean_resnet, std_resnet)
+        ])
+    elif data_augmentation == 'none':
+        train_transform = T.Compose([
+            T.ToPILImage(),
+            T.Resize(256),  # TODO set this value to 224, so the whole painting is cropped
+            T.CenterCrop(224),
+            T.ToTensor(),
+            T.Normalize(mean_resnet, std_resnet)
+        ])
+    elif data_augmentation == 'GAN':
+        raise ImplementationError('GAN data augmentation not yet implemented')
+    else:
+        raise ValueError('data augmentation argument is not recognized, use either "none", "standard" or "GAN"')
+    val_transform = T.Compose([
+        T.ToPILImage(),
+        T.Resize(256), #TODO set this value to 224, so the whole painting is cropped
+        T.CenterCrop(224),
+        T.ToTensor(),
+        T.Normalize(mean_resnet, std_resnet)
+    ])
+
+    total_dset = PaintingDataset(root_dir='../DeepLearningData/train_reduced',csv_file='final_train_info.csv',transform=None)
+    train_dset, val_dset, test_dset = total_dset.split_train_val_test(0.15,0.15)
+
+    train_dset.transform = train_transform
+    val_dset.transform = val_transform
+    test_dset.transform = val_transform
+
+    loader_train = DataLoader(train_dset, batch_size=b_size, shuffle=True, num_workers=num_workers)
+    loader_val = DataLoader(val_dset, batch_size=b_size, shuffle=True, num_workers=num_workers)
+    loader_test = DataLoader(test_dset, batch_size=b_size, shuffle=True, num_workers=num_workers)
