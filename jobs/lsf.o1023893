@@ -1,0 +1,55 @@
+Sender: LSF System <lsfadmin@lo-s4-007>
+Subject: Job 1023893: <python ResNet18.py --data_augmentation standard --resultfile run_resnet.csv --datafolder train_reduced --infofile final_train_info> in cluster <leonhard> Exited
+
+Job <python ResNet18.py --data_augmentation standard --resultfile run_resnet.csv --datafolder train_reduced --infofile final_train_info> was submitted from host <lo-login-02> by user <ameulema> in cluster <leonhard> at Tue Dec 11 20:26:38 2018
+Job was executed on host(s) <lo-s4-007>, in queue <gpu.4h>, as user <ameulema> in cluster <leonhard> at Tue Dec 11 20:27:06 2018
+</cluster/home/ameulema> was used as the home directory.
+</cluster/home/ameulema/DeepLearningETHZ/DeepLearningETHZ> was used as the working directory.
+Started at Tue Dec 11 20:27:06 2018
+Terminated at Tue Dec 11 20:27:11 2018
+Results reported at Tue Dec 11 20:27:11 2018
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+python ResNet18.py --data_augmentation standard --resultfile run_resnet.csv --datafolder train_reduced --infofile final_train_info
+------------------------------------------------------------
+
+Exited with exit code 1.
+
+Resource usage summary:
+
+    CPU time :                                   1.92 sec.
+    Max Memory :                                 332 MB
+    Average Memory :                             303.00 MB
+    Total Requested Memory :                     2048.00 MB
+    Delta Memory :                               1716.00 MB
+    Max Swap :                                   -
+    Max Processes :                              3
+    Max Threads :                                6
+    Run time :                                   6 sec.
+    Turnaround time :                            33 sec.
+
+The output (if any) follows:
+
+<class 'torch.LongTensor'>
+<class 'torch.cuda.FloatTensor'>
+Traceback (most recent call last):
+  File "ResNet18.py", line 128, in <module>
+    total_dset = PaintingDataset(root_dir=img_folder,csv_file=data_csv_file,transform=None)
+  File "/cluster/home/ameulema/DeepLearningETHZ/DeepLearningETHZ/Dataset.py", line 24, in __init__
+    self.info_file = pd.read_csv(csv_file)
+  File "/cluster/apps/python/3.6.4/lib64/python3.6/site-packages/pandas/io/parsers.py", line 709, in parser_f
+    return _read(filepath_or_buffer, kwds)
+  File "/cluster/apps/python/3.6.4/lib64/python3.6/site-packages/pandas/io/parsers.py", line 449, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+  File "/cluster/apps/python/3.6.4/lib64/python3.6/site-packages/pandas/io/parsers.py", line 818, in __init__
+    self._make_engine(self.engine)
+  File "/cluster/apps/python/3.6.4/lib64/python3.6/site-packages/pandas/io/parsers.py", line 1049, in _make_engine
+    self._engine = CParserWrapper(self.f, **self.options)
+  File "/cluster/apps/python/3.6.4/lib64/python3.6/site-packages/pandas/io/parsers.py", line 1695, in __init__
+    self._reader = parsers.TextReader(src, **kwds)
+  File "pandas/_libs/parsers.pyx", line 402, in pandas._libs.parsers.TextReader.__cinit__
+  File "pandas/_libs/parsers.pyx", line 718, in pandas._libs.parsers.TextReader._setup_parser_source
+FileNotFoundError: File b'./data_info_files/final_train_info' does not exist
