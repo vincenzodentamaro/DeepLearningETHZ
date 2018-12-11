@@ -48,8 +48,8 @@ class PaintingDataset(Dataset):
         :return: training dataset and validation dataset
         """
 
-        filename_train = './' + filename + '_train.csv'
-        filename_val = './' + filename + '_val.csv'
+        filename_train = './working_directory/' + filename + '_train.csv'
+        filename_val = './working_directory/' + filename + '_val.csv'
         idx_val = math.ceil((1-val_percentile)*len(self))
         info_file_train = self.info_file.loc[0:idx_val-1, :]
         info_file_val = self.info_file.loc[idx_val:, :]
@@ -67,9 +67,9 @@ class PaintingDataset(Dataset):
         :param val_percentile: percentage of validation data
         :return: training dataset and validation dataset
         """
-        filename_train = './'+filename+'_train.csv'
-        filename_val = './'+filename+'_val.csv'
-        filename_test = './'+filename+'_test.csv'
+        filename_train = './working_directory/'+filename+'_train.csv'
+        filename_val = './working_directory/'+filename+'_val.csv'
+        filename_test = './working_directory/'+filename+'_test.csv'
         idx_val = math.ceil((1-val_percentile-test_percentile)*len(self))
         idx_test = math.ceil((1-test_percentile)*len(self))
         info_file_train = self.info_file.loc[0:idx_val-1, :]

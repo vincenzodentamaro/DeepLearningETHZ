@@ -33,8 +33,8 @@ if __name__ == '__main__':
     if args.resultfile[-4:] != '.csv':
         raise ValueError('Expecting a csv file as result filename, got {} as extension'.format(args.resultfile[-4:]))
 
-    resultfilename1 = args.resultfile[:-4]+'1'+args.resultfile[-4:]
-    resultfilename2 = args.resultfile[:-4]+'2'+args.resultfile[-4:]
+    resultfilename1 = './result_files/' + args.resultfile[:-4]+'1'+args.resultfile[-4:]
+    resultfilename2 = './result_files/' + args.resultfile[:-4]+'2'+args.resultfile[-4:]
 
     ## For running on GPU
 
@@ -57,9 +57,9 @@ if __name__ == '__main__':
     # img_folder_extra = os.path.join(os.path.curdir, '../DeepLearningData/train_reduced')
     # data_csv_file_extra = os.path.join(os.path.curdir, 'info_file_testrun_gen.csv') #TODO comment and uncomment right stuff
     img_folder_extra = os.path.join(os.path.curdir, args.datafolder_extra)
-    data_csv_file_extra = os.path.join(os.path.curdir, args.infofile_extra)
+    data_csv_file_extra = os.path.join(os.path.curdir, 'data_info_files', args.infofile_extra)
     img_folder = os.path.join(os.path.curdir, args.datafolder)
-    data_csv_file = os.path.join(os.path.curdir, args.infofile)
+    data_csv_file = os.path.join(os.path.curdir, 'data_info_files', args.infofile)
     num_workers = 1
 
 
