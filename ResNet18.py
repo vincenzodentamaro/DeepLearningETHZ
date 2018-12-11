@@ -165,7 +165,7 @@ if __name__ == '__main__':
     results = train(model_conv, loss_fn, optimizer_conv, loader_train, loader_val, num_epochs = 5)
     resultfile1 = write_results(results)
     resultfile1.to_csv(os.path.join(os.path.curdir, resultfilename1))
-    test_accuracy = check_accuracy(model_conv,loader_test)
+    test_accuracy = check_accuracy(model_conv, loader_test)
     print('Test accuracy after training last layer: {}'.format(test_accuracy))
 
 
