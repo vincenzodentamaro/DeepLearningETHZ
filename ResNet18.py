@@ -60,7 +60,7 @@ if __name__ == '__main__':
     data_csv_file_extra = os.path.join(os.path.curdir, 'data_info_files', args.infofile_extra)
     img_folder = os.path.join(os.path.curdir, args.datafolder)
     data_csv_file = os.path.join(os.path.curdir, 'data_info_files', args.infofile)
-    num_workers = 1
+    num_workers = 0
 
 
 
