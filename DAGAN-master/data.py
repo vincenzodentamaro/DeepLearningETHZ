@@ -1,5 +1,48 @@
 import numpy as np
+import pandas as pd
+import os
+from skimage import io
+
 np.random.seed(2591)
+
+class CustomDataset(object):
+    """Face Landmarks dataset."""
+
+    def __init__(self, csv_file, root_dir, transform=None):
+        """
+        Args:
+            csv_file (string): Path to the csv file with annotations.
+            root_dir (string): Directory with all the images.
+            transform (callable, optional): Optional transform to be applied
+                on a sample.
+        """
+        self.info_file = pd.read_csv(csv_file)
+        self.root_dir = root_dir
+        self.transform = transform
+        self.classes, self.class_to_idx, self.idx_to_class = self.find_classes()
+
+    def __len__(self):
+        return len(self.info_file)
+
+    def __getitem__(self, idx):
+        img_name = os.path.join(self.root_dir,
+                                self.info_file.at[idx, 'new_filename'])
+        image = io.imread(img_name)
+        style = self.info_file.at[idx, 'style']
+        class_idx = self.class_to_idx[style]
+
+        if self.transform:
+            image = self.transform(image)
+
+        return image, class_idx
+
+    def find_classes(self):
+        df = self.info_file
+        classes = list(df['style'].unique())
+        classes.sort()
+        class_to_idx = {val: idx for (idx, val) in enumerate(classes)}
+        idx_to_class = {idx: val for (idx, val) in enumerate(classes)}
+        return classes, class_to_idx, idx_to_class
 
 
 class DAGANDataset(object):
