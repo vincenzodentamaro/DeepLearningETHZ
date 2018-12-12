@@ -5,9 +5,141 @@ from skimage import io
 
 np.random.seed(2591)
 
-class CustomDataset(object):
-    """Face Landmarks dataset."""
+class Dataset(object):
+    def __init__(self, csv_file, root_dir, transform=None):
+        """
+        Args:
+            csv_file (string): Path to the csv file with annotations.
+            root_dir (string): Directory with all the images.
+            transform (callable, optional): Optional transform to be applied
+                on a sample.
+        """
+        self.info_file = pd.read_csv(csv_file)
+        self.root_dir = root_dir
+        self.transform = transform
 
+    def __len__(self):
+        return len(self.info_file)
+
+    def __getitem__(self, value):
+        if (isinstance(value, int) or isinstance(value,np.int_)):
+            return self.get_image(value)
+
+        elif isinstance(value, tuple):
+            if (isinstance(value[0],int) or isinstance(value[0], np.int_)):
+                image = self.get_image(value[0])
+                return image[value[1:]]
+            else:
+                image_array = self.get_image_array(value[0])
+                return image_array[(slice(None, None, None),)+value[1:]]
+        else:
+            return self.get_image_array(value)
+
+    def get_image(self,value):
+        if (isinstance(value, int) or isinstance(value,np.int_)):
+            img_name = os.path.join(self.root_dir,
+                                    self.info_file.at[value, 'new_filename'])
+            image = io.imread(img_name)
+            if self.transform:
+                image = self.transform(image)
+            return image
+        else:
+            raise IndexError('Encountered unexpected index type in the method get_image, got {}'.format(type(value)))
+
+    def get_image_array(self,value):
+        if isinstance(value, slice):
+            if value.start == None:
+                value.start = 0
+            if value.stop == None:
+                value.stop = len(self)
+            if value.step == None:
+                value.step = 1
+            for idx in range(start=value.start, stop=value.stop, step=value.step):
+                img_name = os.path.join(self.root_dir,
+                                        self.info_file.at[idx, 'new_filename'])
+                image = io.imread(img_name)
+                if self.transform:
+                    image = self.transform(image)
+                image = np.reshape(image,(1,image.shape[0],image.shape[1],image.shape[2]))
+                if idx == value.start:
+                    image_array = image
+                else:
+                    image_array = np.concatenate((image_array, image),axis=0)
+                return image_array
+
+        elif isinstance(value, np.ndarray):
+            if isinstance(value[0], np.int_):
+                first = True
+                for idx in value:
+                    img_name = os.path.join(self.root_dir,
+                                            self.info_file.at[idx, 'new_filename'])
+                    image = io.imread(img_name)
+                    if self.transform:
+                        image = self.transform(image)
+                    image = np.reshape(image, (1, image.shape[0], image.shape[1], image.shape[2]))
+                    if first:
+                        image_array = image
+                        first = False
+                    else:
+                        image_array = np.concatenate((image_array, image), axis=0)
+                return image_array
+
+            elif isinstance(value[0], np.bool_):
+                first = True
+                idx = 0
+                for boolean in value:
+                    if boolean:
+                        img_name = os.path.join(self.root_dir,
+                                                self.info_file.at[idx, 'new_filename'])
+                        image = io.imread(img_name)
+                        if self.transform:
+                            image = self.transform(image)
+                        image = np.reshape(image, (1, image.shape[0], image.shape[1], image.shape[2]))
+                        if first:
+                            image_array = image
+                            first = False
+                        else:
+                            image_array = np.concatenate((image_array, image), axis=0)
+                    idx += 1
+                return image_array
+            else:
+                raise IndexError('Unrecognized indexing type encountered in numpy array, got {}'.format(type(value[0])))
+
+        elif isinstance(value,list):
+            if isinstance(value[0],int):
+                first = True
+                for idx in value:
+                    img_name = os.path.join(self.root_dir,
+                                            self.info_file.at[idx, 'new_filename'])
+                    image = io.imread(img_name)
+                    if self.transform:
+                        image = self.transform(image)
+                    image = np.reshape(image, (1, image.shape[0], image.shape[1], image.shape[2]))
+                    if first:
+                        image_array = image
+                        first = False
+                    else:
+                        image_array = np.concatenate((image_array, image), axis=0)
+                return image_array
+            else:
+                raise IndexError('Unreconized indexing type encountered in list, got {}'.format(type(value[0])))
+        else:
+            raise IndexError('Unrecognized slice indexing type encountered, got {}'.format(type(value)))
+
+class OneClassDataset(Dataset):
+
+    def __init__(self, csv_file, root_dir, transform=None):
+        super().__init__(csv_file=csv_file, root_dir=root_dir, transform=transform)
+        self.assert_one_class()
+
+    def assert_one_class(self):
+        df = self.info_file
+        classes = list(df['style'].unique())
+        if len(classes)>1:
+            raise ValueError('More than 1 class present in a OneClassDataset object')
+
+
+class MultiClassDataset(object):
     def __init__(self, csv_file, root_dir, transform=None):
         """
         Args:
@@ -20,21 +152,51 @@ class CustomDataset(object):
         self.root_dir = root_dir
         self.transform = transform
         self.classes, self.class_to_idx, self.idx_to_class = self.find_classes()
+        self.info_file_classes = self.split_info_file_in_classes()
 
     def __len__(self):
         return len(self.info_file)
 
-    def __getitem__(self, idx):
-        img_name = os.path.join(self.root_dir,
-                                self.info_file.at[idx, 'new_filename'])
-        image = io.imread(img_name)
-        style = self.info_file.at[idx, 'style']
-        class_idx = self.class_to_idx[style]
+    def __getitem__(self, value):
+        if isinstance(value,int):
+            csv_filename = '../working_directory/DAGAN_temporaryfile.csv'
+            self.info_file_classes[value].to_csv(csv_filename, index=False)
+            return OneClassDataset(csv_file=csv_filename,root_dir = self.root_dir, transform = self.transform)
+        if isinstance(value, tuple):
+            if not (isinstance(value[0], int) or isinstance(value[0],np.int_)):
+                raise IndexError('first index of Multiclass object should be integer')
+            #TODO: finish this
 
-        if self.transform:
-            image = self.transform(image)
 
-        return image, class_idx
+    def get_slice(self,value):
+        if isinstance(value, slice):
+            if value.start == None:
+                value.start = 0
+            if value.stop == None:
+                value.stop = len(self)
+            if value.step == None:
+                value.step = 1
+            iterator = range(start=value.start, stop=value.stop, step=value.step)
+        elif (isinstance(value[0],bool) or isinstance(value[0], np.bool_)):
+            idx = 0
+            iterator = []
+            for boolean in value:
+                if boolean:
+                    iterator.append(idx)
+                idx += 1
+        else:
+            iterator = value
+
+        csv_filename = '../working_directory/DAGAN_temporaryfile_class.csv'
+        first = True
+        for label_idx in iterator:
+            if first:
+                csv_file = self.info_file_classes[label_idx]
+                first = False
+            else:
+                csv_file = pd.concat([csv_file, self.info_file_classes[label_idx]])
+        csv_file.to_csv(csv_filename, index=False)
+        return MultiClassDataset(csv_file=csv_filename, root_dir=self.root_dir, transform=self.transform)
 
     def find_classes(self):
         df = self.info_file
@@ -43,6 +205,18 @@ class CustomDataset(object):
         class_to_idx = {val: idx for (idx, val) in enumerate(classes)}
         idx_to_class = {idx: val for (idx, val) in enumerate(classes)}
         return classes, class_to_idx, idx_to_class
+
+    def split_info_file_in_classes(self):
+        info_files_classes = []
+        for label in self.classes:
+            info_files_classes.append(self.info_file.loc[self.info_file['style'] == label])
+        return info_files_classes
+
+
+
+class CustomDAGANDataset(object):
+    pass
+
 
 
 class DAGANDataset(object):
@@ -103,8 +277,11 @@ class DAGANDataset(object):
         :param x: A data batch to preprocess
         :return: A preprocessed data batch
         """
+        if not isinstance(x,np.ndarray):
+            raise TypeError('Only numpy arrays can be used with the method preprocess_data, now got {}'.format(type(x)))
         x = 2 * x - 1
         if self.reverse_channels:
+            raise RuntimeWarning('reverse_channels is not implemented due to its inefficiency')
             reverse_photos = np.ones(shape=x.shape)
             for channel in range(x.shape[-1]):
                 reverse_photos[:, :, :, x.shape[-1] - 1 - channel] = x[:, :, :, channel]
@@ -117,6 +294,8 @@ class DAGANDataset(object):
         :param x: A batch of data to reconstruct
         :return: A reconstructed batch of data
         """
+        if not isinstance(x,np.ndarray):
+            raise TypeError('Only numpy arrays can be used with the method reconstruct original, now got {}'.format(type(x)))
         x = (x + 1) / 2
         return x
 
@@ -126,10 +305,12 @@ class DAGANDataset(object):
         :param x: A data batch
         :return: A shuffled data batch
         """
-        indices = np.arange(len(x))
-        np.random.shuffle(indices)
-        x = x[indices]
-        return x
+        raise NotImplementedError
+
+        # indices = np.arange(len(x))
+        # np.random.shuffle(indices)
+        # x = x[indices]
+        # return x
 
     def get_batch(self, dataset_name):
         """
