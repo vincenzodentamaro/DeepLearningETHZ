@@ -71,8 +71,8 @@ class MnistBatchGenerator:
             xrandl=randint(0,xlength-160)
             x=x[:,xrandw:xrandw+160,xrandl:xrandl+160]
             x=(x-128)/128
-            dataset_x.append(x)
-            dataset_y.append(self.dic2[key])
+            self.dataset_x.append(x)
+            self.dataset_y.append(self.dic2[key])
         self.dataset_x=np.stack(xreturn,axis=0)
         self.dataset_y=np.stack(y,axis=0)
             
