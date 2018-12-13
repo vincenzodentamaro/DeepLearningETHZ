@@ -347,7 +347,7 @@ class DAGANDataset(object):
         else:
             x_gen = self.x_val.flatten_to_dataset()
             self.choose_gen_labels = self.x_val.classes
-        self.choose_gen_samples = np.random.choice(len(x_gen), self.test_samples_per_label, replace=False)
+        self.choose_gen_samples = np.random.choice(len(x_gen), self.test_samples_per_label, replace=True)
         self.x_gen = x_gen[self.choose_gen_samples]
         self.gen_batches = gen_batches
 
@@ -627,9 +627,10 @@ class DAGANImbalancedDataset(DAGANDataset):
 
 
 class OmniglotDAGANDataset(DAGANDataset):
-    def __init__(self, batch_size, last_training_class_index, reverse_channels, num_of_gpus, gen_batches):
+    def __init__(self, batch_size, last_training_class_index, reverse_channels, num_of_gpus, gen_batches,
+                 gen_labels=None):
         super(OmniglotDAGANDataset, self).__init__(batch_size, last_training_class_index, reverse_channels, num_of_gpus,
-                                                   gen_batches)
+                                                   gen_batches,gen_labels=gen_labels)
 
     def load_dataset(self, gan_training_index):
         self.x = np.load("datasets/omniglot_data.npy")
@@ -672,15 +673,24 @@ class VGGFaceDAGANDataset(DAGANDataset):
         return x_train, x_test, x_val
 
 class PaintingsDataset(DAGANDataset):
-    def __init__(self, batch_size, last_training_class_index, reverse_channels, num_of_gpus, gen_batches):
+    def __init__(self, batch_size, last_training_class_index, reverse_channels, num_of_gpus, gen_batches,
+                 gen_labels=None, csv_file='../data_info_files/final_train_info.csv',
+                 root_dir='../../DeepLearningData/train_reduced', transform = None,
+                 working_directory='../working_directory/'):
+        self.csv_file = csv_file
+        self.root_dir = root_dir
+        self.working_directory = working_directory
+        self.transform = transform
         super().__init__(batch_size, last_training_class_index, reverse_channels, num_of_gpus,
-                                                   gen_batches)
+                                                   gen_batches, gen_labels=gen_labels)
+
+
 
     def load_dataset(self, gan_training_index):
-        dataset = Dataset(csv_file='../data_info_files/final_train_info.csv',
-                          root_dir='../../DeepLearningData/train_reduced',
+        dataset = Dataset(csv_file=self.csv_file,
+                          root_dir=self.root_dir,
                           transform=None,
-                          working_directory='../working_directory/')
+                          working_directory=self.working_directory)
         x_train, x_val, x_test = dataset.split_train_val_test(0.15, 0.15)
         x_train = x_train.to_multiclass()
         x_val = x_val.to_multiclass()
