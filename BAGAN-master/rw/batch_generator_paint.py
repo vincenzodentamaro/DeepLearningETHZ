@@ -78,7 +78,7 @@ class MnistBatchGenerator:
         self.labels=self.dataset_y[:]
         self.per_class_ids=dict()
         ids=np.array(range(len(self.dataset_x)))
-        for c in self.classes:
+        for c in range(0,self.classes):
             self.per_class_ids[c] = ids[self.labels==c]
             
             
