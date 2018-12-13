@@ -30,7 +30,7 @@ class MnistBatchGenerator:
             self.folderimages="../working_directory_andreas/test_reduced"
             self.csvfile="../working_directory_andreas/final_reduced_test_info.csv"
         else:
-            self.folderimages="../working_directory_andreas/train_reduced"
+            self.folderimages="../working_directory_andreas/train_reduced1"
             self.csvfile="../working_directory_andreas/final_reduced_train_info.csv"
 
         self.dic={"Romanticism": 0, "Realism": 1, "Impressionism": 2}
@@ -75,6 +75,12 @@ class MnistBatchGenerator:
             self.dataset_y.append(self.dic2[key])
         self.dataset_x=np.stack(dataset_x,axis=0)
         self.dataset_y=np.stack(dataset_y,axis=0)
+        self.labels=self.dataset_y[:]
+        
+        self.per_class_ids=dict()
+        ids=np.array(range(len(self.dataset_x)))
+        for c in classes:
+            self.per_class_ids[c] = ids[self.labels==c]
             
             
 
@@ -123,7 +129,7 @@ class MnistBatchGenerator:
         return [3,160,160]
 
     def next_batch(self):
-        for k in range(0,782):
+        for k in range(0,1):
             xreturn=list()
             y=list()
             s=sample(self.files_int,self.batch_size)
