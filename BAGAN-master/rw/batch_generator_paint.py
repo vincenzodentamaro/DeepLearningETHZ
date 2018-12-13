@@ -27,11 +27,11 @@ class MnistBatchGenerator:
         assert self.batch_size > 0, 'Batch size has to be a positive integer!'
 
         if self.data_src == self.TEST:
-            self.folderimages="../../test_reduced"
-            self.csvfile="../../final_reduced_test_info.csv"
+            self.folderimages="../working_directory_andreas/test_reduced"
+            self.csvfile="../working_directory_andreas/final_reduced_test_info.csv"
         else:
-            self.folderimages="../../train_reduced"
-            self.csvfile="../../final_reduced_train_info.csv"
+            self.folderimages="../working_directory_andreas/train_reduced"
+            self.csvfile="../working_directory_andreas/final_reduced_train_info.csv"
 
         self.dic={"Romanticism": 0, "Realism": 1, "Impressionism": 2}
 
@@ -41,7 +41,7 @@ class MnistBatchGenerator:
         self.dic2=dict()
 
         with open(self.csvfile, mode='r') as csv_file:
-            csv_reader=csv.DictReader(self.csv_file)
+            csv_reader=csv.DictReader(csv_file)
             for row in csv_reader:
                 if row["new_filename"] in self.files:
                     self.dic2[row["new_filename"]]=self.dic[row["style"]]
@@ -54,13 +54,29 @@ class MnistBatchGenerator:
             for key, value in self.dic2.items():
                 if value==c:
                     counter=counter+1
-            self.per_class_count.append(counter)
+            self.per_class_count.append(np.array([counter]))
 
 
         # List of labels
         self.label_table = [str(c) for c in range(len(self.dic))]
 
-
+        self.dataset_x=list()
+        self.dataset_y=list()
+        for key in self.dic2.keys():
+            img=load_img(self.folderimages+"/"+key)
+            x=img_to_array(img)
+            xwidth=x.shape[1]
+            xlength=x.shape[2]
+            xrandw=randint(0,xwidth-160)
+            xrandl=randint(0,xlength-160)
+            x=x[:,xrandw:xrandw+160,xrandl:xrandl+160]
+            x=(x-128)/128
+            self.dataset_x.append(x)
+            self.dataset_y.append(self.dic2[key])
+        self.dataset_x=np.stack(dataset_x,axis=0)
+        self.dataset_y=np.stack(dataset_y,axis=0)
+            
+            
 
     def get_samples_for_class(self, c, samples=None):
         if samples is None:
@@ -83,9 +99,9 @@ class MnistBatchGenerator:
             x=np.rollaxis(x, 2, 0)
             xwidth=x.shape[1]
             xlength=x.shape[2]
-            xrandw=randint(0,xwidth-256)
-            xrandl=randint(0,xlength-256)
-            x=x[:,xrandw:xrandw+256,xrandl:xrandl+256]
+            xrandw=randint(0,xwidth-160)
+            xrandl=randint(0,xlength-160)
+            x=x[:,xrandw:xrandw+160,xrandl:xrandl+160]
             x=(x-128)/128
             xreturn.append(x)
         return np.stack(xreturn,axis=0)
@@ -104,21 +120,26 @@ class MnistBatchGenerator:
         return len(self.files)
 
     def get_image_shape(self):
-        return [3,256,256]
+        return [3,160,160]
 
     def next_batch(self):
-        s=sample(self.files_int,self.batchsize)
+        for k in range(0,782):
+            xreturn=list()
+            y=list()
+            s=sample(self.files_int,self.batch_size)
+            for i in s:
+                img=load_img(self.folderimages+"/"+str(i)+'.jpg')
+                x=img_to_array(img)
+                xwidth=x.shape[1]
+                xlength=x.shape[2]
+                xrandw=randint(0,xwidth-160)
+                xrandl=randint(0,xlength-160)
+                x=x[:,xrandw:xrandw+160,xrandl:xrandl+160]
+                x=(x-128)/128
+                xreturn.append(x)
+                y.append(self.dic2[str(i)+".jpg"])
+            xreturn=np.stack(xreturn,axis=0)
+            y=np.stack(y,axis=0)
+            yield xreturn, y
     
-        for i in s:
-            img=load_img(self.folderimages+"/"+str(i)+'.jpg')
-            x=img_to_array(img)
-            x=np.rollaxis(x, 2, 0)
-            xwidth=x.shape[1]
-            xlength=x.shape[2]
-            xrandw=randint(0,xwidth-256)
-            xrandl=randint(0,xlength-256)
-            x=x[:,xrandw:xrandw+256,xrandl:xrandl+256]
-            x=(x-128)/128
-            yield x, self.dic2[str(i)+".jpg"]
-
 
