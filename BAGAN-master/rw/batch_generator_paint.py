@@ -73,8 +73,8 @@ class MnistBatchGenerator:
             x=(x-128)/128
             self.dataset_x.append(x)
             self.dataset_y.append(self.dic2[key])
-        self.dataset_x=np.stack(xreturn,axis=0)
-        self.dataset_y=np.stack(y,axis=0)
+        self.dataset_x=np.stack(dataset_x,axis=0)
+        self.dataset_y=np.stack(dataset_y,axis=0)
             
             
 
