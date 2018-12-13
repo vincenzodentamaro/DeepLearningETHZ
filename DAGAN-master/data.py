@@ -2,11 +2,11 @@ import numpy as np
 import pandas as pd
 import os
 from skimage import io
-
+import math
 np.random.seed(2591)
 
 class Dataset(object):
-    def __init__(self, csv_file, root_dir, transform=None):
+    def __init__(self, csv_file, root_dir, transform=None, working_directory = '../working_directory/'):
         """
         Args:
             csv_file (string): Path to the csv file with annotations.
@@ -16,10 +16,22 @@ class Dataset(object):
         """
         self.info_file = pd.read_csv(csv_file)
         self.root_dir = root_dir
-        self.transform = transform
+        self.image_size = (224, 224, 3)
+        if transform == None:
+            from torchvision import transforms as T
+            self.transform = T.Compose([
+                T.ToPILImage(),
+                T.Resize(256),  # TODO set this value to 224, so the whole painting is cropped
+                T.CenterCrop(224),
+                ToNumpy()
+            ])
+        else: self.transform = transform
+        self.working_directory = working_directory
+        self.shape = (len(self),)+self.image_size
 
     def __len__(self):
         return len(self.info_file)
+
 
     def __getitem__(self, value):
         if (isinstance(value, int) or isinstance(value,np.int_)):
@@ -49,23 +61,26 @@ class Dataset(object):
     def get_image_array(self,value):
         if isinstance(value, slice):
             if value.start == None:
-                value.start = 0
+                start = 0
+            else: start = value.start
             if value.stop == None:
-                value.stop = len(self)
+                stop = len(self)
+            else: stop = value.stop
             if value.step == None:
-                value.step = 1
-            for idx in range(start=value.start, stop=value.stop, step=value.step):
+                step = 1
+            else: step = value.step
+            for idx in range(start, stop, step):
                 img_name = os.path.join(self.root_dir,
                                         self.info_file.at[idx, 'new_filename'])
                 image = io.imread(img_name)
                 if self.transform:
                     image = self.transform(image)
                 image = np.reshape(image,(1,image.shape[0],image.shape[1],image.shape[2]))
-                if idx == value.start:
+                if idx == start:
                     image_array = image
                 else:
                     image_array = np.concatenate((image_array, image),axis=0)
-                return image_array
+            return image_array
 
         elif isinstance(value, np.ndarray):
             if isinstance(value[0], np.int_):
@@ -126,10 +141,65 @@ class Dataset(object):
         else:
             raise IndexError('Unrecognized slice indexing type encountered, got {}'.format(type(value)))
 
+    def split_train_val(self, val_percentile, filename='temporary_file'):
+        """
+        Split dataset in a training set and validation set
+        :param val_percentile: percentage of validation data
+        :return: training dataset and validation dataset
+        """
+
+        filename_train = self.working_directory + filename + '_train.csv'
+        filename_val = self.working_directory + filename + '_val.csv'
+        idx_val = math.ceil((1-val_percentile)*len(self))
+        info_file_train = self.info_file.loc[0:idx_val-1, :]
+        info_file_val = self.info_file.loc[idx_val:, :]
+        info_file_train.to_csv(filename_train, index=False)
+        info_file_val.to_csv(filename_val, index=False)
+
+        data_train = Dataset(csv_file=filename_train,root_dir=self.root_dir, transform=self.transform,
+                             working_directory=self.working_directory)
+        data_val = Dataset(csv_file=filename_val, root_dir=self.root_dir, transform=self.transform,
+                           working_directory=self.working_directory)
+
+        return data_train, data_val
+
+    def split_train_val_test(self, val_percentile, test_percentile, filename='info_file'):
+        """
+        Split dataset in a training set and validation set
+        :param val_percentile: percentage of validation data
+        :return: training dataset and validation dataset
+        """
+        filename_train = self.working_directory+filename+'_train.csv'
+        filename_val = self.working_directory+filename+'_val.csv'
+        filename_test = self.working_directory+filename+'_test.csv'
+        idx_val = math.ceil((1-val_percentile-test_percentile)*len(self))
+        idx_test = math.ceil((1-test_percentile)*len(self))
+        info_file_train = self.info_file.loc[0:idx_val-1, :]
+        info_file_val = self.info_file.loc[idx_val:idx_test-1, :]
+        info_file_test = self.info_file.loc[idx_test:, :]
+        info_file_train.to_csv(filename_train, index=False)
+        info_file_val.to_csv(filename_val, index=False)
+        info_file_test.to_csv(filename_test, index=False)
+
+        data_train = Dataset(csv_file=filename_train, root_dir=self.root_dir, transform=self.transform,
+                             working_directory=self.working_directory)
+        data_val = Dataset(csv_file=filename_val, root_dir=self.root_dir,transform=self.transform,
+                           working_directory=self.working_directory)
+        data_test = Dataset(csv_file=filename_test, root_dir=self.root_dir,transform=self.transform,
+                            working_directory=self.working_directory)
+
+        return data_train, data_val, data_test
+
+    def to_multiclass(self):
+        filename = self.working_directory + 'temporary_file.csv'
+        self.info_file.to_csv(filename, index=False)
+        return MultiClassDataset(csv_file=filename, root_dir=self.root_dir, transform=self.transform,
+                                 working_directory=self.working_directory)
+
 class OneClassDataset(Dataset):
 
-    def __init__(self, csv_file, root_dir, transform=None):
-        super().__init__(csv_file=csv_file, root_dir=root_dir, transform=transform)
+    def __init__(self, csv_file, root_dir, transform=None, working_directory = '../working_directory/'):
+        super().__init__(csv_file=csv_file, root_dir=root_dir, transform=transform, working_directory= working_directory)
         self.assert_one_class()
 
     def assert_one_class(self):
@@ -140,7 +210,7 @@ class OneClassDataset(Dataset):
 
 
 class MultiClassDataset(object):
-    def __init__(self, csv_file, root_dir, transform=None):
+    def __init__(self, csv_file, root_dir, transform=None, working_directory = '../working_directory/'):
         """
         Args:
             csv_file (string): Path to the csv file with annotations.
@@ -150,33 +220,58 @@ class MultiClassDataset(object):
         """
         self.info_file = pd.read_csv(csv_file)
         self.root_dir = root_dir
-        self.transform = transform
         self.classes, self.class_to_idx, self.idx_to_class = self.find_classes()
         self.info_file_classes = self.split_info_file_in_classes()
+        self.nb_classes = len(self.classes)
+        self.class_lengths = [len(self.info_file_classes[i]) for i in range(self.nb_classes)]
+        self.image_size = (224,224,3)
+        if transform == None:
+            from torchvision import transforms as T
+            self.transform = T.Compose([
+                T.ToPILImage(),
+                T.Resize(256),  # TODO set this value to 224, so the whole painting is cropped
+                T.CenterCrop(224),
+                ToNumpy()
+            ])
+        else: self.transform = transform
+        self.working_directory = working_directory
+        self.shape = (self.nb_classes, np.min(np.array(self.class_lengths))) + self.image_size
+
 
     def __len__(self):
         return len(self.info_file)
 
+
     def __getitem__(self, value):
         if isinstance(value,int):
-            csv_filename = '../working_directory/DAGAN_temporaryfile.csv'
+            csv_filename = self.working_directory + 'DAGAN_temporaryfile.csv'
             self.info_file_classes[value].to_csv(csv_filename, index=False)
-            return OneClassDataset(csv_file=csv_filename,root_dir = self.root_dir, transform = self.transform)
+            return OneClassDataset(csv_file=csv_filename,root_dir = self.root_dir, transform = self.transform,
+                                   working_directory=self.working_directory)
         if isinstance(value, tuple):
             if not (isinstance(value[0], int) or isinstance(value[0],np.int_)):
                 raise IndexError('first index of Multiclass object should be integer')
-            #TODO: finish this
+            csv_filename = self.working_directory + 'DAGAN_temporaryfile.csv'
+            self.info_file_classes[value[0]].to_csv(csv_filename, index=False)
+            one_class_data = OneClassDataset(csv_file=csv_filename,root_dir = self.root_dir, transform = self.transform,
+                                             working_directory=self.working_directory)
+            return one_class_data[value[1:]]
+        else:
+            return self.get_slice(value)
 
 
     def get_slice(self,value):
         if isinstance(value, slice):
             if value.start == None:
-                value.start = 0
+                start = 0
+            else: start = value.start
             if value.stop == None:
-                value.stop = len(self)
+                stop = len(self)
+            else: stop = value.stop
             if value.step == None:
-                value.step = 1
-            iterator = range(start=value.start, stop=value.stop, step=value.step)
+                step = 1
+            else: step = value.step
+            iterator = range(start, stop, step)
         elif (isinstance(value[0],bool) or isinstance(value[0], np.bool_)):
             idx = 0
             iterator = []
@@ -187,7 +282,7 @@ class MultiClassDataset(object):
         else:
             iterator = value
 
-        csv_filename = '../working_directory/DAGAN_temporaryfile_class.csv'
+        csv_filename = self.working_directory + 'DAGAN_temporaryfile_class.csv'
         first = True
         for label_idx in iterator:
             if first:
@@ -196,7 +291,8 @@ class MultiClassDataset(object):
             else:
                 csv_file = pd.concat([csv_file, self.info_file_classes[label_idx]])
         csv_file.to_csv(csv_filename, index=False)
-        return MultiClassDataset(csv_file=csv_filename, root_dir=self.root_dir, transform=self.transform)
+        return MultiClassDataset(csv_file=csv_filename, root_dir=self.root_dir, transform=self.transform,
+                                 working_directory=self.working_directory)
 
     def find_classes(self):
         df = self.info_file
@@ -212,6 +308,12 @@ class MultiClassDataset(object):
             info_files_classes.append(self.info_file.loc[self.info_file['style'] == label])
         return info_files_classes
 
+    def flatten_to_dataset(self):
+        filename = self.working_directory + 'temporary_file.csv'
+        self.info_file.to_csv(filename, index=False)
+        return Dataset(csv_file=filename, root_dir=self.root_dir, transform=self.transform,
+                                 working_directory=self.working_directory)
+
 
 
 class CustomDAGANDataset(object):
@@ -220,7 +322,8 @@ class CustomDAGANDataset(object):
 
 
 class DAGANDataset(object):
-    def __init__(self, batch_size, last_training_class_index, reverse_channels, num_of_gpus, gen_batches):
+    def __init__(self, batch_size, last_training_class_index, reverse_channels, num_of_gpus, gen_batches,
+                 gen_labels = None):
         """
         :param batch_size: The batch size to use for the data loader
         :param last_training_class_index: The final index for the training set, used to restrict the training set
@@ -235,12 +338,17 @@ class DAGANDataset(object):
         self.batch_size = batch_size
         self.reverse_channels = reverse_channels
         self.test_samples_per_label = gen_batches
-        self.choose_gen_labels = np.random.choice(self.x_val.shape[0], self.batch_size, replace=True)
-        self.choose_gen_samples = np.random.choice(len(self.x_val[0]), self.test_samples_per_label, replace=True)
-        self.x_gen = self.x_val[self.choose_gen_labels]
-        self.x_gen = self.x_gen[:, self.choose_gen_samples]
-        self.x_gen = np.reshape(self.x_gen, newshape=(self.x_gen.shape[0] * self.x_gen.shape[1],
-                                                      self.x_gen.shape[2], self.x_gen.shape[3], self.x_gen.shape[4]))
+        if gen_labels:
+            self.choose_gen_labels = gen_labels
+            if isinstance(gen_labels, int):
+                gen_labels = [gen_labels]
+            x_gen = self.x_val[gen_labels]
+            x_gen = x_gen.flatten_to_dataset()
+        else:
+            x_gen = self.x_val.flatten_to_dataset()
+            self.choose_gen_labels = self.x_val.classes
+        self.choose_gen_samples = np.random.choice(len(x_gen), self.test_samples_per_label, replace=False)
+        self.x_gen = x_gen[self.choose_gen_samples]
         self.gen_batches = gen_batches
 
         self.train_index = 0
@@ -281,7 +389,6 @@ class DAGANDataset(object):
             raise TypeError('Only numpy arrays can be used with the method preprocess_data, now got {}'.format(type(x)))
         x = 2 * x - 1
         if self.reverse_channels:
-            raise RuntimeWarning('reverse_channels is not implemented due to its inefficiency')
             reverse_photos = np.ones(shape=x.shape)
             for channel in range(x.shape[-1]):
                 reverse_photos[:, :, :, x.shape[-1] - 1 - channel] = x[:, :, :, channel]
@@ -318,19 +425,17 @@ class DAGANDataset(object):
         :param set_name: The name of the set to use, e.g. "train", "val" etc
         :return: A data batch
         """
-        choose_classes = np.random.choice(len(self.datasets[dataset_name]), size=self.batch_size)
-        choose_samples = np.random.choice(self.datasets[dataset_name].shape[1], size=2 * self.batch_size,
-                                          replace=True)
-
-        choose_samples_a = choose_samples[:self.batch_size]
-        choose_samples_b = choose_samples[self.batch_size:]
 
         x_input_batch_a = []
         x_input_batch_b = []
 
         for i in range(self.batch_size):
-            x_input_batch_a.append(self.datasets[dataset_name][choose_classes[i], choose_samples_a[i]])
-            x_input_batch_b.append(self.datasets[dataset_name][choose_classes[i], choose_samples_b[i]])
+            class_label = np.random.choice(self.datasets[dataset_name].nb_classes)
+            dataset_class = self.datasets[dataset_name][class_label]
+            sample1 = np.random.choice(len(dataset_class))
+            sample2 = np.random.choice(len(dataset_class))
+            x_input_batch_a.append(dataset_class[sample1])
+            x_input_batch_b.append(dataset_class[sample2])
 
         x_input_batch_a = np.array(x_input_batch_a)
         x_input_batch_b = np.array(x_input_batch_b)
@@ -566,14 +671,43 @@ class VGGFaceDAGANDataset(DAGANDataset):
 
         return x_train, x_test, x_val
 
-class PainterBalancedDAGANDataset(DAGANDataset):
+class PaintingsDataset(DAGANDataset):
     def __init__(self, batch_size, last_training_class_index, reverse_channels, num_of_gpus, gen_batches):
-        super(PainterBalancedDAGANDataset, self).__init__(batch_size, last_training_class_index, reverse_channels, num_of_gpus,
+        super().__init__(batch_size, last_training_class_index, reverse_channels, num_of_gpus,
                                                    gen_batches)
 
     def load_dataset(self, gan_training_index):
-        self.x = np.load("datasets/painters_data.npy")
-        self.x = self.x / np.max(self.x)
-        x_train, x_test, x_val = self.x[:1200], self.x[1200:1600], self.x[1600:]
-        x_train = x_train[:gan_training_index]
+        dataset = Dataset(csv_file='../data_info_files/final_train_info.csv',
+                          root_dir='../../DeepLearningData/train_reduced',
+                          transform=None,
+                          working_directory='../working_directory/')
+        x_train, x_val, x_test = dataset.split_train_val_test(0.15, 0.15)
+        x_train = x_train.to_multiclass()
+        x_val = x_val.to_multiclass()
+        x_test = x_test.to_multiclass()
         return x_train, x_test, x_val
+
+
+class ToNumpy(object):
+    """Transform PIL image to numpy array
+    """
+
+    def __call__(self, pic):
+        return np.array(pic)
+
+    def __repr__(self):
+        return self.__class__.__name__ + '()'
+
+if __name__ == '__main__':
+
+    from torchvision import transforms as T
+    transform = T.Compose([
+        T.ToPILImage(),
+        T.Resize(256),  # TODO set this value to 224, so the whole painting is cropped
+        T.CenterCrop(224),
+        ToNumpy()
+    ])
+    data = Dataset('../data_info_files/final_train_info.csv', '../../DeepLearningData/train_reduced',
+                                         transform=transform)
+    multi_class_data = data.to_multiclass()
+    test = multi_class_data[0,3:8]
