@@ -463,7 +463,7 @@ class BalancingGAN:
         self.generator.save(generator_fname)
         self.discriminator.save(discriminator_fname)
 
-    def train(self, bg_train, bg_test, epochs=50):
+    def train(self, bg_train, bg_test, epochs=5):
         if not self.trained:
             self.autoenc_epochs = epochs
 
