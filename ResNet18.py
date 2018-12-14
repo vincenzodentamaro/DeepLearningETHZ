@@ -71,7 +71,13 @@ if __name__ == '__main__':
     mean_resnet = np.array([0.485, 0.456, 0.406]) # This I found from internet (mean values for ImageNet, we can check if this is correct)
     std_resnet = np.array([0.229, 0.224, 0.225])
 
-
+    val_transform = T.Compose([
+        T.ToPILImage(),
+        T.Resize(256),  # TODO set this value to 224, so the whole painting is cropped
+        T.CenterCrop(224),
+        T.ToTensor(),
+        T.Normalize(mean_resnet, std_resnet)
+    ])
 
     if args.data_augmentation == 'extra':
         train_transform = T.Compose([
