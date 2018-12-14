@@ -38,7 +38,12 @@ for f in files:
             try:
                 tt= io.imread(file_input)
                 if len(tt.shape)==3:
-                    shutil.copy2(file_input, file_output)
+                    if tt.shape[2] == 3:
+                        shutil.copy2(file_input, file_output)
+                    else:
+                        print('{} has {} channels and is thus removed'.format(file_input, tt.shape[2]))
+                else:
+                    print('{} is a grayscale image and is thus removed'.format(file_input))
             except:
                 print('{} could not be opened by io.imread'.format(file_input))
                 with open('./removed_files.csv','a') as removed_file:
