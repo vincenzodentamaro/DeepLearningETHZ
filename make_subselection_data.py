@@ -16,7 +16,7 @@ outputdir = os.path.join(os.path.curdir,args.outputdir)
 inputdir = os.path.join(os.path.curdir,args.inputdir)
 
 # open the file in universal line ending mode
-with open('./reduced_train_info.csv', 'rU') as infile:
+with open('./data_info_files/reduced_train_info.csv', 'rU') as infile:
     # read the file as a dictionary for each row ({header : value})
     reader = csv.DictReader(infile)
     data = {}
@@ -30,6 +30,10 @@ with open('./reduced_train_info.csv', 'rU') as infile:
 # extract the variables you want
 files = data['new_filename']
 
+with open('./data_info_files/removed_files.csv', 'w') as removed_file:
+    outcsv = csv.writer(removed_file)
+    outcsv.writerow(['new_filename'])
+
 for f in files:
     file_input = os.path.join(inputdir,f)
     file_output = os.path.join(outputdir,f)
@@ -42,18 +46,24 @@ for f in files:
                         shutil.copy2(file_input, file_output)
                     else:
                         print('{} has {} channels and is thus removed'.format(file_input, tt.shape[2]))
+                        with open('./data_info_files/removed_files.csv', 'a') as removed_file:
+                            outcsv = csv.writer(removed_file)
+                            outcsv.writerow([f])
                 else:
                     print('{} is a grayscale image and is thus removed'.format(file_input))
+                    with open('./data_info_files/removed_files.csv', 'a') as removed_file:
+                        outcsv = csv.writer(removed_file)
+                        outcsv.writerow([f])
             except:
                 print('{} could not be opened by io.imread'.format(file_input))
-                with open('./removed_files.csv','a') as removed_file:
+                with open('./data_info_files/removed_files.csv','a') as removed_file:
                     outcsv = csv.writer(removed_file)
-                    outcsv.writerow(f)
+                    outcsv.writerow([f])
 
 
 # make new info file with the rows of the skipped files removed from the info file
 
-info_file = pd.read_csv('./reduced_train_info.csv')
-removed_files = pd.read_csv('./removed_files.csv')
+info_file = pd.read_csv('./data_info_files/reduced_train_info.csv')
+removed_files = pd.read_csv('./data_info_files/removed_files.csv')
 info_file_removed = info_file.loc[~(info_file.new_filename.isin(removed_files['new_filename'])), :]
-info_file_removed.to_csv('./final_train_info.csv', index=False)
+info_file_removed.to_csv('./data_info_files/final_train_info.csv', index=False)

@@ -5,8 +5,8 @@ import argparse
 
 # Command line inputs
 parser = argparse.ArgumentParser()
-parser.add_argument("--outputfile", help='Name of the outputfile', type=str, default='reduced_train_info.csv')
-parser.add_argument("--inputfile", help='Name of the inputfile', type=str, default='train_info.csv')
+parser.add_argument("--outputfile", help='Name of the outputfile', type=str, default='./data_info_files/reduced_train_info.csv')
+parser.add_argument("--inputfile", help='Name of the inputfile', type=str, default='./data_info_files/train_info.csv')
 args = parser.parse_args()
 if args.outputfile[-4:] != '.csv':
     raise ValueError('Expecting a csv file as output filename, got {} as extension'.format(args.outputfile[-4:]))
