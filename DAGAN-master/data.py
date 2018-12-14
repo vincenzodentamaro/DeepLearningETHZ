@@ -675,7 +675,7 @@ class VGGFaceDAGANDataset(DAGANDataset):
 class PaintingsDataset(DAGANDataset):
     def __init__(self, batch_size, last_training_class_index, reverse_channels, num_of_gpus, gen_batches,
                  gen_labels=None, csv_file='../data_info_files/final_train_info.csv',
-                 root_dir='../../DeepLearningData/train_reduced', transform = None,
+                 root_dir='../train_reduced', transform = None,
                  working_directory='../working_directory/'):
         self.csv_file = csv_file
         self.root_dir = root_dir
