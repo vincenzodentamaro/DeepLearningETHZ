@@ -18,14 +18,13 @@ class Dataset(object):
         self.info_file = pd.read_csv(csv_file)
         self.root_dir = root_dir
         self.image_size = (224, 224, 3)
-        mean = np.array([156., 101., 43.])
-        std = np.array([72., 47., 13.])
+        maxval = 255
         if transform == None:
             self.transform = T.Compose([
                 T.ToPILImage(),
                 T.RandomCrop(224),
                 ToNumpy(),
-                Standardize(mean, std)
+                Normalize(maxval)
             ])
         else: self.transform = transform
         self.working_directory = working_directory
@@ -227,14 +226,13 @@ class MultiClassDataset(object):
         self.nb_classes = len(self.classes)
         self.class_lengths = [len(self.info_file_classes[i]) for i in range(self.nb_classes)]
         self.image_size = (224,224,3)
-        mean = np.array([156., 101., 43.])
-        std = np.array([72., 47., 13.])
+        maxval = 255
         if transform == None:
             self.transform = T.Compose([
                 T.ToPILImage(),
                 T.RandomCrop(224),
                 ToNumpy(),
-                Standardize(mean, std)
+                Normalize(maxval)
             ])
         else: self.transform = transform
         self.working_directory = working_directory
@@ -724,6 +722,17 @@ class Standardize(object):
     def __repr__(self):
         return self.__class__.__name__ + '()'
 
+class Normalize(object):
+    """" Normalize numpy matrix with given maximum pixel value"""
+
+    def __init__(self, maxval):
+        self.maxval = maxval
+
+    def __call__(self, np_array):
+        return np_array/self.maxval
+
+    def __repr__(self):
+        return self.__class__.__name__ + '()'
 
 
 if __name__ == '__main__':
