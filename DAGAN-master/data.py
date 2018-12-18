@@ -25,7 +25,7 @@ class Dataset(object):
                 T.ToPILImage(),
                 T.RandomCrop(224),
                 ToNumpy(),
-                Standardize()
+                Standardize(mean, std)
             ])
         else: self.transform = transform
         self.working_directory = working_directory
@@ -234,7 +234,7 @@ class MultiClassDataset(object):
                 T.ToPILImage(),
                 T.RandomCrop(224),
                 ToNumpy(),
-                Standardize()
+                Standardize(mean, std)
             ])
         else: self.transform = transform
         self.working_directory = working_directory
