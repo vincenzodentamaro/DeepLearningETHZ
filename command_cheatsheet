@@ -19,5 +19,4 @@ Run ResNet: bsub -n 1 -R "rusage[mem=2048, ngpus_excl_p=1]" python ResNet18.py -
 DAGAN arguments: --batch_size 32 --generator_inner_layers 3 --discriminator_inner_layers 5 --num_generations 64 --experiment_title omniglot_dagan_experiment_default --num_of_gpus 1 --z_dim 100 --dropout_rate_value 0.5
 1030753
 
-python train_painting_styles.py --batch_size 4 --generator_inner_layers 2 --discriminator_inner_layers 4 --num_generations 16 --experiment_title omniglot_dagan_experiment_default --num_of_gpus 1 --z_dim 100 --dropout_rate_value 0.5 --infofile ../data_info_files DAGAN_train_info.csv --data_dir ../../DeepLearningData/train_reduced
-
+python train_omniglot_dagan.py --batch_size 4 --generator_inner_layers 2 --discriminator_inner_layers 4 --num_generations 64 --experiment_title omniglot_dagan_experiment_default --num_of_gpus 1 --z_dim 100 --dropout_rate_value 0.5
