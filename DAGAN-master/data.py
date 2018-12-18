@@ -3,6 +3,7 @@ import pandas as pd
 import os
 from skimage import io
 import math
+from torchvision import transforms as T
 np.random.seed(2591)
 
 class Dataset(object):
@@ -17,13 +18,14 @@ class Dataset(object):
         self.info_file = pd.read_csv(csv_file)
         self.root_dir = root_dir
         self.image_size = (224, 224, 3)
+        mean = np.array([156., 101., 43.])
+        std = np.array([72., 47., 13.])
         if transform == None:
-            from torchvision import transforms as T
             self.transform = T.Compose([
                 T.ToPILImage(),
-                T.Resize(256),  # TODO set this value to 224, so the whole painting is cropped
-                T.CenterCrop(224),
-                ToNumpy()
+                T.RandomCrop(224),
+                ToNumpy(),
+                Standardize()
             ])
         else: self.transform = transform
         self.working_directory = working_directory
@@ -225,13 +227,14 @@ class MultiClassDataset(object):
         self.nb_classes = len(self.classes)
         self.class_lengths = [len(self.info_file_classes[i]) for i in range(self.nb_classes)]
         self.image_size = (224,224,3)
+        mean = np.array([156., 101., 43.])
+        std = np.array([72., 47., 13.])
         if transform == None:
-            from torchvision import transforms as T
             self.transform = T.Compose([
                 T.ToPILImage(),
-                T.Resize(256),  # TODO set this value to 224, so the whole painting is cropped
-                T.CenterCrop(224),
-                ToNumpy()
+                T.RandomCrop(224),
+                ToNumpy(),
+                Standardize()
             ])
         else: self.transform = transform
         self.working_directory = working_directory
@@ -707,6 +710,21 @@ class ToNumpy(object):
 
     def __repr__(self):
         return self.__class__.__name__ + '()'
+
+class Standardize(object):
+    """ Standardize numpy matrix with given mean and std per channel"""
+
+    def __init__(self,mean,std):
+        self.mean = mean
+        self.std = std
+
+    def __call__(self,np_array):
+        return(np_array - self.mean)/self.std
+
+    def __repr__(self):
+        return self.__class__.__name__ + '()'
+
+
 
 if __name__ == '__main__':
 
