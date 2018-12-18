@@ -1,0 +1,37 @@
+Sender: LSF System <lsfadmin@lo-s4-007>
+Subject: Job 1023903: <python ResNet18.py --data_augmentation standard --resultfile run_resnet.csv --datafolder train_reduced --infofile final_train_info.csv> in cluster <leonhard> Exited
+
+Job <python ResNet18.py --data_augmentation standard --resultfile run_resnet.csv --datafolder train_reduced --infofile final_train_info.csv> was submitted from host <lo-login-02> by user <ameulema> in cluster <leonhard> at Tue Dec 11 20:43:46 2018
+Job was executed on host(s) <lo-s4-007>, in queue <gpu.4h>, as user <ameulema> in cluster <leonhard> at Tue Dec 11 20:44:06 2018
+</cluster/home/ameulema> was used as the home directory.
+</cluster/home/ameulema/DeepLearningETHZ/DeepLearningETHZ> was used as the working directory.
+Started at Tue Dec 11 20:44:06 2018
+Terminated at Tue Dec 11 20:44:20 2018
+Results reported at Tue Dec 11 20:44:20 2018
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+python ResNet18.py --data_augmentation standard --resultfile run_resnet.csv --datafolder train_reduced --infofile final_train_info.csv
+------------------------------------------------------------
+
+TERM_MEMLIMIT: job killed after reaching LSF memory usage limit.
+Exited with exit code 137.
+
+Resource usage summary:
+
+    CPU time :                                   9.20 sec.
+    Max Memory :                                 2048 MB
+    Average Memory :                             1466.00 MB
+    Total Requested Memory :                     2048.00 MB
+    Delta Memory :                               0.00 MB
+    Max Swap :                                   -
+    Max Processes :                              3
+    Max Threads :                                5
+    Run time :                                   40 sec.
+    Turnaround time :                            34 sec.
+
+The output (if any) follows:
+
+/cluster/shadow/.lsbatch/1544557426.1023903: line 8:  7880 Killed                  python ResNet18.py --data_augmentation standard --resultfile run_resnet.csv --datafolder train_reduced --infofile final_train_info.csv
