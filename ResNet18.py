@@ -109,7 +109,7 @@ if __name__ == '__main__':
         if args.data_augmentation == 'standard':
             train_transform = T.Compose([
                 T.ToPILImage(),
-                T.RandomResizedCrop(224),
+                T.RandomSizedCrop(224),
                 T.RandomHorizontalFlip(),
                 T.ToTensor(),
                 T.Normalize(mean_resnet, std_resnet)
