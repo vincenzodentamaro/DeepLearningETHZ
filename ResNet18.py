@@ -142,7 +142,7 @@ if __name__ == '__main__':
 
     # transfer learning on top of ResNet (only replacing final FC layer)
     # model_conv = torchvision.models.resnet18(pretrained=True)
-    model_conv = torchvision.models.resnet18(pretrained=True)
+    model_conv = torch.load(resnet.pt)
     for param in model_conv.parameters():
         param.requires_grad = False
 
