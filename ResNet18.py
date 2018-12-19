@@ -73,7 +73,7 @@ if __name__ == '__main__':
 
     val_transform = T.Compose([
         T.ToPILImage(),
-        T.RandomResizedCrop(224),
+        T.RandomSizedCrop(224),
         T.RandomHorizontalFlip(),
         T.ToTensor(),
         T.Normalize(mean_resnet, std_resnet)
@@ -82,7 +82,7 @@ if __name__ == '__main__':
     if args.data_augmentation == 'extra':
         train_transform = T.Compose([
             T.ToPILImage(),
-            T.RandomResizedCrop(224),
+            T.RandomSizedCrop(224),
             T.RandomHorizontalFlip(),
             T.ToTensor(),
             T.Normalize(mean_resnet, std_resnet)
@@ -109,7 +109,7 @@ if __name__ == '__main__':
         if args.data_augmentation == 'standard':
             train_transform = T.Compose([
                 T.ToPILImage(),
-                T.RandomResizedCrop(224),
+                T.RandomSizedCrop(224),
                 T.RandomHorizontalFlip(),
                 T.ToTensor(),
                 T.Normalize(mean_resnet, std_resnet)
@@ -142,7 +142,7 @@ if __name__ == '__main__':
 
     # transfer learning on top of ResNet (only replacing final FC layer)
     # model_conv = torchvision.models.resnet18(pretrained=True)
-    model_conv = torchvision.models.resnet18(pretrained=True)
+    model_conv = torch.load(resnet.pt)
     for param in model_conv.parameters():
         param.requires_grad = False
 
