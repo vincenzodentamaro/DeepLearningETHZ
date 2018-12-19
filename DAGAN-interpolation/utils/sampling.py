@@ -1,5 +1,6 @@
 import scipy.misc
 import numpy as np
+import imageio
 
 def unstack(np_array):
     new_list = []
@@ -47,7 +48,7 @@ def sample_generator(num_generations, sess, same_images, inputs, dropout_rate, d
     image = (image - np.min(image)) / (np.max(image) - np.min(image))
     image = image * 255
     image = image[:, (num_generations-1)*height:]
-    scipy.misc.imsave(file_name, image)
+    imageio.imwrite(file_name, image)
 
 def sample_two_dimensions_generator(sess, same_images, inputs,
                                     dropout_rate, dropout_rate_value, data,
@@ -117,6 +118,35 @@ def sample_two_dimensions_generator(sess, same_images, inputs,
 
         positioned_image = np.concatenate(properly_positioned_image, axis=0)
 
-        scipy.misc.imsave("{}_{}.png".format(file_name, i), positioned_image)
+        imageio.imwrite("{}_{}.png".format(file_name, i), positioned_image)
 
+def interpolation_generator(sess, inter_class_interpolations, intra_class_interpolations,
+                            x_i_placeholder, x_j_placeholder, x_i, x_j,
+                            dropout_rate, dropout_rate_value, data, batch_size,
+                            file_name, training_phase, z_input, z_vectors):
+
+    inter_class_images, intra_class_images = sess.run(inter_class_interpolations, intra_class_interpolations,
+                                                              feed_dict={x_i_placeholder: x_i,
+                                                                         x_j_placeholder: x_j,
+                                                                         dropout_rate: dropout_rate_value
+                                                                         z_input: batch_size*[z_vectors[0]],
+                                                                         training_phase: False})
+
+
+    height = inter_class_images.shape[-3]
+
+    inter_class_images, intra_class_interpolations = data.reconstruct_original(inter_class_images), \
+                                                     data.reconstruct_original(intra_class_images)
+
+    inter_class_images = unstack(inter_class_images)
+    inter_class_images = np.concatenate((inter_class_images), axis=-2)
+
+    intra_class_images = unstack(intra_class_images)
+    intra_class_images = np.concatenate((intra_class_images), axis=-2)
+
+    image = np.concatenate((inter_class_images, intra_class_images), axis=-3)
+    image = np.squeeze(image)
+    image = (image - np.min(image)) / (np.max(image) - np.min(image))
+    image = image * 255
+    imageio.imwrite(file_name, image)
 

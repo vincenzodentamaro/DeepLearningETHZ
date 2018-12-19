@@ -1,4 +1,5 @@
 import numpy as np
+import tensorflow as tf
 from scipy.stats import norm
 
 def lerp(val, low, high):
@@ -23,6 +24,25 @@ def slerp(val, low, high):
     omega = np.arccos(np.dot(low/np.linalg.norm(low), high/np.linalg.norm(high)))
     so = np.sin(omega)
     return np.sin((1.0-val)*omega) / so * low + np.sin(val*omega)/so * high
+
+def slerp_tf(val, low, high):
+    if val <= 0:
+        return low
+    elif val >= 1:
+        return high
+    low_flat = tf.reshape(low,[-1,])
+    high_flat = tf.reshape(high, [-1,])
+    dot_prod = tf.reduce_sum( tf.multiply( low_flat/tf.norm(low_flat, axis=0,keepdims=True),
+                                           high_flat/tf.norm(high_flat, axis=0,keepdims=True) ), 0, keepdims=True)
+    threshold = 1e-7
+    dot_prod = tf.maximum(-(1-threshold)*tf.ones(dot_prod.shape),
+                          tf.minimum(dot_prod, (1-threshold)*tf.ones(dot_prod.shape)))
+    omega = tf.acos(dot_prod)
+    so = tf.sin(omega)
+    interpolation = tf.sin((1.-val)*omega)/so*low_flat + tf.sin(val*omega)/so*high_flat
+    return tf.reshape(interpolation, high.shape)
+
+
 
 def slerp_gaussian(val, low, high):
     """Spherical interpolation with gaussian CDF (generally not useful)"""
@@ -84,3 +104,18 @@ def create_mine_grid(rows, cols, dim, space, anchors, spherical, gaussian, scale
     return u_grid
 
 #print(create_mine_grid(rows=16, cols=16, dim=100, space=1, anchors=None, spherical=True, gaussian=True))
+
+def create_interpolation_interval(input_a, input_b, batch_size):
+    vals = np.linspace(0., 1., batch_size)
+    interpolated_latent_space = []
+
+    for i, val in enumerate(vals):
+        if i == 0:
+            interpolated_latent_space.append(input_a)
+        elif i == batch_size-1:
+            pass
+        else:
+            interpolated_latent_space.append(slerp_tf(val,input_a,input_b))
+    interpolated_latent_space.append(input_b)
+    interpolated_latent_space = tf.stack(interpolated_latent_space,axis=0)
+    return interpolated_latent_space

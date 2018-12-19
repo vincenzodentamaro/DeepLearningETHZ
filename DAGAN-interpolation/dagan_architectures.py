@@ -204,7 +204,8 @@ class UResNetGenerator:
 
         return outputs
 
-    def __call__(self, z_inputs, conditional_input, training=False, dropout_rate=0.0):
+    def __call__(self, z_inputs, conditional_input, training=False, dropout_rate=0.0, output_latent_space=False,
+                 generate_from_latent_space=False, latent_inputs=None):
         """
         Apply network on data.
         :param z_inputs: Random noise to inject [batch_size, z_dim]
@@ -254,7 +255,10 @@ class UResNetGenerator:
                             current_layers.append(outputs)
                         encoder_layers.append(outputs)
 
-            g_conv_encoder = outputs
+            if generate_from_latent_space:
+                g_conv_encoder = latent_inputs
+            else:
+                g_conv_encoder = outputs
 
             with tf.variable_scope("vector_expansion"):  # Used for expanding the z injected noise to match the
                                                          # dimensionality of the various decoder MultiLayers, injecting
@@ -364,7 +368,11 @@ class UResNetGenerator:
             print("generator_total_layers", self.conv_layer_num)
             count_parameters(self.variables, name="generator_parameter_num")
         self.build = False
-        return gan_decoder, encoder_layers, decoder_layers
+
+        if output_latent_space:
+            return gan_decoder, encoder_layers, decoder_layers, g_conv_encoder
+        else:
+            return gan_decoder, encoder_layers, decoder_layers
 
 
 class Discriminator:

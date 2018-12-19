@@ -1,5 +1,6 @@
 import tensorflow as tf
 from dagan_architectures import UResNetGenerator, Discriminator
+from interpolations import create_interpolation_interval
 
 
 class DAGAN:
@@ -265,4 +266,72 @@ class DAGAN:
            z_input=self.z_inputs)
 
         return self.input_x_i[0], generated
+
+    def encode(self, conditional_images):
+        """
+        encode images to latent space with the DAGAN
+        :param conditional_images: Images to condition DAGAN on.
+        noise with dimensionality [batch_size, z_dim]
+        :return: A batch of encoded latent spaces, one per conditional image
+        """
+
+        z_input = tf.zeros([self.batch_size, self.z_dim])
+        _, _, _, g_conv_encoder = self.g(z_input,
+                                         conditional_images,
+                                         training=self.training_phase,
+                                         dropout_rate=self.dropout_rate,
+                                         output_latent_space=True)
+        return g_conv_encoder
+
+    def interpolate_inter_class(self, images_class1, images_class2):
+        """ Create a batch of interpolated pictures between the first image of images_class1 and the first image
+        of images_class2"""
+        z_input = tf.zeros([self.batch_size, self.z_dim])
+        latent_vectors_class1 = self.encode(images_class1)
+        latent_vectors_class2 = self.encode(images_class2)
+        # take the first latent vector of each class and interpolate between the two (number of interpolations
+        # is equal to the batch size
+        interpolated_latent_batch = create_interpolation_interval(latent_vectors_class1[0], latent_vectors_class2[0])
+
+        generated_samples, _, _ = self.g(z_input, images_class1,
+                                         training=self.training_phase,
+                                         dropout_rate=self.dropout_rate,
+                                         generate_from_latent_space=True,
+                                         latent_inputs=interpolated_latent_batch)
+        return generated_samples
+
+    def interpolate_intra_class(self,images):
+        """ Create a batch of interpolated pictures between the first two images of the given batch """
+        z_input = tf.zeros([self.batch_size, self.z_dim])
+        latent_vectors = self.encode(images)
+        # take the first two latent vectors and interpolate between the two (number of interpolations
+        # is equal to the batch size
+        interpolated_latent_batch = create_interpolation_interval(latent_vectors[0], latent_vectors[1])
+
+        generated_samples, _, _ = self.g(z_input, images,
+                                         training=self.training_phase,
+                                         dropout_rate=self.dropout_rate,
+                                         generate_from_latent_space=True,
+                                         latent_inputs=interpolated_latent_batch)
+        return generated_samples
+
+
+    def generate(self, conditional_images, z_input=None):
+        """
+        Generate samples with the DAGAN
+        :param conditional_images: Images to condition DAGAN on.
+        :param z_input: Random noise to condition the DAGAN on. If none is used then the method will generate random
+        noise with dimensionality [batch_size, z_dim]
+        :return: A batch of generated images, one per conditional image
+        """
+        if z_input is None:
+            z_input = tf.random_normal([self.batch_size, self.z_dim], mean=0, stddev=1)
+
+        generated_samples, encoder_layers, decoder_layers = self.g(z_input,
+                               conditional_images,
+                               training=self.training_phase,
+                               dropout_rate=self.dropout_rate)
+
+        return generated_samples
+
 

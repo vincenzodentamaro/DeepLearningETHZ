@@ -58,6 +58,12 @@ class ExperimentBuilder(object):
 
         self.summary, self.losses, self.graph_ops = dagan.init_train()
         self.same_images = dagan.sample_same_images()
+        self.x_class_i = tf.placeholder(tf.float32, [self.batch_size, image_height, image_width,
+                                                     image_channel], 'inputs-class-i')
+        self.x_class_j = tf.placeholder(tf.float32, [self.batch_size, image_height, image_width,
+                                                     image_channel], 'inputs-class-j')
+        self.inter_class_interpolations = dagan.interpolate_inter_class(self.x_class_i, self.x_class_j)
+        self.intra_class_interpolations = dagan.interpolate_intra_class(self.x_class_i)
 
         self.total_train_batches = int(data.training_data_size / (self.batch_size * self.num_gpus))
 
@@ -238,6 +244,11 @@ class ExperimentBuilder(object):
                                                     dropout_rate=self.dropout_rate,
                                                     dropout_rate_value=self.dropout_rate_value,
                                                     z_vectors=self.z_2d_vectors)
+
+                    x_class_i, x_class_j = self.data.get_two_class_batches()
+
+
+
 
                     with tqdm.tqdm(total=self.total_gen_batches) as pbar_samp:
                         for i in range(self.total_gen_batches):
