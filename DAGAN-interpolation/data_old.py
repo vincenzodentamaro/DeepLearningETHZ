@@ -321,18 +321,12 @@ class OmniglotDAGANDataset(DAGANDataset):
         super(OmniglotDAGANDataset, self).__init__(batch_size, last_training_class_index, reverse_channels, num_of_gpus,
                                                    gen_batches)
 
-    # def load_dataset(self, gan_training_index):
-    #     self.x = np.load("datasets/omniglot_data.npy")
-    #     self.x = self.x / np.max(self.x)
-    #     x_train, x_test, x_val = self.x[:1200], self.x[1200:1600], self.x[1600:]
-    #     x_train = x_train[:gan_training_index]
-    #     return x_train, x_test, x_val
-
     def load_dataset(self, gan_training_index):
         self.x = np.load("datasets/omniglot_data.npy")
         self.x = self.x / np.max(self.x)
-        x_train, x_test, x_val = self.x[:4], self.x[4:6], self.x[6:8]
+        x_train, x_test, x_val = self.x[:1200], self.x[1200:1600], self.x[1600:]
         return x_train, x_test, x_val
+
 
 class OmniglotImbalancedDAGANDataset(DAGANImbalancedDataset):
     def __init__(self, batch_size, last_training_class_index, reverse_channels, num_of_gpus, gen_batches):
