@@ -331,7 +331,7 @@ class OmniglotDAGANDataset(DAGANDataset):
     def load_dataset(self, gan_training_index):
         self.x = np.load("datasets/omniglot_data.npy")
         self.x = self.x / np.max(self.x)
-        x_train, x_test, x_val = self.x[:24], self.x[24:32], self.x[32:40]
+        x_train, x_test, x_val = self.x[:4], self.x[4:6], self.x[6:8]
         return x_train, x_test, x_val
 
 class OmniglotImbalancedDAGANDataset(DAGANImbalancedDataset):

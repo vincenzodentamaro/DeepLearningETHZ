@@ -291,13 +291,16 @@ class DAGAN:
         latent_vectors_class2 = self.encode(images_class2)
         # take the first latent vector of each class and interpolate between the two (number of interpolations
         # is equal to the batch size
-        interpolated_latent_batch = create_interpolation_interval(latent_vectors_class1[0], latent_vectors_class2[0])
+        interpolated_latent_batch = create_interpolation_interval(latent_vectors_class1[0], latent_vectors_class2[0], self.batch_size)
 
         generated_samples, _, _ = self.g(z_input, images_class1,
                                          training=self.training_phase,
                                          dropout_rate=self.dropout_rate,
                                          generate_from_latent_space=True,
                                          latent_inputs=interpolated_latent_batch)
+        new_shape = [1,images_class1.shape[1],images_class1.shape[2],images_class1.shape[3]]
+        generated_samples = tf.concat([tf.reshape(images_class1[0],new_shape),generated_samples,
+                                       tf.reshape(images_class2[0],new_shape)],axis=0)
         return generated_samples
 
     def interpolate_intra_class(self,images):
@@ -306,15 +309,14 @@ class DAGAN:
         latent_vectors = self.encode(images)
         # take the first two latent vectors and interpolate between the two (number of interpolations
         # is equal to the batch size
-        interpolated_latent_batch = create_interpolation_interval(latent_vectors[0], latent_vectors[1])
+        interpolated_latent_batch = create_interpolation_interval(latent_vectors[0], latent_vectors[1], self.batch_size)
 
         generated_samples, _, _ = self.g(z_input, images,
                                          training=self.training_phase,
                                          dropout_rate=self.dropout_rate,
                                          generate_from_latent_space=True,
                                          latent_inputs=interpolated_latent_batch)
+        new_shape = [1, images.shape[1], images.shape[2], images.shape[3]]
+        generated_samples = tf.concat([tf.reshape(images[0], new_shape), generated_samples,
+                                       tf.reshape(images[1], new_shape)], axis=0)
         return generated_samples
-
-
-
-
