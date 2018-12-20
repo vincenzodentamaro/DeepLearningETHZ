@@ -294,7 +294,7 @@ class UResNetGenerator:
                     if idx<0:
                         num_features = self.layer_sizes[0]
                         inner_layers = self.inner_layers[0]
-                        outputs = tf.concat([outputs, conditional_input], axis=3)
+                        # outputs = tf.concat([outputs, conditional_input], axis=3)
                         upscale_shape = conditional_input.get_shape().as_list()
 
                     with tf.variable_scope('g_deconv{}'.format(i)):
@@ -317,7 +317,7 @@ class UResNetGenerator:
                                                                  .format(i, j), training=training,
                                                                  layer_to_skip_connect=current_layers,
                                                                  num_features=num_features,
-                                                                 dim_upscale=False,
+                                                                 dim_upscale=False, #todo: I changed this from false to true
                                                                  local_inner_layers=decoder_inner_layers,
                                                                  w_size=upscale_shape[1],
                                                                  h_size=upscale_shape[2],
@@ -340,7 +340,7 @@ class UResNetGenerator:
                                 h_size=upscale_shape[2], dropout_rate=dropout_rate)
                             current_layers.append(outputs)
                         if (idx-1)>=0:
-                            outputs = tf.concat([outputs, encoder_layers[idx-1]], axis=3)
+                            # outputs = tf.concat([outputs, encoder_layers[idx-1]], axis=3)
                             current_layers[-1] = outputs
 
                 high_res_layers = []

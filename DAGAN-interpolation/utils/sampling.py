@@ -2,6 +2,7 @@ import scipy.misc
 import numpy as np
 import imageio
 
+
 def unstack(np_array):
     new_list = []
     for i in range(np_array.shape[0]):
@@ -144,7 +145,14 @@ def interpolation_generator(sess, inter_class_interpolations, intra_class_interp
     intra_class_images = unstack(intra_class_images)
     intra_class_images = np.concatenate((intra_class_images), axis=-2)
 
-    image = np.concatenate((inter_class_images, intra_class_images), axis=-3)
+    # also include x_i images in jpg, to see if the interpolations depend a lot on them
+    new_shape = (1, x_i.shape[1], x_i.shape[2], x_i.shape[3])
+    original_batch = np.concatenate([np.reshape(x_i[0], new_shape), x_i,
+                                   np.reshape(x_i[-1], new_shape)], axis=0)
+    original_batch = unstack(original_batch)
+    original_batch = np.concatenate((original_batch),axis=-2)
+
+    image = np.concatenate((inter_class_images, intra_class_images, original_batch), axis=-3)
     image = np.squeeze(image)
     image = (image - np.min(image)) / (np.max(image) - np.min(image))
     image = image * 255
