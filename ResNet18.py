@@ -162,7 +162,7 @@ if __name__ == '__main__':
     train_acc = []
     val_acc = []
 
-    results = train(model_conv, loss_fn, optimizer_conv, loader_train, loader_val, num_epochs = 5)
+    results = train(model_conv, loss_fn, optimizer_conv, loader_train, loader_val, num_epochs = 10)
     resultfile1 = write_results(results)
     resultfile1.to_csv(os.path.join(os.path.curdir, resultfilename1))
     test_accuracy = check_accuracy(model_conv, loader_test)
@@ -175,9 +175,9 @@ if __name__ == '__main__':
     for param in model_conv.parameters():
         param.requires_grad = True
 
-    optimizer_conv = optim.Adam(model_conv.parameters(), lr=1e-10)
+    optimizer_conv = optim.Adam(model_conv.parameters(), lr=1e-8)
 
-    results = train(model_conv, loss_fn, optimizer_conv, loader_train, loader_val, num_epochs = 1)
+    results = train(model_conv, loss_fn, optimizer_conv, loader_train, loader_val, num_epochs = 4)
     resultfile2 = write_results(results)
     resultfile2.to_csv(os.path.join(os.path.curdir, resultfilename2))
     test_accuracy = check_accuracy(model_conv,loader_test)
