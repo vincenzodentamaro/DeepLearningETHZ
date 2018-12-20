@@ -1,6 +1,6 @@
 import tensorflow as tf
 from dagan_architectures import UResNetGenerator, Discriminator
-from interpolations import create_interpolation_interval
+from utils.interpolations import create_interpolation_interval
 
 
 class DAGAN:
@@ -316,22 +316,5 @@ class DAGAN:
         return generated_samples
 
 
-    def generate(self, conditional_images, z_input=None):
-        """
-        Generate samples with the DAGAN
-        :param conditional_images: Images to condition DAGAN on.
-        :param z_input: Random noise to condition the DAGAN on. If none is used then the method will generate random
-        noise with dimensionality [batch_size, z_dim]
-        :return: A batch of generated images, one per conditional image
-        """
-        if z_input is None:
-            z_input = tf.random_normal([self.batch_size, self.z_dim], mean=0, stddev=1)
-
-        generated_samples, encoder_layers, decoder_layers = self.g(z_input,
-                               conditional_images,
-                               training=self.training_phase,
-                               dropout_rate=self.dropout_rate)
-
-        return generated_samples
 
 

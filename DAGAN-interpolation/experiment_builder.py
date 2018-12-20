@@ -5,7 +5,7 @@ from utils.storage import save_statistics, build_experiment_folder
 from tensorflow.contrib import slim
 
 from dagan_networks_wgan import *
-from utils.sampling import sample_generator, sample_two_dimensions_generator
+from utils.sampling import sample_generator, sample_two_dimensions_generator, interpolation_generator
 
 
 class ExperimentBuilder(object):
@@ -237,7 +237,7 @@ class ExperimentBuilder(object):
                                                     same_images=self.same_images,
                                                     inputs=x_train_i,
                                                     data=self.data, batch_size=self.batch_size, z_input=self.z_input,
-                                                    file_name="{}/train_z_spherical_{}_{}".format(self.save_image_path,
+                                                    file_name="{}/train_z_spherical_{}_{}.png".format(self.save_image_path,
                                                                                                   self.experiment_name,
                                                                                                   e),
                                                     input_a=self.input_x_i, training_phase=self.training_phase,
@@ -246,8 +246,16 @@ class ExperimentBuilder(object):
                                                     z_vectors=self.z_2d_vectors)
 
                     x_class_i, x_class_j = self.data.get_two_class_batches()
-
-
+                    interpolation_generator(sess=sess, inter_class_interpolations = self.inter_class_interpolations,
+                                            intra_class_interpolations=self.intra_class_interpolations,
+                                            x_i_placeholder = self.x_class_i, x_j_placeholder = self.x_class_j,
+                                            x_i = x_class_i, x_j=x_class_j, dropout_rate_value=self.dropout_rate_value,
+                                            dropout_rate=self.dropout_rate, data = self.data,
+                                            batch_size=self.batch_size,
+                                            file_name="{}/interpolations_{}_{}.png".format(self.save_image_path,
+                                                                                           self.experiment_name, e),
+                                            training_phase=self.training_phase, z_input = self.z_input,
+                                            z_vectors=self.z_vectors)
 
 
                     with tqdm.tqdm(total=self.total_gen_batches) as pbar_samp:

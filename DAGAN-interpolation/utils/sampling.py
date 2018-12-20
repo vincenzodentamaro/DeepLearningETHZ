@@ -128,7 +128,7 @@ def interpolation_generator(sess, inter_class_interpolations, intra_class_interp
     inter_class_images, intra_class_images = sess.run(inter_class_interpolations, intra_class_interpolations,
                                                               feed_dict={x_i_placeholder: x_i,
                                                                          x_j_placeholder: x_j,
-                                                                         dropout_rate: dropout_rate_value
+                                                                         dropout_rate: dropout_rate_value,
                                                                          z_input: batch_size*[z_vectors[0]],
                                                                          training_phase: False})
 

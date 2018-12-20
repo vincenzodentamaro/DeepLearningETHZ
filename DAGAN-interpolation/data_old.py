@@ -182,6 +182,25 @@ class DAGANDataset(object):
         x_input_a = self.get_multi_batch("gen")
         return x_input_a
 
+    def get_two_class_batches(self, dataset_name="train"):
+        """ Get two batches, each from a different class. Will be used for interpolation"""
+        x_input_batch_a = []
+        x_input_batch_b = []
+
+        for i in range(self.batch_size):
+            class_labels = np.random.choice(len(self.datasets[dataset_name]), size=2, replace=False)
+            dataset_class1 = self.datasets[dataset_name][class_labels[0]]
+            dataset_class2 = self.datasets[dataset_name][class_labels[1]]
+            sample1 = np.random.choice(len(dataset_class1))
+            sample2 = np.random.choice(len(dataset_class2))
+            x_input_batch_a.append(dataset_class1[sample1])
+            x_input_batch_b.append(dataset_class2[sample2])
+
+        x_input_batch_a = np.array(x_input_batch_a)
+        x_input_batch_b = np.array(x_input_batch_b)
+
+        return self.preprocess_data(x_input_batch_a), self.preprocess_data(x_input_batch_b)
+
 class DAGANImbalancedDataset(DAGANDataset):
     def __init__(self, batch_size, last_training_class_index, reverse_channels, num_of_gpus, gen_batches):
         """
@@ -302,11 +321,17 @@ class OmniglotDAGANDataset(DAGANDataset):
         super(OmniglotDAGANDataset, self).__init__(batch_size, last_training_class_index, reverse_channels, num_of_gpus,
                                                    gen_batches)
 
+    # def load_dataset(self, gan_training_index):
+    #     self.x = np.load("datasets/omniglot_data.npy")
+    #     self.x = self.x / np.max(self.x)
+    #     x_train, x_test, x_val = self.x[:1200], self.x[1200:1600], self.x[1600:]
+    #     x_train = x_train[:gan_training_index]
+    #     return x_train, x_test, x_val
+
     def load_dataset(self, gan_training_index):
         self.x = np.load("datasets/omniglot_data.npy")
         self.x = self.x / np.max(self.x)
-        x_train, x_test, x_val = self.x[:1200], self.x[1200:1600], self.x[1600:]
-        x_train = x_train[:gan_training_index]
+        x_train, x_test, x_val = self.x[:24], self.x[24:32], self.x[32:40]
         return x_train, x_test, x_val
 
 class OmniglotImbalancedDAGANDataset(DAGANImbalancedDataset):
