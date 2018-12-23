@@ -114,16 +114,18 @@ class ExperimentBuilder(object):
             best_d_val_loss = np.inf
 
             if self.spherical_interpolation:
-                dim = int(np.sqrt(self.num_generations)*2)
-                self.z_2d_vectors = interpolations.create_mine_grid(rows=dim,
-                                                                    cols=dim,
-                                                                    dim=self.z_dim, space=3, anchors=None,
-                                                                    spherical=True, gaussian=True)
-                self.z_vectors = interpolations.create_mine_grid(rows=1, cols=self.num_generations, dim=self.z_dim,
-                                                                 space=3, anchors=None, spherical=True, gaussian=True)
+                # dim = int(np.sqrt(self.num_generations)*2)
+                # self.z_2d_vectors = interpolations.create_mine_grid(rows=dim,
+                #                                                     cols=dim,
+                #                                                     dim=self.z_dim, space=3, anchors=None,
+                #                                                     spherical=True, gaussian=True)
+                # self.z_vectors = interpolations.create_mine_grid(rows=1, cols=self.num_generations, dim=self.z_dim,
+                #                                                  space=3, anchors=None, spherical=True, gaussian=True)
+                self.z_vectors = interpolations.create_mine_vector(num_generations=self.num_generations,
+                                                                   z_dim=self.z_dim)
             else:
                 self.z_vectors = np.random.normal(size=(self.num_generations, self.z_dim))
-                self.z_2d_vectors = np.random.normal(size=(self.num_generations, self.z_dim))
+                # self.z_2d_vectors = np.random.normal(size=(self.num_generations, self.z_dim))
 
             with tqdm.tqdm(total=self.total_epochs-start_from_epoch) as pbar_e:
                 for e in range(start_from_epoch, self.total_epochs):
@@ -224,7 +226,7 @@ class ExperimentBuilder(object):
                                     total_g_val_loss_std))
 
 
-
+                    print("making {}/train_z_variations_{}_{}.png".format(self.save_image_path,self.experiment_name, e))
                     sample_generator(num_generations=self.num_generations, sess=sess, same_images=self.same_images,
                                      inputs=x_train_i,
                                      data=self.data, batch_size=self.batch_size, z_input=self.z_input,
@@ -235,18 +237,8 @@ class ExperimentBuilder(object):
                                      z_vectors=self.z_vectors, dropout_rate=self.dropout_rate,
                                      dropout_rate_value=self.dropout_rate_value)
 
-                    sample_two_dimensions_generator(sess=sess,
-                                                    same_images=self.same_images,
-                                                    inputs=x_train_i,
-                                                    data=self.data, batch_size=self.batch_size, z_input=self.z_input,
-                                                    file_name="{}/train_z_spherical_{}_{}".format(self.save_image_path,
-                                                                                                  self.experiment_name,
-                                                                                                  e),
-                                                    input_a=self.input_x_i, training_phase=self.training_phase,
-                                                    dropout_rate=self.dropout_rate,
-                                                    dropout_rate_value=self.dropout_rate_value,
-                                                    z_vectors=self.z_2d_vectors)
-
+                    print("making {}/train_interpolations_{}_{}.png".format(self.save_image_path,
+                                                                            self.experiment_name, e))
                     x_class_i, x_class_j = self.data.get_two_class_batches()
                     interpolation_generator(sess=sess, inter_class_interpolations = self.inter_class_interpolations,
                                             intra_class_interpolations=self.intra_class_interpolations,
@@ -254,10 +246,43 @@ class ExperimentBuilder(object):
                                             x_i = x_class_i, x_j=x_class_j, dropout_rate_value=self.dropout_rate_value,
                                             dropout_rate=self.dropout_rate, data = self.data,
                                             batch_size=self.batch_size,
-                                            file_name="{}/interpolations_{}_{}.png".format(self.save_image_path,
+                                            file_name="{}/train_interpolations_{}_{}.png".format(self.save_image_path,
                                                                                            self.experiment_name, e),
                                             training_phase=self.training_phase, z_input = self.z_input,
                                             z_vectors=self.z_vectors)
+                    print("making {}/test_z_variations_{}_{}.png".format(self.save_image_path,
+                                                                                          self.experiment_name,
+                                                                                       e))
+                    x_gen_a = self.data.get_gen_batch()
+                    sample_generator(num_generations=self.num_generations, sess=sess,
+                                     same_images=self.same_images,
+                                     inputs=x_gen_a,
+                                     data=self.data, batch_size=self.batch_size, z_input=self.z_input,
+                                     file_name="{}/test_z_variations_{}_{}.png".format(self.save_image_path,
+                                                                                          self.experiment_name,
+                                                                                       e),
+                                     input_a=self.input_x_i, training_phase=self.training_phase,
+                                     z_vectors=self.z_vectors, dropout_rate=self.dropout_rate,
+                                     dropout_rate_value=self.dropout_rate_value)
+                    print("making {}/test_interpolations_{}_{}.png".format(self.save_image_path,
+                                                                         self.experiment_name,
+                                                                         e))
+                    x_class_i_test, x_class_j_test = self.data.get_two_class_batches("test")
+                    interpolation_generator(sess=sess, inter_class_interpolations=self.inter_class_interpolations,
+                                            intra_class_interpolations=self.intra_class_interpolations,
+                                            x_i_placeholder=self.x_class_i, x_j_placeholder=self.x_class_j,
+                                            x_i=x_class_i_test, x_j=x_class_j_test,
+                                            dropout_rate_value=self.dropout_rate_value,
+                                            dropout_rate=self.dropout_rate, data=self.data,
+                                            batch_size=self.batch_size,
+                                            file_name="{}/test_interpolations_{}_{}.png".format(self.save_image_path,
+                                                                                                 self.experiment_name,
+                                                                                                 e),
+                                            training_phase=self.training_phase, z_input=self.z_input,
+                                            z_vectors=self.z_vectors)
+
+
+
 
 
                     # with tqdm.tqdm(total=self.total_gen_batches) as pbar_samp:

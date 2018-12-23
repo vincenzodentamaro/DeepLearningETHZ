@@ -10,3 +10,4 @@ data = dataset.OmniglotDAGANDataset(batch_size=batch_size, last_training_class_i
 experiment = ExperimentBuilder(args, data=data)
 #run experiment
 experiment.run_experiment()
+

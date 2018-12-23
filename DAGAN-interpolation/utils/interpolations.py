@@ -21,7 +21,11 @@ def slerp(val, low, high):
         return high
     elif np.allclose(low, high):
         return low
-    omega = np.arccos(np.dot(low/np.linalg.norm(low), high/np.linalg.norm(high)))
+    threshold = 1e-7
+    dot_prod = np.dot(low/np.linalg.norm(low), high/np.linalg.norm(high))
+    dot_prod = np.maximum(-(1 - threshold) * np.ones(dot_prod.shape),
+                          np.minimum(dot_prod, (1 - threshold) * np.ones(dot_prod.shape)))
+    omega = np.arccos(dot_prod)
     so = np.sin(omega)
     return np.sin((1.0-val)*omega) / so * low + np.sin(val*omega)/so * high
 
@@ -119,3 +123,24 @@ def create_interpolation_interval(input_a, input_b, batch_size):
     interpolated_latent_space.append(input_b)
     interpolated_latent_space = tf.stack(interpolated_latent_space,axis=0)
     return interpolated_latent_space
+
+def create_mine_vector(num_generations, z_dim, space=None):
+    """
+    :param num_generations: number of random latent space vectors in output
+    :param z_dim: dimension of random latent space
+    :param space: number of interpolations between the random latent space vectors
+    :return:
+    """
+    if space == None:
+        space = int(num_generations/3.)
+    u_list = np.zeros((num_generations,z_dim))
+    z_high = np.random.normal(size=(z_dim),loc=0.,scale=1.)
+    for i in range(num_generations):
+        if i%space == 0:
+            z_low = z_high
+            z_high = np.random.normal(size=(z_dim),loc=0.,scale=1.)
+            u_list[i,:] = z_low
+        else:
+            val = float(i%space)/float(space)
+            u_list[i,:] = slerp(val, z_low, z_high)
+    return u_list
