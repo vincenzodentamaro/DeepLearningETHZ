@@ -255,6 +255,8 @@ class ExperimentBuilder(object):
                                                                                           self.experiment_name,
                                                                                        e))
                     x_gen_a = self.data.get_gen_batch()
+                    print(x_gen_a.shape)
+                    print(self.z_vectors.shape)
                     sample_generator(num_generations=self.num_generations, sess=sess,
                                      same_images=self.same_images,
                                      inputs=x_gen_a,
