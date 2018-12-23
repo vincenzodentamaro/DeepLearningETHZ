@@ -41,7 +41,7 @@ filter_subset = False # True if we want to filter to just train _1
 balanced_dset = True # True if I want equal # of paintings per artist, false if I want to use all available per artist
 
 ## THIS VERSION OF SCRIPT HAS EQUAL NUMBER OF PAINTINGS PER ARTIST
-num_train = 4000
+num_train = 8000
 num_val = 500
 num_test = 500
 num_samples = num_train + num_val + num_test # threshold to include an artist
