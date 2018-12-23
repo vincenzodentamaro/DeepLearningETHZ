@@ -514,13 +514,13 @@ class DAGANDataset(object):
 
     def get_two_class_batches(self, dataset_name="train"):
         """ Get two batches, each from a different class. Will be used for interpolation"""
-        class_labels = np.random.choice(len(self.datasets[dataset_name]), size=2, replace=False)
+        class_labels = np.random.choice(self.datasets[dataset_name].nb_classes, size=2, replace=False)
         dataset_class1 = self.datasets[dataset_name][class_labels[0]]
         dataset_class2 = self.datasets[dataset_name][class_labels[1]]
         choose_samples = np.random.choice(self.datasets[dataset_name].shape[1], size=self.batch_size,
                                           replace=True)
-        x_input_batch_a = dataset_class1[choose_samples]
-        x_input_batch_b = dataset_class2[choose_samples]
+        x_input_batch_a = dataset_class1[choose_samples1]
+        x_input_batch_b = dataset_class2[choose_samples2]
 
         return self.preprocess_data(x_input_batch_a), self.preprocess_data(x_input_batch_b)
 
