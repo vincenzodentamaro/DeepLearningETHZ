@@ -52,8 +52,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from PIL import Image, ImageFilter
 import random
-import cv2
-import os, glob
+import os
 
 t = pd.read_csv(dat_folder + 'all_data_info.csv')
 
