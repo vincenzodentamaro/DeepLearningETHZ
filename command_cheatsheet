@@ -34,3 +34,6 @@ bsub -n 20 -W 4:00 -R "rusage[mem=4500, ngpus_excl_p=1]" python train_omniglot_d
 move files to local machine:
 scp -r ameulema@login.leonhard.ethz.ch:/cluster/scratch/ameulema/DeepLearningETHZ/DAGAN-interpolation/omniglot/visual_outputs ./
 
+testrun painting styles:
+bsub -n 20 -W 4:00 -R "rusage[mem=4500, ngpus_excl_p=1]" python train_painting_styles.py --batch_size 8 --generator_inner_layers 2 --discriminator_inner_layers 4 --num_generations 64 --experiment_title paintingstyles2 --num_of_gpus 1 --z_dim 100 --dropout_rate_value 0.5 --infofile ../data_info_files/info_file_testrun_gen.csv --data_dir ../train_reduced
+

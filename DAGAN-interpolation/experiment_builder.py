@@ -4,6 +4,7 @@ import tqdm
 from utils.storage import save_statistics, build_experiment_folder
 from tensorflow.contrib import slim
 import math
+import imageio #to check if it is installed on clusters
 
 from dagan_networks_wgan import *
 from utils.sampling import sample_generator, sample_two_dimensions_generator, interpolation_generator

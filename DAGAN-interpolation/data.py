@@ -244,7 +244,7 @@ class MultiClassDataset(object):
 
 
     def __getitem__(self, value):
-        if isinstance(value,int):
+        if (isinstance(value,int) or isinstance(value, np.int_)):
             csv_filename = self.working_directory + 'DAGAN_temporaryfile.csv'
             self.info_file_classes[value].to_csv(csv_filename, index=False)
             return OneClassDataset(csv_file=csv_filename,root_dir = self.root_dir, transform = self.transform,
@@ -640,52 +640,6 @@ class DAGANImbalancedDataset(DAGANDataset):
             return x_input_a_batch, x_input_b_batch
 
 
-class OmniglotDAGANDataset(DAGANDataset):
-    def __init__(self, batch_size, last_training_class_index, reverse_channels, num_of_gpus, gen_batches,
-                 gen_labels=None):
-        super(OmniglotDAGANDataset, self).__init__(batch_size, last_training_class_index, reverse_channels, num_of_gpus,
-                                                   gen_batches,gen_labels=gen_labels)
-
-    def load_dataset(self, gan_training_index):
-        self.x = np.load("datasets/omniglot_data.npy")
-        self.x = self.x / np.max(self.x)
-        x_train, x_test, x_val = self.x[:1200], self.x[1200:1600], self.x[1600:]
-        x_train = x_train[:gan_training_index]
-        return x_train, x_test, x_val
-
-class OmniglotImbalancedDAGANDataset(DAGANImbalancedDataset):
-    def __init__(self, batch_size, last_training_class_index, reverse_channels, num_of_gpus, gen_batches):
-        super(OmniglotImbalancedDAGANDataset, self).__init__(batch_size, last_training_class_index, reverse_channels,
-                                                             num_of_gpus, gen_batches)
-    def load_dataset(self, last_training_class_index):
-        x = np.load("datasets/omniglot_data.npy")
-        x_temp = []
-        for i in range(x.shape[0]):
-            choose_samples = np.random.choice([i for i in range(1, 15)])
-            x_temp.append(x[i, :choose_samples])
-        self.x = np.array(x_temp)
-        self.x = self.x / np.max(self.x)
-        x_train, x_test, x_val = self.x[:1200], self.x[1200:1600], self.x[1600:]
-        x_train = x_train[:last_training_class_index]
-
-        return x_train, x_test, x_val
-
-
-class VGGFaceDAGANDataset(DAGANDataset):
-    def __init__(self, batch_size, last_training_class_index, reverse_channels, num_of_gpus, gen_batches):
-        super(VGGFaceDAGANDataset, self).__init__(batch_size, last_training_class_index, reverse_channels, num_of_gpus,
-                                                  gen_batches)
-
-    def load_dataset(self, gan_training_index):
-
-        self.x = np.load("datasets/vgg_face_data.npy")
-        self.x = self.x / np.max(self.x)
-        self.x = np.reshape(self.x, newshape=(2354, 100, 64, 64, 3))
-        x_train, x_test, x_val = self.x[:1803], self.x[1803:2300], self.x[2300:]
-        x_train = x_train[:gan_training_index]
-
-        return x_train, x_test, x_val
-
 class PaintingsDataset(DAGANDataset):
     def __init__(self, batch_size, last_training_class_index, reverse_channels, num_of_gpus, gen_batches,
                  gen_labels=None, csv_file='../data_info_files/final_train_info.csv',
@@ -703,7 +657,7 @@ class PaintingsDataset(DAGANDataset):
     def load_dataset(self, gan_training_index):
         dataset = Dataset(csv_file=self.csv_file,
                           root_dir=self.root_dir,
-                          transform=None,
+                          transform=self.transform,
                           working_directory=self.working_directory)
         x_train, x_val, x_test = dataset.split_train_val_test(0.15, 0.15)
         x_train = x_train.to_multiclass()
