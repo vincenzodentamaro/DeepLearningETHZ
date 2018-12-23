@@ -448,7 +448,7 @@ class DAGANDataset(object):
         Provides a batch that contains data to be used for generation
         :return: A data batch to use for generation
         """
-        if self.indexes["gen"] >= self.batch_size * self.gen_batches:
+        if self.indexes["gen"] > len(self.datasets["gen"])-self.batch_size:
             self.indexes["gen"] = 0
         x_input_batch_a = self.datasets["gen"][self.indexes["gen"]:self.indexes["gen"]+self.batch_size]
         self.indexes["gen"] += self.batch_size

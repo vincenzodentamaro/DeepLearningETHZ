@@ -5,7 +5,7 @@ from utils.parser_util import get_args
 batch_size, num_gpus, args = get_args()
 #set the data provider to use for the experiment
 data = dataset.PaintingsDataset(batch_size=batch_size, last_training_class_index=900, reverse_channels=True,
-                                    num_of_gpus=num_gpus, gen_batches=10, csv_file=args.infofile, root_dir = args.data_dir)
+                                    num_of_gpus=num_gpus, gen_dataset_size=batch_size, csv_file=args.infofile, root_dir = args.data_dir)
 #init experiment
 experiment = ExperimentBuilder(args, data=data)
 #run experiment
