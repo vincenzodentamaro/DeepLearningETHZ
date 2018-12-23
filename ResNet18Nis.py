@@ -34,7 +34,7 @@ print_every = 100
 
 
 dat_folder = 'working_directory_andreas/'
-img_folder = 'reduced/'
+img_folder = 'train_reduced/'
 num_workers = 4
 
 filter_subset = False # True if we want to filter to just train _1
