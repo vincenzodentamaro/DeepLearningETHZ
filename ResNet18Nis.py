@@ -51,7 +51,6 @@ b_size = 50 # batch size for the data loaders
 
 import pandas as pd
 import matplotlib.pyplot as plt
-%matplotlib inline
 from PIL import Image, ImageFilter
 import random
 import cv2
