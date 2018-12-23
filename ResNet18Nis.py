@@ -22,8 +22,6 @@ from torchnet.meter import ConfusionMeter
 import numpy as np
 import timeit
 
-%load_ext autoreload
-%autoreload 2
 
 dtype = torch.FloatTensor
 ytype = torch.LongTensor
