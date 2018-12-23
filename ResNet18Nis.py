@@ -152,8 +152,6 @@ loss_fn = nn.CrossEntropyLoss().type(dtype)
 # opoosed to before.
 optimizer_conv = optim.Adam(model_conv.fc.parameters(), lr=1e-3)
 
-model_conv.load_state_dict(torch.load('working_directory_andreas/state_dict.dat'))
-train_acc, val_acc = torch.load('working_directory_andreas/train_val_accs.dat')
 
 train_acc = []
 val_acc = []
