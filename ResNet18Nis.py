@@ -16,8 +16,7 @@ import torchvision.datasets as dset
 import torchvision.models as models
 import torchvision.transforms as T
 
-import torchnet as tnt
-from torchnet.meter import ConfusionMeter
+
 
 import numpy as np
 import timeit
