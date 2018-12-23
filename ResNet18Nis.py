@@ -35,19 +35,19 @@ print(dtype)
 print_every = 100
 
 
-dat_folder = '../../Nitin/project/data/'
-img_folder = dat_folder + 'images/'
+dat_folder = 'working_directory_andreas/'
+img_folder = train_reduced/'
 num_workers = 4
 
 filter_subset = False # True if we want to filter to just train _1
 balanced_dset = True # True if I want equal # of paintings per artist, false if I want to use all available per artist
 
 ## THIS VERSION OF SCRIPT HAS EQUAL NUMBER OF PAINTINGS PER ARTIST
-num_train = 240
-num_val = 30
-num_test = num_val
+num_train = 4000
+num_val = 500
+num_test = 500
 num_samples = num_train + num_val + num_test # threshold to include an artist
-b_size = 60 # batch size for the data loaders
+b_size = 50 # batch size for the data loaders
 
 
 
@@ -69,15 +69,15 @@ if (filter_subset):
 t.head()
 # print(t.shape)
 
-x = list(t['artist'].value_counts())
+x = list(t['style'].value_counts())
 # list of all artists to include
-temp = t['artist'].value_counts()
+temp = t['style'].value_counts()
 threshold = num_samples
 # threshold = 500
 artists = temp[temp >= threshold].index.tolist()
 num_artists = len(artists)
 
-print(str(len(artists)) + ' artists being classified')
+print(str(len(artists)) + ' styles being classified')
 
 # pull train and val data for just those artists
 train_dfs = []
@@ -85,7 +85,7 @@ val_dfs = []
 test_dfs = []
 
 for a in artists:
-    df = t[t['artist'].str.startswith(a, na=False)].sample(n=num_samples, random_state=seed)
+    df = t[t['style'].str.startswith(a, na=False)].sample(n=num_samples, random_state=seed)
     t_df = df.sample(n=num_train, random_state=seed)
     rest_df = df.loc[~df.index.isin(t_df.index)]
     v_df = rest_df.sample(n=num_val, random_state=seed)
@@ -138,7 +138,7 @@ import torchvision
 
 # transfer learning on top of ResNet (only replacing final FC layer)
 # model_conv = torchvision.models.resnet18(pretrained=True)
-model_conv = torchvision.models.resnet18(pretrained=True)
+model_conv = torch.load(resnet.pt)
 for param in model_conv.parameters():
     param.requires_grad = False
 
@@ -155,8 +155,8 @@ loss_fn = nn.CrossEntropyLoss().type(dtype)
 # opoosed to before.
 optimizer_conv = optim.Adam(model_conv.fc.parameters(), lr=1e-3)
 
-model_conv.load_state_dict(torch.load('../../Nitin/project/cs231n-final/resnet18-300paintings/run2/state_dict.dat'))
-train_acc, val_acc = torch.load('../../Nitin/project/cs231n-final/resnet18-300paintings/run2/train_val_accs.dat')
+model_conv.load_state_dict(torch.load('working_directory_andreas/state_dict.dat'))
+train_acc, val_acc = torch.load('working_directory_andreas/train_val_accs.dat')
 
 train_acc = []
 val_acc = []
