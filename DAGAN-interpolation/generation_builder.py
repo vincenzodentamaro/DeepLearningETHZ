@@ -14,7 +14,8 @@ class ExperimentBuilder(object):
         args = parser.parse_args()
         self.continue_from_epoch = args.continue_from_epoch
         self.experiment_name = args.experiment_title
-        self.saved_models_filepath, self.log_path, self.save_image_path = build_experiment_folder(self.experiment_name)
+        self.saved_models_filepath, self.log_path, self.save_image_path, self.generations_path\
+            = build_experiment_folder(self.experiment_name)
         self.num_gpus = args.num_of_gpus
         self.batch_size = args.batch_size
         gen_depth_per_layer = args.generator_inner_layers
@@ -33,9 +34,9 @@ class ExperimentBuilder(object):
                               discr_depth_per_layer]
         generator_layer_padding = ["SAME", "SAME", "SAME", "SAME"]
 
-        image_height = data.x.shape[2]
-        image_width = data.x.shape[3]
-        image_channels = data.x.shape[4]
+        image_height = data.image_height
+        image_width = data.image_width
+        image_channels = data.image_channels
 
         self.input_x_i = tf.placeholder(tf.float32, [self.num_gpus, self.batch_size, image_height, image_width,
                                                      image_channels], 'inputs-1')
@@ -54,12 +55,8 @@ class ExperimentBuilder(object):
                       discriminator_layer_sizes=discriminator_layers, discr_inner_conv=discr_inner_layers,
                       gen_inner_conv=gen_inner_layers, num_gpus=self.num_gpus, z_dim=self.z_dim, z_inputs=self.z_input)
 
-        self.same_images = dagan.sample_same_images()
-
-        self.total_train_batches = data.training_data_size / (self.batch_size * self.num_gpus)
-        self.total_val_batches = data.validation_data_size / (self.batch_size * self.num_gpus)
-        self.total_test_batches = data.testing_data_size / (self.batch_size * self.num_gpus)
-        self.total_gen_batches = data.generation_data_size / (self.batch_size * self.num_gpus)
+        self.generated_multi_batch = dagan.generate_multi_batch()
+        self.total_gen_batches = int(data.generation_data_size / (self.batch_size * self.num_gpus))
         self.init = tf.global_variables_initializer()
         self.spherical_interpolation = True
 
@@ -88,24 +85,18 @@ class ExperimentBuilder(object):
                     variables_to_restore,
                     ignore_missing_vars=True)
                 fine_tune(sess)
-            if self.spherical_interpolation:
-                z_vectors = interpolations.create_mine_grid(rows=self.num_generations, cols=self.num_generations,
-                                                            dim=100, space=3, anchors=None,
-                                                            spherical=True, gaussian=True)
-            else:
-                z_vectors = np.random.normal(size=(self.num_generations * self.num_generations, self.z_dim))
+
 
             with tqdm.tqdm(total=self.total_gen_batches) as pbar_samp:
+                info_file_gen = None
                 for i in range(self.total_gen_batches):
-                    x_gen_a = self.data.get_gen_batch()
-                    sample_two_dimensions_generator(sess=sess,
-                                                    same_images=self.same_images,
-                                                    inputs=x_gen_a,
-                                                    data=self.data, batch_size=self.batch_size, z_input=self.z_input,
-                                                    file_name="{}/generation_z_spherical_{}".format(self.save_image_path,
-                                                                                                  self.experiment_name),
-                                                    input_a=self.input_x_i, training_phase=self.training_phase,
-                                                    dropout_rate=self.dropout_rate,
-                                                    dropout_rate_value=self.dropout_rate_value,
-                                                    z_vectors=z_vectors)
+                    x_gen_a, info_file_a = self.data.get_multi_batch()
+                    info_file_gen = generate_sample_batch(sess=sess, generated_multi_batch=self.generated_multi_batch,
+                                                          inputs=x_gen_a,
+                                          input_a=self.input_x_i, dropout_rate=self.dropout_rate,
+                                          dropout_rate_value=self.dropout_rate_value, data=self.data,
+                                          batch_size=self.batch_size, file_prefix=self.generations_path,
+                                          info_file_batch=info_file_a, info_file_gen=info_file_gen,
+                                                          training_phase=False, z_input = self.z_input)
+
                     pbar_samp.update(1)

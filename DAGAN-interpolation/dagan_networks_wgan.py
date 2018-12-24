@@ -267,6 +267,16 @@ class DAGAN:
 
         return self.input_x_i[0], generated
 
+    def generate_multi_batch(self):
+        generated_multi_batch = []
+        for gpu in range(self.num_gpus):
+            self.z_inputs = tf.random_normal()
+            generated_batch = self.generate(self.input_x_i[gpu], z_input=self.z_inputs)
+            generated_multi_batch.append(generated_batch)
+        generated_multi_batch = tf.stack(generated_multi_batch)
+        return generated_multi_batch
+
+
     def encode(self, conditional_images):
         """
         encode images to latent space with the DAGAN

@@ -33,7 +33,6 @@ class Dataset(object):
     def __len__(self):
         return len(self.info_file)
 
-
     def __getitem__(self, value):
         if (isinstance(value, int) or isinstance(value,np.int_)):
             return self.get_image(value)
@@ -191,6 +190,13 @@ class Dataset(object):
 
         return data_train, data_val, data_test
 
+    def get_info_file_slice(self, start, stop):
+        info_file = self.info_file.loc[start:stop-1, :]
+        info_file = info_file.reset_index()
+        info_file = info_file.drop(columns=['index'], axis=1)
+        return info_file
+
+
     def to_multiclass(self):
         filename = self.working_directory + 'temporary_file.csv'
         self.info_file.to_csv(filename, index=False)
@@ -295,6 +301,27 @@ class MultiClassDataset(object):
         return MultiClassDataset(csv_file=csv_filename, root_dir=self.root_dir, transform=self.transform,
                                  working_directory=self.working_directory)
 
+    def get_dataset_slice(self, labels, samples_list):
+        """
+        :param labels: list or numpy array with the wished labels in the output slice
+        :param samples_list: nested list or numpy array with one list of wished samples per label in labels
+        :return: Dataset object with with all wished samples
+        """
+        csv_filename = self.working_directory + 'DAGAN_temporaryfile_class.csv'
+        first = True
+        for label_idx, label in enumerate(labels):
+            label = self.class_to_idx[label]
+            if first:
+                csv_file = self.info_file_classes[label].loc[samples_list[label_idx],:]
+                first = False
+            else:
+                csv_file = pd.concat([csv_file, self.info_file_classes[label].loc[samples_list[label_idx], :]])
+        csv_file.to_csv(csv_filename, index=False)
+        return Dataset(csv_file=csv_filename, root_dir=self.root_dir, transform=self.transform,
+                       working_directory=self.working_directory)
+
+
+
     def find_classes(self):
         df = self.info_file
         classes = list(df['style'].unique())
@@ -306,7 +333,10 @@ class MultiClassDataset(object):
     def split_info_file_in_classes(self):
         info_files_classes = []
         for label in self.classes:
-            info_files_classes.append(self.info_file.loc[self.info_file['style'] == label])
+            info_file = self.info_file.loc[self.info_file['style'] == label]
+            info_file = info_file.reset_index()
+            info_file = info_file.drop(columns=['index'], axis=1)
+            info_files_classes.append(info_file)
         return info_files_classes
 
     def flatten_to_dataset(self):
@@ -314,12 +344,6 @@ class MultiClassDataset(object):
         self.info_file.to_csv(filename, index=False)
         return Dataset(csv_file=filename, root_dir=self.root_dir, transform=self.transform,
                                  working_directory=self.working_directory)
-
-
-
-class CustomDAGANDataset(object):
-    pass
-
 
 
 class DAGANDataset(object):
@@ -525,6 +549,8 @@ class DAGANDataset(object):
         return self.preprocess_data(x_input_batch_a), self.preprocess_data(x_input_batch_b)
 
 
+
+
 class DAGANImbalancedDataset(DAGANDataset):
     def __init__(self, batch_size, last_training_class_index, reverse_channels, num_of_gpus, gen_batches):
         """
@@ -640,6 +666,97 @@ class DAGANImbalancedDataset(DAGANDataset):
             return x_input_a_batch, x_input_b_batch
 
 
+class DAGANGeneratingDataset(object):
+    def __init__(self, batch_size, reverse_channels, num_of_gpus, gen_batches_per_label, gen_labels):
+        """
+        :param batch_size: The batch size to use for the data loader
+        :param last_training_class_index: The final index for the training set, used to restrict the training set
+        if needed. E.g. if training set is 1200 classes and last_training_class_index=900 then only the first 900
+        classes will be used
+        :param reverse_channels: A boolean indicating whether we need to reverse the colour channels e.g. RGB to BGR
+        :param num_of_gpus: Number of gpus to use for training
+        :param gen_batches: How many batches to use from the validation set for the end of epoch generations
+        """
+        self.gen_labels = gen_labels
+        self.batch_size = batch_size
+        self.gen_batches_per_label = gen_batches_per_label
+        self.x_gen = self.load_dataset()
+        self.num_of_gpus = num_of_gpus
+        self.reverse_channels = reverse_channels
+        self.index = 0
+        self.image_height = self.x_gen.shape[-3]
+        self.image_width = self.x_gen.shape[-2]
+        self.image_channel = self.x_gen.shape[-1]
+        self.generation_data_size = len(self.x_gen)
+
+    def load_dataset(self):
+        """
+        Loads the dataset into the data loader class. To be implemented in all classes that inherit
+        DAGANImbalancedDataset
+        :param last_training_class_index: last_training_class_index: The final index for the training set,
+        used to restrict the training set if needed. E.g. if training set is 1200 classes and
+        last_training_class_index=900 then only the first 900 classes will be used
+        """
+        raise NotImplementedError
+
+    def preprocess_data(self, x):
+        """
+        Preprocesses data such that their values lie in the -1.0 to 1.0 range so that the tanh activation gen output
+        can work properly
+        :param x: A data batch to preprocess
+        :return: A preprocessed data batch
+        """
+        if not isinstance(x,np.ndarray):
+            raise TypeError('Only numpy arrays can be used with the method preprocess_data, now got {}'.format(type(x)))
+        x = 2 * x - 1
+        if self.reverse_channels:
+            reverse_photos = np.ones(shape=x.shape)
+            for channel in range(x.shape[-1]):
+                reverse_photos[:, :, :, x.shape[-1] - 1 - channel] = x[:, :, :, channel]
+            x = reverse_photos
+        return x
+
+    def reconstruct_original(self, x):
+        """
+        Applies the reverse operations that preprocess_data() applies such that the data returns to their original form
+        :param x: A batch of data to reconstruct
+        :return: A reconstructed batch of data
+        """
+        if not isinstance(x,np.ndarray):
+            raise TypeError('Only numpy arrays can be used with the method reconstruct original, now got {}'.format(type(x)))
+        x = (x + 1) / 2
+        return x
+
+    def get_batch(self, return_info_file=True):
+        """
+        Generates a data batch to be used for training or evaluation
+        :param set_name: The name of the set to use, e.g. "train", "val" etc
+        :return: A data batch
+        """
+
+        if self.index > self.generation_data_size - self.batch_size:
+            self.index = 0
+        x_input_batch_a = self.x_gen[self.index:self.index+self.batch_size]
+        if return_info_file:
+            info_file_batch = self.x_gen.get_info_file_slice(self.index, self.index+self.batch_size)
+            return self.preprocess_data(x_input_batch_a), info_file_batch
+        else:
+            return self.preprocess_data(x_input_batch_a)
+
+
+    def get_multi_batch(self):
+
+        x_input_a_batch = []
+        info_files_a = []
+        x_input_a, info_file_a = self.get_batch()
+        for n_batch in range(self.num_of_gpus):
+            x_input_a_batch.append(x_input_a)
+            info_files_a.append(info_file_a)
+        x_input_a_batch = np.array(x_input_a_batch)
+        return x_input_a_batch, info_files_a
+
+
+
 class PaintingsDataset(DAGANDataset):
     def __init__(self, batch_size, last_training_class_index, reverse_channels, num_of_gpus, gen_batches,
                  gen_labels=None, csv_file='../data_info_files/final_train_info.csv',
@@ -664,6 +781,41 @@ class PaintingsDataset(DAGANDataset):
         x_val = x_val.to_multiclass()
         x_test = x_test.to_multiclass()
         return x_train, x_test, x_val
+
+
+class GeneratePaintingsDataset(DAGANGeneratingDataset):
+    def __init__(self, batch_size, reverse_channels, num_of_gpus, gen_batches_per_label,
+                 gen_labels=None, csv_file='../data_info_files/final_train_info.csv',
+                 root_dir='../train_reduced', transform = None,
+                 working_directory='../working_directory/'):
+        self.csv_file = csv_file
+        self.root_dir = root_dir
+        self.working_directory = working_directory
+        self.transform = transform
+        super().__init__(batch_size, reverse_channels, num_of_gpus,gen_batches_per_label,gen_labels)
+
+    def load_dataset(self):
+        dataset = MultiClassDataset(csv_file=self.csv_file,
+                          root_dir=self.root_dir,
+                          transform=self.transform,
+                          working_directory=self.working_directory)
+        if self.gen_labels == None:
+            self.gen_labels = dataset.classes
+        elif (isinstance(self.gen_labels, int) or isinstance(self.gen_labels, np.int_)):
+            self.gen_labels = [self.gen_labels]
+        samples_list = []
+        samples_per_label = self.gen_batches_per_label*self.batch_size
+        for label in self.gen_labels:
+            label = dataset.class_to_idx[label]
+            if samples_per_label > dataset.class_lengths[label]:
+                samples = np.random.choice(dataset.class_lengths[label], size=samples_per_label, replace=True)
+            else:
+                samples = np.random.choice(dataset.class_lengths[label], size=samples_per_label, replace=False)
+            samples_list.append(samples)
+
+        dataset = dataset.get_dataset_slice(self.gen_labels, samples_list)
+        return dataset
+
 
 
 class ToNumpy(object):
@@ -715,3 +867,6 @@ if __name__ == '__main__':
                                          transform=transform)
     multi_class_data = data.to_multiclass()
     test = multi_class_data[0,3:8]
+    data_gen = GeneratePaintingsDataset(batch_size=32, reverse_channels=False, num_of_gpus=1, gen_batches_per_label=5,
+                                        gen_labels=None,csv_file='../data_info_files/final_train_info.csv',
+                                        root_dir='../../DeepLearningData/train_reduced')

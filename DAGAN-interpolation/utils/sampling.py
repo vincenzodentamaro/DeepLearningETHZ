@@ -1,6 +1,7 @@
 import scipy.misc
 import numpy as np
 import imageio
+import pandas as pd
 
 
 def unstack(np_array):
@@ -21,7 +22,7 @@ def sample_generator(num_generations, sess, same_images, inputs, dropout_rate, d
     generated_list = np.zeros(shape=(batch_size, num_generations, generated.shape[-3], generated.shape[-2],
                                      generated.shape[-1]))
     height = generated.shape[-3]
-    for i in range(num_generations):
+    for i in range(batch_size):
         input_images, generated = sess.run(same_images, feed_dict={z_input: batch_size*[z_vectors[i]],
                                                                       input_a: inputs,
                                                                       training_phase: False, dropout_rate:
@@ -50,6 +51,35 @@ def sample_generator(num_generations, sess, same_images, inputs, dropout_rate, d
     image = image * 255
     image = image[:, (num_generations-1)*height:]
     imageio.imwrite(file_name, image)
+
+def generate_sample_batch(sess, generated_multi_batch, inputs, dropout_rate, dropout_rate_value, data, batch_size,
+                     file_prefix, info_file_batch, info_file_gen, input_a, training_phase, z_input):
+    z_vectors = np.random.normal(size=tuple(z_input.get_shape().as_list()))
+    images = sess.run(generated_multi_batch, feed_dict={input_a: inputs, dropout_rate: dropout_rate_value,
+                                                                  training_phase: False,
+                                                                  z_input: z_vectors})
+    images = data.reconstruct_original(images)
+    images = (images - np.min(images)) / (np.max(images) - np.min(images))
+    images = images * 255
+
+    header = info_file_batch.columns.values.tolist()
+    if info_file_gen == None:
+        info_file_gen = pd.DataFrame(columns=header)
+    for gpu in range(images.shape[0]):
+        for i in range(batch_size):
+            image_path = file_prefix + info_file_batch.loc[i,'new_filename'][:-4] + '_gen' + str(gpu) + '.jpg'
+            image_name = info_file_batch.loc[i,'new_filename'][:-4] + '_gen' + str(gpu) + '.jpg'
+            new_row = pd.DataFrame([[info_file_batch.loc[i,'artist'], info_file_batch.loc[i,'style'],
+                                                   image_name]],columns=header)
+            info_file_gen = info_file_gen.append(new_row)
+            imageio.imwrite(image_path, images[gpu,i,:,:,:])
+
+    return info_file_gen
+
+
+
+
+
 
 def sample_two_dimensions_generator(sess, same_images, inputs,
                                     dropout_rate, dropout_rate_value, data,
@@ -120,6 +150,7 @@ def sample_two_dimensions_generator(sess, same_images, inputs,
         positioned_image = np.concatenate(properly_positioned_image, axis=0)
 
         imageio.imwrite("{}_{}.png".format(file_name, i), positioned_image)
+
 
 def interpolation_generator(sess, inter_class_interpolations, intra_class_interpolations,
                             x_i_placeholder, x_j_placeholder, x_i, x_j,

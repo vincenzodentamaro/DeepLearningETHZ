@@ -42,3 +42,23 @@ def build_experiment_folder(experiment_name):
         os.makedirs(saved_models_filepath)
 
     return saved_models_filepath, logs_filepath, samples_filepath
+
+def build_generation_folder(experiment_name):
+    saved_models_filepath = "{}/{}".format(experiment_name.replace("_", "/"), "saved_models/")
+    logs_filepath = "{}/{}".format(experiment_name.replace("_", "/"), "logs/")
+    samples_filepath = "{}/{}".format(experiment_name.replace("_", "/"), "visual_outputs/")
+    generations_filepath = "{}/{}".format(experiment_name.replace("_", "/"), "generations/")
+
+    import os
+    if not os.path.exists(experiment_name.replace("_", "/")):
+        os.makedirs(experiment_name.replace("_", "/"))
+    if not os.path.exists(logs_filepath):
+        os.makedirs(logs_filepath)
+    if not os.path.exists(samples_filepath):
+        os.makedirs(samples_filepath)
+    if not os.path.exists(saved_models_filepath):
+        os.makedirs(saved_models_filepath)
+    if not os.path.exists(generations_filepath):
+        os.makedirs(generations_filepath)
+
+    return saved_models_filepath, logs_filepath, samples_filepath, generations_filepath
