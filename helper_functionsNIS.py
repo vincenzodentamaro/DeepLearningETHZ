@@ -47,7 +47,7 @@ def train(model, loss_fn, optimizer, loader_train, loader_val,train_acc, val_acc
         train_acc.append(check_accuracy(model, loader_train))
         val_acc.append(check_accuracy(model, loader_val))
 
-    return [train_acc, val_acc, train_loss_hist, train_time,train_loss_hist]
+    return [train_acc, val_acc, train_loss_hist, train_time]
 
 
 def check_accuracy(model, loader):
