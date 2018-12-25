@@ -17,15 +17,13 @@ def reset(m):
         m.reset_parameters()
 
 
-def train(model, loss_fn, optimizer, loader_train, loader_val,train_acc, val_acc, num_epochs=1):
+def train(model, loss_fn, optimizer, loader_train, loader_val,train_acc, val_acc, num_epochs=1, train_time,train_loss_hist):
     dtype = torch.FloatTensor
     ytype = torch.LongTensor
     print_every=100
     ytype_cuda = torch.cuda.LongTensor
     if (torch.cuda.is_available()):
         dtype = torch.cuda.FloatTensor
-    train_loss_hist = []
-    train_time = []
     for epoch in range(num_epochs):
         print('Starting epoch %d / %d' % (epoch + 1, num_epochs))
         model.train()
@@ -49,7 +47,7 @@ def train(model, loss_fn, optimizer, loader_train, loader_val,train_acc, val_acc
         train_acc.append(check_accuracy(model, loader_train))
         val_acc.append(check_accuracy(model, loader_val))
 
-    return [train_acc, val_acc, train_loss_hist, train_time]
+    return [train_acc, val_acc, train_loss_hist, train_time,train_loss_hist]
 
 
 def check_accuracy(model, loader):
