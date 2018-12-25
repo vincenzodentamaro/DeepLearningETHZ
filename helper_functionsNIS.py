@@ -46,6 +46,10 @@ def train(model, loss_fn, optimizer, loader_train, loader_val,train_acc, val_acc
             y_var = Variable(y.type(dtype).long())
             scores = model(x_var)
             loss = loss_fn(scores, y_var)
+            print("LOSS")
+            print(loss)
+            print("SCORES")
+            print(scores)
             if (t + 1) % print_every == 0:
                 print('t = %d, loss = %.4f' % (t + 1, loss.data[0]))
             optimizer.zero_grad()
