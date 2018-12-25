@@ -2,7 +2,7 @@ import random
 import math
 seed = 231
 random.seed(seed) # fix the datasets
-from helper_functions import train, check_accuracy, confusion_matrix, reset, Flatten, ImplementationError, write_results,main()
+from helper_functions import train, check_accuracy, confusion_matrix, reset, Flatten, ImplementationError, write_results,main
 main()
 import torch
 import torch.nn as nn
