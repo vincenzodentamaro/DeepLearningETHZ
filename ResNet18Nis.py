@@ -93,7 +93,6 @@ for a in artists:
 train_df = pd.concat(train_dfs)
 val_df = pd.concat(val_dfs)
 test_df = pd.concat(test_dfs)
-print(test_df)
 print(train_df.shape)
 print(val_df.shape)
 print(test_df.shape)
