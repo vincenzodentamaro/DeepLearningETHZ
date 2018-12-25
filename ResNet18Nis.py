@@ -65,6 +65,7 @@ t.head()
 # print(t.shape)
 
 x = list(t['style'].value_counts())
+print(x)
 # list of all artists to include
 temp = t['style'].value_counts()
 threshold = num_samples
