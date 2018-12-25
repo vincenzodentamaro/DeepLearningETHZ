@@ -34,7 +34,7 @@ print_every = 100
 
 dat_folder = 'working_directory_andreas/'
 img_folder = '../data/'
-num_workers = 4
+num_workers = 0
 
 filter_subset = False # True if we want to filter to just train _1
 balanced_dset = True # True if I want equal # of paintings per artist, false if I want to use all available per artist
