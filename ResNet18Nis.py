@@ -126,15 +126,7 @@ test_dset = PaintingFolder(img_folder, val_transform, test_df)
 loader_test = DataLoader(test_dset, batch_size=b_size, shuffle=True, num_workers=num_workers)
 
 print("Done")
-for t, (x, y) in enumerate(loader_train):
-   x_var = Variable(x.type(dtype))
-   y_var = Variable(y.type(dtype).long())
-   scores = model(x_var)
-   loss = loss_fn(scores, y_var)
-   print("LOSS")
-   print(loss)
-   print("SCORES")
-   print(scores)
+
 
 
 import torchvision 
@@ -147,6 +139,17 @@ model_conv = models.resnet18(pretrained=True)
 for param in model_conv.parameters():
     param.requires_grad = False
 
+for t, (x, y) in enumerate(loader_train):
+   x_var = Variable(x.type(dtype))
+   y_var = Variable(y.type(dtype).long())
+   scores = model_conv(x_var)
+   loss = loss_fn(scores, y_var)
+   print("LOSS")
+   print(loss)
+   print("SCORES")
+   print(scores)
+      
+      
 # Parameters of newly constructed modules have requires_grad=True by default
 num_ftrs = model_conv.fc.in_features
 model_conv.fc = nn.Linear(num_ftrs, num_artists)
