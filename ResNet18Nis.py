@@ -34,7 +34,7 @@ print_every = 100
 
 dat_folder = 'working_directory_andreas/'
 img_folder = '../data/'
-num_workers = 0
+num_workers = 4
 
 filter_subset = False # True if we want to filter to just train _1
 balanced_dset = True # True if I want equal # of paintings per artist, false if I want to use all available per artist
@@ -151,21 +151,7 @@ if torch.cuda.is_available():
 
 loss_fn = nn.CrossEntropyLoss().type(dtype)
 
-
-
-for t, (x, y) in enumerate(loader_train):
-   print(y)
-   x_var = Variable(x.type(dtype))
-   y_var = Variable(y.type(dtype).long())
-   scores = model_conv(x_var)
-   print("SCORES")
-   print(scores)
-   print("YVAR")
-   print(y_var)
-   loss = loss_fn(scores, y_var)
-
-
-      
+ 
 
 
 
