@@ -17,7 +17,7 @@ def reset(m):
         m.reset_parameters()
 
 
-def train(model, loss_fn, optimizer, loader_train, loader_val,train_acc, val_acc, num_epochs=1, train_time,train_loss_hist):
+def train(model, loss_fn, optimizer, loader_train, loader_val,train_acc, val_acc, train_time,train_loss_hist, num_epochs=1):
     dtype = torch.FloatTensor
     ytype = torch.LongTensor
     print_every=100
