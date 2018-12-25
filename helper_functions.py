@@ -34,7 +34,7 @@ def train(model, loss_fn, optimizer, loader_train, loader_val,train_acc, val_acc
     ytype = torch.LongTensor
     ytype_cuda = torch.cuda.LongTensor
     if (torch.cuda.is_available()):
-    dtype = torch.cuda.FloatTensor
+        dtype = torch.cuda.FloatTensor
     train_loss_hist = []
     train_time = []
     for epoch in range(num_epochs):
