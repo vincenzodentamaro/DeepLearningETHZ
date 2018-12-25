@@ -33,11 +33,11 @@ print(dtype)
 print_every = 100
 
 
-dat_folder = 'working_directory_andreas/'
-img_folder = 'train_reduced/'
+dat_folder = working_directory_andreas/'
+img_folder = '../data'
 num_workers = 4
 
-filter_subset = False # True if we want to filter to just train _1
+filter_subset = True # True if we want to filter to just train _1
 balanced_dset = True # True if I want equal # of paintings per artist, false if I want to use all available per artist
 
 ## THIS VERSION OF SCRIPT HAS EQUAL NUMBER OF PAINTINGS PER ARTIST
@@ -111,8 +111,8 @@ train_transform = T.Compose([
         T.Normalize(mean_resnet, std_resnet)
     ])
 val_transform = T.Compose([
-        T.Scale(256),
-        T.CenterCrop(224),
+        T.RandomSizedCrop(224),
+        T.RandomHorizontalFlip(),
         T.ToTensor(),
         T.Normalize(mean_resnet, std_resnet)
     ])
@@ -175,12 +175,12 @@ train_acc, val_acc, train_loss = train(model_conv, loss_fn, optimizer_conv, load
 print()
 print(str(timeit.default_timer() - start_time) + " seconds taken")
 
-
-# check_accuracy(model_conv, loader_train)
-# check_accuracy(model_conv, loader_val)
+print("top accuracy)
+check_accuracy(model_conv, loader_train)
+check_accuracy(model_conv, loader_val)
 check_accuracy(model_conv, loader_test)
 
-
+print("Top 3accuracy")
 check_accuracy_topX(model_conv, loader_train, top=3)
 check_accuracy_topX(model_conv, loader_val, top=3)
 check_accuracy_topX(model_conv, loader_test, top=3)
