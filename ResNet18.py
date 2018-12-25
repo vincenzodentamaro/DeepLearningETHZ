@@ -10,6 +10,8 @@ from Dataset import PaintingDataset, AugmentedPaintingDataset
 import os
 import torchvision
 import torchvision.transforms as T
+import torchvision.models as models
+
 import timeit
 from helper_functions import train, check_accuracy, confusion_matrix, reset, Flatten, ImplementationError, write_results
 import numpy as np
@@ -142,7 +144,7 @@ if __name__ == '__main__':
 
     # transfer learning on top of ResNet (only replacing final FC layer)
     # model_conv = torchvision.models.resnet18(pretrained=True)
-    model_conv = torch.load(resnet.pt)
+    model_conv = models.resnet18(pretrained=True)
     for param in model_conv.parameters():
         param.requires_grad = False
 
