@@ -33,7 +33,7 @@ print(dtype)
 print_every = 100
 
 
-dat_folder = working_directory_andreas/'
+dat_folder = 'working_directory_andreas/'
 img_folder = '../data'
 num_workers = 4
 
