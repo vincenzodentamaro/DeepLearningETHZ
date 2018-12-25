@@ -116,5 +116,3 @@ def write_results(results):
         rows.append(row)
 
     return pd.DataFrame(rows,columns=column_header)
-
-

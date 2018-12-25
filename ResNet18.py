@@ -1,6 +1,7 @@
 import random
 seed = 231
 random.seed(seed) # fix the datasets
+from torch.autograd import Variable
 
 import torch
 import torch.nn as nn
@@ -10,6 +11,8 @@ from Dataset import PaintingDataset, AugmentedPaintingDataset
 import os
 import torchvision
 import torchvision.transforms as T
+import torchvision.models as models
+
 import timeit
 from helper_functions import train, check_accuracy, confusion_matrix, reset, Flatten, ImplementationError, write_results
 import numpy as np
@@ -66,15 +69,15 @@ if __name__ == '__main__':
 
     ## INITIALIZE DATASETS
 
-    b_size = 4 #TODO: set back to 32
+    b_size = 32 #TODO: set back to 32
 
     mean_resnet = np.array([0.485, 0.456, 0.406]) # This I found from internet (mean values for ImageNet, we can check if this is correct)
     std_resnet = np.array([0.229, 0.224, 0.225])
 
     val_transform = T.Compose([
         T.ToPILImage(),
-        T.Resize(256),  # TODO set this value to 224, so the whole painting is cropped
-        T.CenterCrop(224),
+        T.RandomSizedCrop(224),
+        T.RandomHorizontalFlip(),
         T.ToTensor(),
         T.Normalize(mean_resnet, std_resnet)
     ])
@@ -82,7 +85,7 @@ if __name__ == '__main__':
     if args.data_augmentation == 'extra':
         train_transform = T.Compose([
             T.ToPILImage(),
-            T.RandomResizedCrop(224),
+            T.RandomSizedCrop(224),
             T.RandomHorizontalFlip(),
             T.ToTensor(),
             T.Normalize(mean_resnet, std_resnet)
@@ -109,7 +112,7 @@ if __name__ == '__main__':
         if args.data_augmentation == 'standard':
             train_transform = T.Compose([
                 T.ToPILImage(),
-                T.RandomResizedCrop(224),
+                T.RandomSizedCrop(224),
                 T.RandomHorizontalFlip(),
                 T.ToTensor(),
                 T.Normalize(mean_resnet, std_resnet)
@@ -142,7 +145,7 @@ if __name__ == '__main__':
 
     # transfer learning on top of ResNet (only replacing final FC layer)
     # model_conv = torchvision.models.resnet18(pretrained=True)
-    model_conv = torchvision.models.resnet18(pretrained=True)
+    model_conv = models.resnet18(pretrained=True)
     for param in model_conv.parameters():
         param.requires_grad = False
 
@@ -150,11 +153,23 @@ if __name__ == '__main__':
     num_ftrs = model_conv.fc.in_features
     model_conv.fc = nn.Linear(num_ftrs, nb_classes)
 
+
     if torch.cuda.is_available():
         model_conv = model_conv.cuda()
 
     loss_fn = nn.CrossEntropyLoss().type(dtype)
-
+    for t, (x, y) in enumerate(loader_train):
+        print(y)
+        print(x)
+        x_var = Variable(x.type(dtype))
+        y_var = Variable(y.type(dtype).long())
+        scores = model_conv(x_var)
+        print("SCORES")
+        print(scores)
+        print("YVAR")
+        print(y_var)
+        loss = loss_fn(scores, y_var)
+        print(loss)
     # Observe that only parameters of final layer are being optimized as
     # opoosed to before.
     optimizer_conv = optim.Adam(model_conv.fc.parameters(), lr=1e-3)
@@ -162,7 +177,7 @@ if __name__ == '__main__':
     train_acc = []
     val_acc = []
 
-    results = train(model_conv, loss_fn, optimizer_conv, loader_train, loader_val, num_epochs = 5)
+    results = train(model_conv, loss_fn, optimizer_conv, loader_train, loader_val, num_epochs = 10)
     resultfile1 = write_results(results)
     resultfile1.to_csv(os.path.join(os.path.curdir, resultfilename1))
     test_accuracy = check_accuracy(model_conv, loader_test)
@@ -175,9 +190,9 @@ if __name__ == '__main__':
     for param in model_conv.parameters():
         param.requires_grad = True
 
-    optimizer_conv = optim.Adam(model_conv.parameters(), lr=1e-10)
+    optimizer_conv = optim.Adam(model_conv.parameters(), lr=1e-8)
 
-    results = train(model_conv, loss_fn, optimizer_conv, loader_train, loader_val, num_epochs = 1)
+    results = train(model_conv, loss_fn, optimizer_conv, loader_train, loader_val, num_epochs = 4)
     resultfile2 = write_results(results)
     resultfile2.to_csv(os.path.join(os.path.curdir, resultfilename2))
     test_accuracy = check_accuracy(model_conv,loader_test)

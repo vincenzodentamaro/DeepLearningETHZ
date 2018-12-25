@@ -25,6 +25,8 @@ def get_args():
                              'each epoch')
     parser.add_argument('--use_wide_connections', nargs="?", type=str, default="False",
                         help='Whether to use wide connections in discriminator')
+    parser.add_argument('--infofile', type=str, default='../data_info_files/final_train_info.csv')
+    parser.add_argument('--data_dir', type=str, default='../train_reduced')
     args = parser.parse_args()
     batch_size = args.batch_size
     num_gpus = args.num_of_gpus
