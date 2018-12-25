@@ -126,7 +126,15 @@ test_dset = PaintingFolder(img_folder, val_transform, test_df)
 loader_test = DataLoader(test_dset, batch_size=b_size, shuffle=True, num_workers=num_workers)
 
 print("Done")
-
+for t, (x, y) in enumerate(loader_train):
+   x_var = Variable(x.type(dtype))
+   y_var = Variable(y.type(dtype).long())
+   scores = model(x_var)
+   loss = loss_fn(scores, y_var)
+   print("LOSS")
+   print(loss)
+   print("SCORES")
+   print(scores)
 
 
 import torchvision 
