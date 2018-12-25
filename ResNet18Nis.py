@@ -157,11 +157,13 @@ for t, (x, y) in enumerate(loader_train):
    x_var = Variable(x.type(dtype))
    y_var = Variable(y.type(dtype).long())
    scores = model_conv(x_var)
-   loss = loss_fn(scores, y_var)
-   print("LOSS")
-   print(loss)
    print("SCORES")
    print(scores)
+   print("YVAR")
+   print(y_var)
+   loss = loss_fn(scores, y_var)
+
+
       
 
 
