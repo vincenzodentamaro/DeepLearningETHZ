@@ -5,18 +5,6 @@ import timeit
 import pandas as pd
 
 
-def main():
-    dtype = torch.FloatTensor
-    ytype = torch.LongTensor
-    ytype_cuda = torch.cuda.LongTensor
-    if (torch.cuda.is_available()):
-        dtype = torch.cuda.FloatTensor
-    print(ytype)
-    print(dtype)
-    print_every = 100
-
-if __name__ == '__main__':
-    main()
 
 class Flatten(nn.Module):
     def forward(self, x):
