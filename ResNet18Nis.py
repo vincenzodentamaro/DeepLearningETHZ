@@ -40,9 +40,9 @@ filter_subset = False # True if we want to filter to just train _1
 balanced_dset = True # True if I want equal # of paintings per artist, false if I want to use all available per artist
 
 ## THIS VERSION OF SCRIPT HAS EQUAL NUMBER OF PAINTINGS PER ARTIST
-num_train = 10000
-num_val = 1000
-num_test = 1000
+num_train = 2000
+num_val = 300
+num_test = 300
 num_samples = num_train + num_val + num_test # threshold to include an artist
 b_size = 50 # batch size for the data loaders
 
@@ -86,7 +86,7 @@ for a in artists:
     rest_df = df.loc[~df.index.isin(t_df.index)]
     v_df = rest_df.sample(n=num_val, random_state=seed)
     te_df = rest_df.loc[~rest_df.index.isin(v_df.index)]
-    
+    print(df.to_string())
     train_dfs.append(t_df)
     val_dfs.append(v_df)
     test_dfs.append(te_df)
