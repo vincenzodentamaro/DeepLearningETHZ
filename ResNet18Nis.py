@@ -86,7 +86,6 @@ for a in artists:
     rest_df = df.loc[~df.index.isin(t_df.index)]
     v_df = rest_df.sample(n=num_val, random_state=seed)
     te_df = rest_df.loc[~rest_df.index.isin(v_df.index)]
-    print(df.to_string())
     train_dfs.append(t_df)
     val_dfs.append(v_df)
     test_dfs.append(te_df)
@@ -94,7 +93,7 @@ for a in artists:
 train_df = pd.concat(train_dfs)
 val_df = pd.concat(val_dfs)
 test_df = pd.concat(test_dfs)
-
+print(test_df)
 print(train_df.shape)
 print(val_df.shape)
 print(test_df.shape)
