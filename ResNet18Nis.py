@@ -64,10 +64,10 @@ if (filter_subset):
 t.head()
 # print(t.shape)
 
-x = list(t['style'].value_counts())
+x = list(t['artist'].value_counts())
 print(x)
 # list of all artists to include
-temp = t['style'].value_counts()
+temp = t['artist'].value_counts()
 threshold = num_samples
 # threshold = 500
 artists = temp[temp >= threshold].index.tolist()
@@ -81,7 +81,7 @@ val_dfs = []
 test_dfs = []
 
 for a in artists:
-    df = t[t['style'].str.startswith(a, na=False)].sample(n=num_samples, random_state=seed)
+    df = t[t['artist'].str.startswith(a, na=False)].sample(n=num_samples, random_state=seed)
     t_df = df.sample(n=num_train, random_state=seed)
     rest_df = df.loc[~df.index.isin(t_df.index)]
     v_df = rest_df.sample(n=num_val, random_state=seed)
