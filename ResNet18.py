@@ -152,11 +152,21 @@ if __name__ == '__main__':
     num_ftrs = model_conv.fc.in_features
     model_conv.fc = nn.Linear(num_ftrs, nb_classes)
 
+
     if torch.cuda.is_available():
         model_conv = model_conv.cuda()
 
     loss_fn = nn.CrossEntropyLoss().type(dtype)
-
+    for t, (x, y) in enumerate(loader_train):
+        print(y)
+        x_var = Variable(x.type(dtype))
+        y_var = Variable(y.type(dtype).long())
+        scores = model_conv(x_var)
+        print("SCORES")
+        print(scores)
+        print("YVAR")
+        print(y_var)
+        loss = loss_fn(scores, y_var)
     # Observe that only parameters of final layer are being optimized as
     # opoosed to before.
     optimizer_conv = optim.Adam(model_conv.fc.parameters(), lr=1e-3)
