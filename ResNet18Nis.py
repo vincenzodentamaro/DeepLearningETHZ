@@ -165,7 +165,7 @@ val_acc = []
 train_time = []
 train_loss_hist = []
 start_time = timeit.default_timer()
-train_acc, val_acc, train_loss_hist, train_time = train(model_conv, loss_fn, optimizer_conv, loader_train, loader_val, train_acc, val_acc, num_epochs = 5, train_time, train_loss_hist)
+train_acc, val_acc, train_loss_hist, train_time = train(model_conv, loss_fn, optimizer_conv, loader_train, loader_val, train_acc, val_acc, train_time, train_loss_hist, num_epochs = 5)
 
 print()
 print(str(timeit.default_timer() - start_time) + " seconds taken")
@@ -177,7 +177,7 @@ for param in model_conv.parameters():
 optimizer_conv = optim.Adam(model_conv.parameters(), lr=1e-10)
 
 start_time = timeit.default_timer()
-train_acc, val_acc, train_loss_hist, train_time = train(model_conv, loss_fn, optimizer_conv, loader_train, loader_val, train_acc, val_acc, num_epochs = 3, train_time, train_loss_hist)
+train_acc, val_acc, train_loss_hist, train_time = train(model_conv, loss_fn, optimizer_conv, loader_train, loader_val, train_acc, val_acc, train_time, train_loss_hist, num_epochs = 3)
 
 print()
 print(str(timeit.default_timer() - start_time) + " seconds taken")
