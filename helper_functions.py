@@ -30,7 +30,11 @@ def reset(m):
 
 
 def train(model, loss_fn, optimizer, loader_train, loader_val,train_acc, val_acc, num_epochs=1):
-
+    dtype = torch.FloatTensor
+    ytype = torch.LongTensor
+    ytype_cuda = torch.cuda.LongTensor
+    if (torch.cuda.is_available()):
+    dtype = torch.cuda.FloatTensor
     train_loss_hist = []
     train_time = []
     for epoch in range(num_epochs):
