@@ -1,6 +1,7 @@
 import random
 seed = 231
 random.seed(seed) # fix the datasets
+from torch.autograd import Variable
 
 import torch
 import torch.nn as nn
@@ -159,6 +160,7 @@ if __name__ == '__main__':
     loss_fn = nn.CrossEntropyLoss().type(dtype)
     for t, (x, y) in enumerate(loader_train):
         print(y)
+        print(x)
         x_var = Variable(x.type(dtype))
         y_var = Variable(y.type(dtype).long())
         scores = model_conv(x_var)
@@ -167,6 +169,7 @@ if __name__ == '__main__':
         print("YVAR")
         print(y_var)
         loss = loss_fn(scores, y_var)
+        print(loss)
     # Observe that only parameters of final layer are being optimized as
     # opoosed to before.
     optimizer_conv = optim.Adam(model_conv.fc.parameters(), lr=1e-3)
