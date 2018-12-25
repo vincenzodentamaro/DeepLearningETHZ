@@ -142,7 +142,8 @@ for param in model_conv.parameters():
 # Parameters of newly constructed modules have requires_grad=True by default
 num_ftrs = model_conv.fc.in_features
 model_conv.fc = nn.Linear(num_ftrs, num_artists)
-
+print("NUMBER OF ARTISTS")
+print(num_artists)
 if torch.cuda.is_available():
     model_conv = model_conv.cuda()
 
