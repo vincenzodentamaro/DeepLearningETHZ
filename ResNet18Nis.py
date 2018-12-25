@@ -139,16 +139,7 @@ model_conv = models.resnet18(pretrained=True)
 for param in model_conv.parameters():
     param.requires_grad = False
 
-for t, (x, y) in enumerate(loader_train):
-   x_var = Variable(x.type(dtype))
-   y_var = Variable(y.type(dtype).long())
-   scores = model_conv(x_var)
-   loss = loss_fn(scores, y_var)
-   print("LOSS")
-   print(loss)
-   print("SCORES")
-   print(scores)
-      
+
       
 # Parameters of newly constructed modules have requires_grad=True by default
 num_ftrs = model_conv.fc.in_features
@@ -159,6 +150,22 @@ if torch.cuda.is_available():
     model_conv = model_conv.cuda()
 
 loss_fn = nn.CrossEntropyLoss().type(dtype)
+
+
+
+for t, (x, y) in enumerate(loader_train):
+   x_var = Variable(x.type(dtype))
+   y_var = Variable(y.type(dtype).long())
+   scores = model_conv(x_var)
+   loss = loss_fn(scores, y_var)
+   print("LOSS")
+   print(loss)
+   print("SCORES")
+   print(scores)
+      
+
+
+
 
 # Observe that only parameters of final layer are being optimized as
 # opoosed to before.
