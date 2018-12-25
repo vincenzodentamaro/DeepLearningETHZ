@@ -175,7 +175,7 @@ train_acc, val_acc, train_loss = train(model_conv, loss_fn, optimizer_conv, load
 print()
 print(str(timeit.default_timer() - start_time) + " seconds taken")
 
-print("top accuracy)
+print("top accuracy")
 check_accuracy(model_conv, loader_train)
 check_accuracy(model_conv, loader_val)
 check_accuracy(model_conv, loader_test)
