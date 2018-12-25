@@ -1,6 +1,7 @@
 import random
 seed = 231
 random.seed(seed) # fix the datasets
+from torch.autograd import Variable
 
 import torch
 import torch.nn as nn
@@ -10,6 +11,8 @@ from Dataset import PaintingDataset, AugmentedPaintingDataset
 import os
 import torchvision
 import torchvision.transforms as T
+import torchvision.models as models
+
 import timeit
 from helper_functions import train, check_accuracy, confusion_matrix, reset, Flatten, ImplementationError, write_results
 import numpy as np
@@ -142,7 +145,7 @@ if __name__ == '__main__':
 
     # transfer learning on top of ResNet (only replacing final FC layer)
     # model_conv = torchvision.models.resnet18(pretrained=True)
-    model_conv = torch.load(resnet.pt)
+    model_conv = models.resnet18(pretrained=True)
     for param in model_conv.parameters():
         param.requires_grad = False
 
@@ -150,11 +153,23 @@ if __name__ == '__main__':
     num_ftrs = model_conv.fc.in_features
     model_conv.fc = nn.Linear(num_ftrs, nb_classes)
 
+
     if torch.cuda.is_available():
         model_conv = model_conv.cuda()
 
     loss_fn = nn.CrossEntropyLoss().type(dtype)
-
+    for t, (x, y) in enumerate(loader_train):
+        print(y)
+        print(x)
+        x_var = Variable(x.type(dtype))
+        y_var = Variable(y.type(dtype).long())
+        scores = model_conv(x_var)
+        print("SCORES")
+        print(scores)
+        print("YVAR")
+        print(y_var)
+        loss = loss_fn(scores, y_var)
+        print(loss)
     # Observe that only parameters of final layer are being optimized as
     # opoosed to before.
     optimizer_conv = optim.Adam(model_conv.fc.parameters(), lr=1e-3)

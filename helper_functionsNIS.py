@@ -5,18 +5,6 @@ import timeit
 import pandas as pd
 
 
-def main():
-    dtype = torch.FloatTensor
-    ytype = torch.LongTensor
-    ytype_cuda = torch.cuda.LongTensor
-    if (torch.cuda.is_available()):
-        dtype = torch.cuda.FloatTensor
-    print(ytype)
-    print(dtype)
-    print_every = 100
-
-if __name__ == '__main__':
-    main()
 
 class Flatten(nn.Module):
     def forward(self, x):
@@ -29,19 +17,15 @@ def reset(m):
         m.reset_parameters()
 
 
-def train(model, loss_fn, optimizer, loader_train, loader_val, num_epochs=1):
+def train(model, loss_fn, optimizer, loader_train, loader_val,train_acc, val_acc, num_epochs=1):
     dtype = torch.FloatTensor
     ytype = torch.LongTensor
+    print_every=100
     ytype_cuda = torch.cuda.LongTensor
     if (torch.cuda.is_available()):
         dtype = torch.cuda.FloatTensor
-    # print(ytype)
-    # print(dtype)
-    print_every = 100
     train_loss_hist = []
     train_time = []
-    train_acc = []
-    val_acc = []
     for epoch in range(num_epochs):
         print('Starting epoch %d / %d' % (epoch + 1, num_epochs))
         model.train()
