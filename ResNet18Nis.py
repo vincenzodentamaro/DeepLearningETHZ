@@ -154,6 +154,7 @@ loss_fn = nn.CrossEntropyLoss().type(dtype)
 
 
 for t, (x, y) in enumerate(loader_train):
+   print(y)
    x_var = Variable(x.type(dtype))
    y_var = Variable(y.type(dtype).long())
    scores = model_conv(x_var)
