@@ -29,14 +29,19 @@ def reset(m):
         m.reset_parameters()
 
 
-def train(model, loss_fn, optimizer, loader_train, loader_val,train_acc, val_acc, num_epochs=1):
+def train(model, loss_fn, optimizer, loader_train, loader_val, num_epochs=1):
     dtype = torch.FloatTensor
     ytype = torch.LongTensor
     ytype_cuda = torch.cuda.LongTensor
     if (torch.cuda.is_available()):
         dtype = torch.cuda.FloatTensor
+    # print(ytype)
+    # print(dtype)
+    print_every = 100
     train_loss_hist = []
     train_time = []
+    train_acc = []
+    val_acc = []
     for epoch in range(num_epochs):
         print('Starting epoch %d / %d' % (epoch + 1, num_epochs))
         model.train()
@@ -111,5 +116,3 @@ def write_results(results):
         rows.append(row)
 
     return pd.DataFrame(rows,columns=column_header)
-
-
