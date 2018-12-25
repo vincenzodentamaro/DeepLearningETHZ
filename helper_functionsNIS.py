@@ -20,6 +20,7 @@ def reset(m):
 def train(model, loss_fn, optimizer, loader_train, loader_val,train_acc, val_acc, num_epochs=1):
     dtype = torch.FloatTensor
     ytype = torch.LongTensor
+    print_every=100
     ytype_cuda = torch.cuda.LongTensor
     if (torch.cuda.is_available()):
         dtype = torch.cuda.FloatTensor
