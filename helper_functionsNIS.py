@@ -98,3 +98,30 @@ def write_results(results):
         rows.append(row)
 
     return pd.DataFrame(rows,columns=column_header)
+
+def check_accuracy_topX(model,loader, top=5):
+    print('Checking top' + str(top) + ' accuracy!')
+    num_correct = 0
+    num_samples = 0
+    model.eval() # Put the model in test mode (the opposite of model.train(), essentially)
+    for x, y in loader:
+        y = y.view(-1, 1).type(ytype)
+        x_var = Variable(x.type(dtype), volatile=True)
+        scores = model(x_var)
+        
+        s = scores.data.cpu().numpy()
+        ind = np.argpartition(s, -top)[:, -top:]
+
+        # crappy loop... must be a vectorized way to do this
+        c = 0
+        y_n = y.numpy()
+        for i in np.arange(ind.shape[0]):
+            if y[i,0] in ind[i]:
+                c += 1
+        
+        num_correct += c
+        num_samples += ind.shape[0]
+        
+    acc = float(num_correct) / num_samples
+    print('Got %d / %d correct (%.2f)' % (num_correct, num_samples, 100 * acc))
+    return 100*acc  
