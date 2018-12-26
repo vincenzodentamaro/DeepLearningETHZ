@@ -165,8 +165,10 @@ val_acc = []
 train_time = []
 train_loss_hist = []
 start_time = timeit.default_timer()
-train_acc, val_acc, train_loss_hist, train_time = train(model_conv, loss_fn, optimizer_conv, loader_train, loader_val, train_acc, val_acc, train_time, train_loss_hist, num_epochs = 5)
-
+train_acc, val_acc, train_loss_hist, train_time = train(model_conv, loss_fn, optimizer_conv, loader_train, loader_val, train_acc, val_acc, train_time, train_loss_hist, num_epochs = 1)
+results=[train_acc,val_acc, train_loss_hist, train_time]
+resultfile1 = write_results(results)
+resultfile1.to_csv("RESULTS1.csv")
 print()
 print(str(timeit.default_timer() - start_time) + " seconds taken")
 
@@ -179,17 +181,15 @@ optimizer_conv = optim.Adam(model_conv.parameters(), lr=1e-10)
 start_time = timeit.default_timer()
 train_acc, val_acc, train_loss_hist, train_time = train(model_conv, loss_fn, optimizer_conv, loader_train, loader_val, train_acc, val_acc, train_time, train_loss_hist, num_epochs = 1)
 
+results2=[train_acc,val_acc, train_loss_hist, train_time]
+resultfile1 = write_results(results2)
+resultfile1.to_csv("RESULTS2.csv")
+
+
 print()
 print(str(timeit.default_timer() - start_time) + " seconds taken")
 
 
-TRAINVAL=[train_acc,val_acc,train_loss_hist]
-
-import csv
-
-with open("TRAINVAL.csv", "wb") as f:
-    writer = csv.writer(f)
-    writer.writerows(TRAINVAL)
 
 
 #print("top accuracy")
@@ -198,7 +198,6 @@ with open("TRAINVAL.csv", "wb") as f:
 #check_accuracy(model_conv, loader_test)
 
 
-FinalAccuracy=[check_accuracy(model_conv, loader_train),check_accuracy(model_conv, loader_val),check_accuracy(model_conv, loader_test)]
 
 
 #print("Top 3accuracy")
@@ -206,15 +205,6 @@ FinalAccuracy=[check_accuracy(model_conv, loader_train),check_accuracy(model_con
 #check_accuracy_topX(model_conv, loader_val, top=3)
 #check_accuracy_topX(model_conv, loader_test, top=3)
 
-FinalAccuracyTop3=[check_accuracy_topX(model_conv, loader_train, top=3),check_accuracy_topX(model_conv, loader_val, top=3),check_accuracy_topX(model_conv, loader_test, top=3)]
-
-
-FA=[FinalAccuracy,FinalAccuracyTop3]
-import csv
-
-with open("FA.csv", "wb") as f:
-    writer = csv.writer(f)
-    writer.writerows(FA)
 
 epochs = np.arange(len(train_acc)) + 1
 print(train_acc)
