@@ -165,7 +165,7 @@ val_acc = []
 train_time = []
 train_loss_hist = []
 start_time = timeit.default_timer()
-train_acc, val_acc, train_loss_hist, train_time = train(model_conv, loss_fn, optimizer_conv, loader_train, loader_val, train_acc, val_acc, train_time, train_loss_hist, num_epochs = 1)
+train_acc, val_acc, train_loss_hist, train_time = train(model_conv, loss_fn, optimizer_conv, loader_train, loader_val, train_acc, val_acc, train_time, train_loss_hist, num_epochs = 5)
 results=[train_acc,val_acc, train_loss_hist, train_time]
 resultfile1 = write_results(results)
 resultfile1.to_csv("RESULTS1.csv")
