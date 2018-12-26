@@ -15,10 +15,10 @@ class MnistBatchGenerator:
     TRAIN = 1
     TEST = 0
 
-    def __init__(self, data_src, batch_size=32, class_to_prune=None, unbalance=0):
+    def __init__(self, data_src, batch_size=32, class_to_prune=None, amount_of_training_samples=10000,unbalance=0):
         self.batch_size = batch_size
         self.data_src = data_src
-
+        self.amount=amount
         # Load data
         mnist = input_data.read_data_sets("dataset/mnist", one_hot=False)
 
@@ -29,7 +29,9 @@ class MnistBatchGenerator:
             self.dataset_y = np.load('rw/dataset_y_test.npy')
         else:
             self.dataset_x = np.load('rw/dataset_x_train.npy')
+            self.dataset_x = self.dataset_x[0:amount]
             self.dataset_y = np.load('rw/dataset_y_train.npy')
+            self.dataset_y = self.dataset_y[0:amount]
 
         # Normalize between -1 and 1
         self.dataset_x = (np.reshape(self.dataset_x, (self.dataset_x.shape[0], 28, 28)) - 0.5) * 2
