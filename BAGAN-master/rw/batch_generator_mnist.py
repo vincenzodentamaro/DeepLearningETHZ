@@ -18,7 +18,7 @@ class MnistBatchGenerator:
     def __init__(self, data_src, batch_size=32, class_to_prune=None, amount_of_training_samples=10000,unbalance=0):
         self.batch_size = batch_size
         self.data_src = data_src
-        self.amount=amount
+        self.amount=amount_of_training_samples
         # Load data
         mnist = input_data.read_data_sets("dataset/mnist", one_hot=False)
 
