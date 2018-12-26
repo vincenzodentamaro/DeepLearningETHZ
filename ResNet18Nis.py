@@ -2,7 +2,7 @@ import random
 import math
 seed = 231
 random.seed(seed) # fix the datasets
-from helper_functionsNIS import train, check_accuracy, confusion_matrix, reset, Flatten, ImplementationError, write_results
+from helper_functionsNIS import train, check_accuracy, check_accuracy_topX, confusion_matrix, reset, Flatten, ImplementationError, write_results
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -162,10 +162,13 @@ optimizer_conv = optim.Adam(model_conv.fc.parameters(), lr=1e-3)
 
 train_acc = []
 val_acc = []
-
+train_time = []
+train_loss_hist = []
 start_time = timeit.default_timer()
-train_acc, val_acc, train_loss = train(model_conv, loss_fn, optimizer_conv, loader_train, loader_val, train_acc, val_acc, num_epochs = 5)
-
+train_acc, val_acc, train_loss_hist, train_time = train(model_conv, loss_fn, optimizer_conv, loader_train, loader_val, train_acc, val_acc, train_time, train_loss_hist, num_epochs = 5)
+results=[train_acc,val_acc, train_loss_hist, train_time]
+resultfile1 = write_results(results)
+resultfile1.to_csv("RESULTS1.csv")
 print()
 print(str(timeit.default_timer() - start_time) + " seconds taken")
 
@@ -173,24 +176,34 @@ print(str(timeit.default_timer() - start_time) + " seconds taken")
 for param in model_conv.parameters():
     param.requires_grad = True
 
-optimizer_conv = optim.Adam(model_conv.parameters(), lr=1e-4, weight_decay=1e-2)
+optimizer_conv = optim.Adam(model_conv.parameters(), lr=1e-10)
 
 start_time = timeit.default_timer()
-train_acc, val_acc, train_loss = train(model_conv, loss_fn, optimizer_conv, loader_train, loader_val, train_acc, val_acc, num_epochs = 3)
+train_acc, val_acc, train_loss_hist, train_time = train(model_conv, loss_fn, optimizer_conv, loader_train, loader_val, train_acc, val_acc, train_time, train_loss_hist, num_epochs = 1)
+
+results2=[train_acc,val_acc, train_loss_hist, train_time]
+resultfile1 = write_results(results2)
+resultfile1.to_csv("RESULTS2.csv")
+
 
 print()
 print(str(timeit.default_timer() - start_time) + " seconds taken")
 
-print("top accuracy")
-check_accuracy(model_conv, loader_train)
-check_accuracy(model_conv, loader_val)
-check_accuracy(model_conv, loader_test)
 
-print("Top 3accuracy")
-check_accuracy_topX(model_conv, loader_train, top=3)
-check_accuracy_topX(model_conv, loader_val, top=3)
-check_accuracy_topX(model_conv, loader_test, top=3)
 
+
+#print("top accuracy")
+#check_accuracy(model_conv, loader_train)
+#check_accuracy(model_conv, loader_val)
+#check_accuracy(model_conv, loader_test)
+
+
+
+
+#print("Top 3accuracy")
+#check_accuracy_topX(model_conv, loader_train, top=3)
+#check_accuracy_topX(model_conv, loader_val, top=3)
+#check_accuracy_topX(model_conv, loader_test, top=3)
 
 
 epochs = np.arange(len(train_acc)) + 1
