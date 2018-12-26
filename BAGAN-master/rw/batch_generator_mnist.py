@@ -25,11 +25,11 @@ class MnistBatchGenerator:
         assert self.batch_size > 0, 'Batch size has to be a positive integer!'
 
         if self.data_src == self.TEST:
-            self.dataset_x = mnist.test.images
-            self.dataset_y = mnist.test.labels
+            self.dataset_x = np.load('rw/dataset_x_test.npy')
+            self.dataset_y = np.load('rw/dataset_y_test.npy')
         else:
-            self.dataset_x = mnist.train.images
-            self.dataset_y = mnist.train.labels
+            self.dataset_x = np.load('rw/dataset_x_train.npy')
+            self.dataset_y = np.load('rw/dataset_y_train.npy')
 
         # Normalize between -1 and 1
         self.dataset_x = (np.reshape(self.dataset_x, (self.dataset_x.shape[0], 28, 28)) - 0.5) * 2
