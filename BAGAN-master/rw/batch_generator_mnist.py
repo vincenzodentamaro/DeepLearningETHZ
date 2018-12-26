@@ -29,9 +29,9 @@ class MnistBatchGenerator:
             self.dataset_y = np.load('rw/dataset_y_test.npy')
         else:
             self.dataset_x = np.load('rw/dataset_x_train.npy')
-            self.dataset_x = self.dataset_x[0:amount]
+            self.dataset_x = self.dataset_x[0:self.amount]
             self.dataset_y = np.load('rw/dataset_y_train.npy')
-            self.dataset_y = self.dataset_y[0:amount]
+            self.dataset_y = self.dataset_y[0:self.amount]
 
         # Normalize between -1 and 1
         self.dataset_x = (np.reshape(self.dataset_x, (self.dataset_x.shape[0], 28, 28)) - 0.5) * 2
