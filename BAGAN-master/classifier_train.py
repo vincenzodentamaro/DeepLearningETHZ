@@ -1,6 +1,6 @@
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
-from TwoLayerCNN_solution import CNN
+from rw import CNN
 import datetime
 import time
 import sys
