@@ -146,7 +146,7 @@ tf.flags.DEFINE_string("run_name", None, "Suffix for output directory. If None, 
 
 
 FLAGS = tf.flags.FLAGS
-FLAGS(sys.argv)
+#FLAGS(sys.argv)
 print("\nParameters:")
 for attr, value in sorted(FLAGS.__flags.items()):
     print("{}={}".format(attr.upper(), value))
