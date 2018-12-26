@@ -28,7 +28,7 @@ if __name__ == '__main__':
     argParser.add_option("-u", "--unbalance", default=0.2,
                   action="store", type="float", dest="unbalance",
                   help="Unbalance factor u. The minority class has at most u * otherClassSamples instances.")
-    argParser.add_option("-a", "--unbalance", default=10000,
+    argParser.add_option("-a", "--amount", default=10000,
                   action="store", type="float", dest="amount",
                   help="Amount of training samples used from MNIST.")
 
