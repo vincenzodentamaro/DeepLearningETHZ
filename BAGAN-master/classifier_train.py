@@ -6,7 +6,6 @@ import sys
 import os
 import numpy as np
 
-
 class CNN(object):
     def __init__(self, patch_size, num_filters_first_layer, num_filters_second_layer,
                  size_fully_connected_layer, num_classes=10, image_size=784, lambda_reg = 0.001):
@@ -139,6 +138,10 @@ tf.flags.DEFINE_integer("batch_size", 32, "Batch Size (default: 50)")
 tf.flags.DEFINE_integer("num_epochs", 2000, "Number of training epochs (default: 2000)")
 tf.flags.DEFINE_integer("evaluate_every", 10, "Evaluate model on dev set after this many steps (default: 100)")
 tf.flags.DEFINE_integer("checkpoint_every", 50, "Save model after this many steps (default: 100)")
+tf.flags.DEFINE_integer("amount", 200, "Amount of training samples (default: 200)")
+tf.flags.DEFINE_integer("chunks", 20, "Amount of batches in one epoch (default: 20)")
+
+
 # Misc Parameters
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
 tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
@@ -163,7 +166,10 @@ print("")
 # for each set the images and labels are given (e.g. mnist.train.images of size
 # [55,000, 784] and mnist.train.labels of size [55,000, 10])
 mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
-
+dataset_x_test = mnist.test.images
+dataset_y_test = mnist.test.labels
+dataset_x_train = np.random.shuffle(mnist.train.images)[0:amount]
+dataset_y_train = np.random.shuffle(mnist.train.labels)[0:amount]
 with tf.Graph().as_default():
     session_conf = tf.ConfigProto(
       allow_soft_placement=FLAGS.allow_soft_placement,
@@ -274,7 +280,9 @@ with tf.Graph().as_default():
 
 
         for i in range(FLAGS.num_epochs):
-            batch = mnist.train.next_batch(FLAGS.batch_size)
+            batchx= np.split(dataset_x_train,chunks)
+            batchy= np.split(dataset_y_train,chunks)
+            batch=[batchx, batchy]
             begin = time.time()
             train_step(batch[0], batch[1])
             end = time.time()
