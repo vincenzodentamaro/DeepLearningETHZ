@@ -173,8 +173,8 @@ dataset_x_test = mnist.test.images
 dataset_y_test = mnist.test.labels
 dataset_x_train = mnist.train.images[0:amount]
 dataset_y_train = mnist.train.labels[0:amount]
-dataset_x_train=tf.convert_to_tensor(dataset_x_train)
-dataset_y_train=tf.convert_to_tensor(dataset_y_train)
+#dataset_x_train=tf.convert_to_tensor(dataset_x_train)
+#dataset_y_train=tf.convert_to_tensor(dataset_y_train)
 
 
 with tf.Graph().as_default():
@@ -287,9 +287,11 @@ with tf.Graph().as_default():
 
 
         for i in range(FLAGS.num_epochs):
+            batchx = dataset_x_train.next_batch(FLAGS.batch_size)
+            #batchx= tf.train.batch(dataset_x_train,chunks)
+            batchy = dataset_y_train.next_batch(FLAGS.batch_size)
 
-            batchx= tf.train.batch(dataset_x_train,chunks)
-            batchy= tf.train.batch(dataset_y_train,chunks)
+            #batchy= tf.train.batch(dataset_y_train,chunks)
             batch=[batchx, batchy]
             begin = time.time()
             train_step(batch[0], batch[1])
