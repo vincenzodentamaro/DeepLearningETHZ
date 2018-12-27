@@ -29,7 +29,7 @@ class MnistBatchGenerator:
             self.dataset_y = np.load('rw/dataset_y_test.npy')
         else:
             self.dataset_x = np.load('rw/dataset_x_train.npy')
-            indices = np.random.randint(0,self.dataset_x.shape[0],self.amount)
+            indices = np.random.randint(0,int(self.dataset_x.shape[0]),int(self.amount))
 
             self.dataset_x = self.dataset_x[indices]
             self.dataset_y = np.load('rw/dataset_y_train.npy')
