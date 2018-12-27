@@ -171,8 +171,8 @@ chunks=FLAGS.chunks
 mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
 dataset_x_test = mnist.test.images
 dataset_y_test = mnist.test.labels
-dataset_x_train = np.random.shuffle(mnist.train.images)[0:amount]
-dataset_y_train = np.random.shuffle(mnist.train.labels)[0:amount]
+dataset_x_train = mnist.train.images[0:amount]
+dataset_y_train = mnist.train.labels[0:amount]
 with tf.Graph().as_default():
     session_conf = tf.ConfigProto(
       allow_soft_placement=FLAGS.allow_soft_placement,
