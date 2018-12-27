@@ -284,7 +284,7 @@ with tf.Graph().as_default():
 
         for i in range(FLAGS.num_epochs):
 
-            batchx= tf.train.batch(dataset_x,train,chunks)
+            batchx= tf.train.batch(dataset_x_train,chunks)
             batchy= tf.train.batch(dataset_y_train,chunks)
             batch=[batchx, batchy]
             begin = time.time()
