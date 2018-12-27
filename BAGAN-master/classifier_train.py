@@ -165,6 +165,9 @@ print("")
 # (mnist.validation) of size 5,000 and test set (mnist.test) of size 10,000
 # for each set the images and labels are given (e.g. mnist.train.images of size
 # [55,000, 784] and mnist.train.labels of size [55,000, 10])
+
+amount=FLAGS.amount
+chunks=FLAGS.chunks
 mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
 dataset_x_test = mnist.test.images
 dataset_y_test = mnist.test.labels
@@ -280,6 +283,7 @@ with tf.Graph().as_default():
 
 
         for i in range(FLAGS.num_epochs):
+
             batchx= np.split(dataset_x_train,chunks)
             batchy= np.split(dataset_y_train,chunks)
             batch=[batchx, batchy]
