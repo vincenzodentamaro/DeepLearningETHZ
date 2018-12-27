@@ -166,15 +166,11 @@ print("")
 # for each set the images and labels are given (e.g. mnist.train.images of size
 # [55,000, 784] and mnist.train.labels of size [55,000, 10])
 
-#amount=FLAGS.amount
-#chunks=FLAGS.chunks
-mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
-#dataset_x_test = mnist.test.images
-#dataset_y_test = mnist.test.labels
-#dataset_x_train = mnist.train.images[0:amount]
-#dataset_y_train = mnist.train.labels[0:amount]
-#dataset_x_train=tf.convert_to_tensor(dataset_x_train)
-#dataset_y_train=tf.convert_to_tensor(dataset_y_train)
+amount=FLAGS.amount
+chunks=FLAGS.chunks
+
+dataset_x_train = mnist.train.images[0:amount]
+dataset_y_train = mnist.train.labels[0:amount]
 
 
 with tf.Graph().as_default():
@@ -287,12 +283,9 @@ with tf.Graph().as_default():
 
 
         for i in range(FLAGS.num_epochs):
-            z = mnist.train
-            z.take(FLAGS.amount)
-            batch=z.next_batch(FLAGS.batch_size)
-            batchx = dataset_x_train.next_batch(FLAGS.batch_size)
+            batchx = dataset_x_train
             #batchx= tf.train.batch(dataset_x_train,chunks)
-            batchy = dataset_y_train.next_batch(FLAGS.batch_size)
+            batchy = dataset_y_train
 
             #batchy= tf.train.batch(dataset_y_train,chunks)
             batch=[batchx, batchy]
