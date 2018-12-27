@@ -287,7 +287,8 @@ with tf.Graph().as_default():
 
 
         for i in range(FLAGS.num_epochs):
-            z = take(mnist.train,FLAGS.amount)
+            z = mnist.train
+            z.take(FLAGS.amount)
             batch=z.next_batch(FLAGS.batch_size)
             batchx = dataset_x_train.next_batch(FLAGS.batch_size)
             #batchx= tf.train.batch(dataset_x_train,chunks)
