@@ -173,6 +173,10 @@ dataset_x_test = mnist.test.images
 dataset_y_test = mnist.test.labels
 dataset_x_train = mnist.train.images[0:amount]
 dataset_y_train = mnist.train.labels[0:amount]
+dataset_x_train=tf.convert_to_tensor(dataset_x_train)
+dataset_y_train=tf.convert_to_tensor(dataset_y_train)
+
+
 with tf.Graph().as_default():
     session_conf = tf.ConfigProto(
       allow_soft_placement=FLAGS.allow_soft_placement,
