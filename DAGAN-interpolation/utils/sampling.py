@@ -17,9 +17,9 @@ def sample_generator(num_generations, sess, same_images, inputs, dropout_rate, d
     input_images, generated = sess.run(same_images, feed_dict={input_a: inputs, dropout_rate: dropout_rate_value,
                                                                   training_phase: False,
                                                                   z_input: batch_size*[z_vectors[0]]})
-    input_images_list = np.zeros(shape=(batch_size, num_generations, input_images.shape[-3], input_images.shape[-2],
+    input_images_list = np.zeros(shape=(batch_size, batch_size, input_images.shape[-3], input_images.shape[-2],
                                         input_images.shape[-1]))
-    generated_list = np.zeros(shape=(batch_size, num_generations, generated.shape[-3], generated.shape[-2],
+    generated_list = np.zeros(shape=(batch_size, batch_size, generated.shape[-3], generated.shape[-2],
                                      generated.shape[-1]))
     height = generated.shape[-3]
     for i in range(batch_size):
@@ -47,9 +47,9 @@ def sample_generator(num_generations, sess, same_images, inputs, dropout_rate, d
 
     image = np.concatenate((input_images, generated), axis=1)
     image = np.squeeze(image)
-    image = (image - np.min(image)) / (np.max(image) - np.min(image))
+    # image = (image - np.min(image)) / (np.max(image) - np.min(image))
     image = image * 255
-    image = image[:, (num_generations-1)*height:]
+    image = image[:, (batch_size-1)*height:]
     imageio.imwrite(file_name, image)
 
 def generate_sample_batch(sess, generated_multi_batch, inputs, dropout_rate, dropout_rate_value, data, batch_size,
@@ -185,7 +185,7 @@ def interpolation_generator(sess, inter_class_interpolations, intra_class_interp
 
     image = np.concatenate((inter_class_images, intra_class_images, original_batch), axis=-3)
     image = np.squeeze(image)
-    image = (image - np.min(image)) / (np.max(image) - np.min(image))
+    # image = (image - np.min(image)) / (np.max(image) - np.min(image))
     image = image * 255
     imageio.imwrite(file_name, image)
 
