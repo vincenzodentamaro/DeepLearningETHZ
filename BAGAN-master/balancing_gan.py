@@ -463,7 +463,7 @@ class BalancingGAN:
         self.generator.save(generator_fname)
         self.discriminator.save(discriminator_fname)
 
-    def train(self, bg_train, bg_test, epochs=5):
+    def train(self, bg_train, bg_test, epochs=50):
         if not self.trained:
             self.autoenc_epochs = epochs
 
@@ -510,6 +510,8 @@ class BalancingGAN:
                     ]
                 ])
                 img_samples = np.concatenate((img_samples, new_samples), axis=0)
+                print(img_samples.shape)
+                print(new_samples.shape)
 
             shape = img_samples.shape
             img_samples = img_samples.reshape((-1, shape[-4], shape[-3], shape[-2], shape[-1]))

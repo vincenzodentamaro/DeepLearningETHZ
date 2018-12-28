@@ -15,22 +15,25 @@ class MnistBatchGenerator:
     TRAIN = 1
     TEST = 0
 
-    def __init__(self, data_src, batch_size=32, class_to_prune=None, unbalance=0):
+    def __init__(self, data_src, batch_size=32, class_to_prune=None, amount_of_training_samples=10000,unbalance=0):
         self.batch_size = batch_size
         self.data_src = data_src
-
+        self.amount=amount_of_training_samples
         # Load data
         mnist = input_data.read_data_sets("dataset/mnist", one_hot=False)
 
         assert self.batch_size > 0, 'Batch size has to be a positive integer!'
 
         if self.data_src == self.TEST:
-            self.dataset_x = mnist.test.images
-            self.dataset_y = mnist.test.labels
+            self.dataset_x = np.load('rw/dataset_x_test.npy')
+            self.dataset_y = np.load('rw/dataset_y_test.npy')
         else:
-            self.dataset_x = mnist.train.images
-            self.dataset_y = mnist.train.labels
+            self.dataset_x = np.load('rw/dataset_x_train.npy')
+            indices = np.random.randint(0,int(self.dataset_x.shape[0]),int(self.amount))
 
+            self.dataset_x = self.dataset_x[indices]
+            self.dataset_y = np.load('rw/dataset_y_train.npy')
+            self.dataset_y = self.dataset_y[indices]
         # Normalize between -1 and 1
         self.dataset_x = (np.reshape(self.dataset_x, (self.dataset_x.shape[0], 28, 28)) - 0.5) * 2
 

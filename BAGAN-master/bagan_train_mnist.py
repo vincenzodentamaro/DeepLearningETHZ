@@ -28,6 +28,9 @@ if __name__ == '__main__':
     argParser.add_option("-u", "--unbalance", default=0.2,
                   action="store", type="float", dest="unbalance",
                   help="Unbalance factor u. The minority class has at most u * otherClassSamples instances.")
+    argParser.add_option("-a", "--amount", default=10000,
+                  action="store", type="float", dest="amount",
+                  help="Amount of training samples used from MNIST.")
 
     argParser.add_option("-s", "--random_seed", default=0,
                   action="store", type="int", dest="seed",
@@ -62,6 +65,7 @@ if __name__ == '__main__':
     # Read command line parameters
     np.random.seed(options.seed)
     unbalance = options.unbalance
+    amount=options.amount
     gratio_mode = options.gratio_mode
     dratio_mode = options.dratio_mode
     gan_epochs = options.epochs
@@ -83,9 +87,9 @@ if __name__ == '__main__':
     # Read initial data.
     print("read input data...")
     bg_train_full = BatchGenerator(BatchGenerator.TRAIN, batch_size,
-                                   class_to_prune=None, unbalance=None)
+                                   class_to_prune=None, amount_of_training_samples=amount, unbalance=None)
     bg_test = BatchGenerator(BatchGenerator.TEST, batch_size,
-                             class_to_prune=None, unbalance=None)
+                             class_to_prune=None, amount_of_training_samples=amount, unbalance=None)
 
     print("input data loaded...")
 
@@ -128,7 +132,7 @@ if __name__ == '__main__':
 
         # Unbalance the training set.
         bg_train_partial = BatchGenerator(BatchGenerator.TRAIN, batch_size,
-                                          class_to_prune=c, unbalance=unbalance)
+                                          class_to_prune=c,amount_of_training_samples=amount, unbalance=unbalance)
 
         # Train the model (or reload it if already available
         if not (
