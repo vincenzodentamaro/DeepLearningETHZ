@@ -156,8 +156,9 @@ class DAGAN:
             g_same_class_outputs, g_discr_features = self.d(x_g, input_a, training=self.training_phase,
                                           dropout_rate=self.dropout_rate)
 
-            t_same_class_outputs, t_discr_features = self.d(input_b, input_a, training=self.training_phase,
-                                          dropout_rate=self.dropout_rate)
+            t_same_class_outputs, t_discr_features, t_lastlayer_features = self.d(input_b, input_a,
+                                                                                  training=self.training_phase,
+                                          dropout_rate=self.dropout_rate, extended_output=True)
 
             # Remove comments to save discriminator feature activations
             # self.save_features(name="generated_discr_layers", features=g_discr_features)
@@ -183,13 +184,26 @@ class DAGAN:
                                      training=self.training_phase)
             gradients = tf.gradients(pre_grads, [interpolates_g, input_a])[0]
             slopes = tf.sqrt(tf.reduce_sum(tf.square(gradients), reduction_indices=[1]))
+            gradient_summary_d = tf.reduce_mean(slopes)
             gradient_penalty = tf.reduce_mean((slopes - 1.) ** 2)
             d_loss += 10 * gradient_penalty
+
+            #improving improved WGAN training
+            d1, _, d1_features = self.d(input_b, input_a, training=self.training_phase, dropout_rate=self.dropout_rate,
+                                        extended_output=True)
+            # for d2, t_same_class_outputs is reused, as it is also computed with dropout
+            distance_outputs = tf.abs(t_same_class_outputs - d1)
+            distance_features = tf.sqrt(tf.reduce_sum(tf.square(t_lastlayer_features-d1_features), axis=1))
+            CT = tf.reduce_mean(distance_outputs + 0.1*distance_features)
+            d_loss += 2*CT
+
+            #summaries
 
             tf.add_to_collection('g_losses', g_loss)
             tf.add_to_collection('d_losses', d_loss)
             tf.summary.scalar('g_losses', g_loss)
             tf.summary.scalar('d_losses', d_loss)
+            tf.summary.scalar('d_gradients', gradient_summary_d)
 
             tf.summary.scalar('d_loss_real', tf.reduce_mean(d_real))
             tf.summary.scalar('d_loss_fake', tf.reduce_mean(d_fake))

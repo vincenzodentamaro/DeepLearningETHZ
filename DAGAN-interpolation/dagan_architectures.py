@@ -294,7 +294,7 @@ class UResNetGenerator:
                     if idx<0:
                         num_features = self.layer_sizes[0]
                         inner_layers = self.inner_layers[0]
-                        outputs = tf.concat([outputs, conditional_input], axis=3) # comment out to get Resnet instead of Uresnet
+                        # outputs = tf.concat([outputs, conditional_input], axis=3) # comment out to get Resnet instead of Uresnet
                         upscale_shape = conditional_input.get_shape().as_list()
 
                     with tf.variable_scope('g_deconv{}'.format(i)):
@@ -340,7 +340,7 @@ class UResNetGenerator:
                                 h_size=upscale_shape[2], dropout_rate=dropout_rate)
                             current_layers.append(outputs)
                         if (idx-1)>=0:
-                            outputs = tf.concat([outputs, encoder_layers[idx-1]], axis=3) # comment out to get Resnet instead of UResnet
+                            # outputs = tf.concat([outputs, encoder_layers[idx-1]], axis=3) # comment out to get Resnet instead of UResnet
                             current_layers[-1] = outputs
 
                 high_res_layers = []
@@ -467,7 +467,7 @@ class Discriminator:
         return outputs
 
 
-    def __call__(self, conditional_input, generated_input, training=False, dropout_rate=0.0):
+    def __call__(self, conditional_input, generated_input, training=False, dropout_rate=0.0, extended_output = False):
         """
         :param conditional_input: A batch of conditional inputs (x_i) of size [batch_size, height, width, channel]
         :param generated_input: A batch of generated inputs (x_g) of size [batch_size, height, width, channel]
@@ -545,4 +545,7 @@ class Discriminator:
             print("discr layers", self.conv_layer_num)
             count_parameters(self.variables, name="discriminator_parameter_num")
         self.build = False
-        return outputs, current_layers
+        if extended_output:
+            return outputs, current_layers, combo_level_flatten
+        else:
+            return outputs, current_layers
