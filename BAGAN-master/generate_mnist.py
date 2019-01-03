@@ -70,11 +70,38 @@ if __name__ == '__main__':
     opt_class = options.target_class
     batch_size = 32
     dataset_name = 'MNIST'
-    classes=[0,1,2,3,4,5,6,7,8,9]
-    target_classes = np.array(range(len(classes)))
-    img_samples = defaultdict(list)
     # Set channels for mnist.
     channels=1
+        # Read initial data.
+    print("read input data...")
+    bg_train_full = BatchGenerator(BatchGenerator.TRAIN, batch_size,
+                                   class_to_prune=None, unbalance=None)
+    bg_test = BatchGenerator(BatchGenerator.TEST, batch_size,
+                             class_to_prune=None, unbalance=None)
+
+    print("input data loaded...")
+
+    shape = bg_train_full.get_image_shape()
+
+    min_latent_res = shape[-1]
+    while min_latent_res > 8:
+        min_latent_res = min_latent_res / 2
+    min_latent_res = int(min_latent_res)
+
+    classes = bg_train_full.get_label_table()
+
+    # Initialize statistics information
+    gan_train_losses = defaultdict(list)
+    gan_test_losses = defaultdict(list)
+
+    img_samples = defaultdict(list)
+
+    # For all possible minority classes.
+    target_classes = np.array(range(len(classes)))
+    if opt_class >= 0:
+        min_classes = np.array([opt_class])
+    else:
+        min_classes = target_classes
 
     # Result directory
     res_dir = "./res_{}_dmode_{}_gmode_{}_unbalance_{}_epochs_{}_lr_{:f}_seed_{}".format(dataset_name, dratio_mode, gratio_mode, unbalance, options.epochs, adam_lr, options.seed)
