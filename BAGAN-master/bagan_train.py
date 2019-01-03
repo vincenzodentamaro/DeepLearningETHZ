@@ -165,10 +165,10 @@ if __name__ == '__main__':
                 "{}/class_{}_reconstructor.h5".format(res_dir, c),
                 bg_train=bg_train_partial  # This is required to initialize the per-class mean and covariance matrix
             )
-
+        for k in range(0,10)
         # Sample and save images
-        img_samples['class_{}'.format(c)] = gan.generate_samples(c=c, samples=1000)
-
-        save_image_array(np.array([img_samples['class_{}'.format(c)]]), '{}/plot_class_{}.png'.format(res_dir, c))
+            img_samples['class_{}'.format(k)] = gan.generate_samples(c=k, samples=1000)
+            np.save('{}/samples_class_{}.npy'.format(res_dir,k),img_samples['class_{}'.format(k)])
+            save_image_array(np.array([img_samples['class_{}'.format(k)]]), '{}/plot_class_{}.png'.format(res_dir, k))
 
 
