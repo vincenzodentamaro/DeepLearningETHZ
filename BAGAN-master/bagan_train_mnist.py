@@ -171,5 +171,5 @@ if __name__ == '__main__':
 
         # Sample and save images
         img_samples['class_{}'.format(c)] = gan.generate_samples(c=c, samples=300)
-        #np.save('{}/samples_class_{}.npy'.format(res_dir,c),img_samples['class_{}'.format(c)])
+        np.save('{}/samples_class_{}.npy'.format(res_dir,c),img_samples['class_{}'.format(c)])
         save_image_array(np.array([img_samples['class_{}'.format(c)]]), '{}/plot_class_{}.png'.format(res_dir, c))
