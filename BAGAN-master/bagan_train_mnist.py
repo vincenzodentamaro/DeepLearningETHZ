@@ -171,7 +171,6 @@ if __name__ == '__main__':
 
         for k in range(0,10):
         # Sample and save images
-            img_samples['class_{}'.format(k)] = gan.generate_samples(k, samples=5)
             img_samples['class_{}'.format(k)] = gan.generate_samples(k, samples=15)
 
             np.save('{}/samples_class_{}.npy'.format(res_dir,k),img_samples['class_{}'.format(k)])
