@@ -169,7 +169,9 @@ if __name__ == '__main__':
                 bg_train=bg_train_partial  # This is required to initialize the per-class mean and covariance matrix
             )
 
+        for k in range(0,10):
         # Sample and save images
-        img_samples['class_{}'.format(c)] = gan.generate_samples(c=c, samples=10)
+            img_samples['class_{}'.format(k)] = gan.generate_samples(k, samples=15)
 
-        save_image_array(np.array([img_samples['class_{}'.format(c)]]), '{}/plot_class_{}.png'.format(res_dir, c))
+            np.save('{}/samples_class_{}.npy'.format(res_dir,k),img_samples['class_{}'.format(k)])
+            save_image_array(np.array([img_samples['class_{}'.format(k)]]), '{}/plot_class_{}.png'.format(res_dir, k))
