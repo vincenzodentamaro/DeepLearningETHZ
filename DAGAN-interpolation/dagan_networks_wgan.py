@@ -166,7 +166,8 @@ class DAGAN:
 
             d_real = t_same_class_outputs
             d_fake = g_same_class_outputs
-            d_loss = tf.reduce_mean(d_fake) - tf.reduce_mean(d_real)
+            d_loss_GAN = tf.reduce_mean(d_fake) - tf.reduce_mean(d_real)
+            d_loss = d_loss_GAN
             g_loss = -tf.reduce_mean(d_fake)
 
             alpha = tf.random_uniform(
@@ -204,12 +205,16 @@ class DAGAN:
             tf.summary.scalar('g_losses', g_loss)
             tf.summary.scalar('d_losses', d_loss)
             tf.summary.scalar('d_gradients', gradient_summary_d)
+            tf.summary.histogram('d_slopes_hist', slopes)
+            tf.summary.scalar('gradient_penalty', gradient_penalty)
+            tf.summary.scalar('consistency_term',CT)
+            tf.summary.scalar('d_loss_gan')
 
             tf.summary.scalar('d_loss_real', tf.reduce_mean(d_real))
             tf.summary.scalar('d_loss_fake', tf.reduce_mean(d_fake))
             tf.summary.image('output_generated_images', [tf.concat(tf.unstack(x_g, axis=0), axis=0)])
-            tf.summary.image('output_input_a', [tf.concat(tf.unstack(input_a, axis=0), axis=0)])
-            tf.summary.image('output_input_b', [tf.concat(tf.unstack(input_b, axis=0), axis=0)])
+            # tf.summary.image('output_input_a', [tf.concat(tf.unstack(input_a, axis=0), axis=0)])
+            # tf.summary.image('output_input_b', [tf.concat(tf.unstack(input_b, axis=0), axis=0)])
 
         return {
             "g_losses": tf.add_n(tf.get_collection('g_losses'), name='total_g_loss'),
@@ -227,12 +232,27 @@ class DAGAN:
         opt_ops = dict()
         update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
         with tf.control_dependencies(update_ops):
-            opt_ops["g_opt_op"] = opts["g_opt"].minimize(losses["g_losses"],
-                                          var_list=self.g.variables,
-                                          colocate_gradients_with_ops=True)
-            opt_ops["d_opt_op"] = opts["d_opt"].minimize(losses["d_losses"],
+            gradients_g = opts["g_opt"].compute_gradients(losses["g_losses"],
+                                                          var_list=self.g.variables,
+                                                          colocate_gradients_with_ops=True)
+            opt_ops["g_opt_op"] = opts["g_opt"].apply_gradients(gradients_g)
+            # opt_ops["g_opt_op"] = opts["g_opt"].minimize(losses["g_losses"],
+            #                               var_list=self.g.variables,
+            #                               colocate_gradients_with_ops=True)
+            gradients_d = opts["d_opt"].compute_gradients(losses["d_losses"],
                                                          var_list=self.d.variables,
                                                          colocate_gradients_with_ops=True)
+            opt_ops["d_opt_op"] = opts["d_opt"].apply_gradients(gradients_d)
+            # opt_ops["d_opt_op"] = opts["d_opt"].minimize(losses["d_losses"],
+            #                                              var_list=self.d.variables,
+            #                                              colocate_gradients_with_ops=True)
+
+            # Save gradients in summary:
+            stacked_gradients_g = concatenate_gradients(gradients_g)
+            stacked_gradients_d = concatenate_gradients(gradients_d)
+            tf.summary.histogram('g_gradients_hist', stacked_gradients_g)
+            tf.summary.histogram('d_gradients_hist', stacked_gradients_d)
+
         return opt_ops
 
     def init_train(self, learning_rate=1e-4, beta1=0.0, beta2=0.9):
@@ -265,8 +285,8 @@ class DAGAN:
             opts[key.replace("losses", "opt")] = tf.train.AdamOptimizer(beta1=beta1, beta2=beta2,
                                                                             learning_rate=learning_rate)
 
-        summary = tf.summary.merge_all()
         apply_grads_ops = self.train(opts=opts, losses=losses)
+        summary = tf.summary.merge_all()
 
         return summary, losses, apply_grads_ops
 
@@ -344,3 +364,10 @@ class DAGAN:
         generated_samples = tf.concat([tf.reshape(images[0], new_shape), generated_samples,
                                        tf.reshape(images[1], new_shape)], axis=0)
         return generated_samples
+
+
+def concatenate_gradients(grad_var_pairs):
+    grad_list = []
+    for (grad, _) in grad_var_pairs:
+        grad_list.append(grad)
+    return tf.stack(grad_list)
