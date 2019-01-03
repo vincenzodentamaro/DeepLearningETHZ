@@ -18,9 +18,6 @@ from rw.batch_generator_mnist import MnistBatchGenerator as BatchGenerator
 from utils import save_image_array
 
 import os
-
-
-
 if __name__ == '__main__':
     # Collect arguments
     argParser = OptionParser()
@@ -80,83 +77,21 @@ if __name__ == '__main__':
     # Result directory
     res_dir = "./res_{}_dmode_{}_gmode_{}_unbalance_{}_epochs_{}_lr_{:f}_seed_{}".format(
         dataset_name, dratio_mode, gratio_mode, unbalance, options.epochs, adam_lr, options.seed
-    )
-    if not os.path.exists(res_dir):
-        os.makedirs(res_dir)
-
-    # Read initial data.
-    print("read input data...")
-    bg_train_full = BatchGenerator(BatchGenerator.TRAIN, batch_size,
-                                   class_to_prune=None, amount_of_training_samples=amount, unbalance=None)
-    bg_test = BatchGenerator(BatchGenerator.TEST, batch_size,
-                             class_to_prune=None, amount_of_training_samples=amount, unbalance=None)
-
-    print("input data loaded...")
-
-    shape = bg_train_full.get_image_shape()
-
-    min_latent_res = shape[-1]
-    while min_latent_res > 8:
-        min_latent_res = min_latent_res / 2
-    min_latent_res = int(min_latent_res)
-
-    classes = bg_train_full.get_label_table()
-
-    # Initialize statistics information
-    gan_train_losses = defaultdict(list)
-    gan_test_losses = defaultdict(list)
-
-    img_samples = defaultdict(list)
-
-    # For all possible minority classes.
-    target_classes = np.array(range(len(classes)))
-    if opt_class >= 0:
-        min_classes = np.array([opt_class])
-    else:
-        min_classes = target_classes
-
-    for c in min_classes:
-        # If unbalance is 1.0, then the same BAGAN model can be applied to every class because
-        # we do not drop any instance at training time.
-        if unbalance == 1.0 and c > 0 and (
-            os.path.exists("{}/class_0_score.csv".format(res_dir, c)) and
-            os.path.exists("{}/class_0_discriminator.h5".format(res_dir, c)) and
-            os.path.exists("{}/class_0_generator.h5".format(res_dir, c)) and
-            os.path.exists("{}/class_0_reconstructor.h5".format(res_dir, c))
-        ):
-            # Without additional imbalance, BAGAN does not need to be retrained, we simlink the pregenerated model
-            os.symlink("{}/class_0_score.csv".format(res_dir), "{}/class_{}_score.csv".format(res_dir, c))
-            os.symlink("{}/class_0_discriminator.h5".format(res_dir), "{}/class_{}_discriminator.h5".format(res_dir, c))
-            os.symlink("{}/class_0_generator.h5".format(res_dir), "{}/class_{}_generator.h5".format(res_dir, c))
-            os.symlink("{}/class_0_reconstructor.h5".format(res_dir), "{}/class_{}_reconstructor.h5".format(res_dir, c))
-
-        # Unbalance the training set.
+    for c in range(0,10):
+        
+        print("Loading GAN for class {}".format(c))
         bg_train_partial = BatchGenerator(BatchGenerator.TRAIN, batch_size,
-                                          class_to_prune=c,amount_of_training_samples=amount, unbalance=unbalance)
-
-        # Train the model (or reload it if already available
-        if (
-                os.path.exists("{}/class_{}_score.csv".format(res_dir, c)) and
-                os.path.exists("{}/class_{}_discriminator.h5".format(res_dir, c)) and
-                os.path.exists("{}/class_{}_generator.h5".format(res_dir, c)) and
-                os.path.exists("{}/class_{}_reconstructor.h5".format(res_dir, c))
-        ):
-          print("Loading GAN for class {}".format(c))
-
-          gan = bagan.BalancingGAN(target_classes, c, dratio_mode=dratio_mode, gratio_mode=gratio_mode,
-                                     adam_lr=adam_lr, res_dir=res_dir, image_shape=shape, min_latent_res=min_latent_res)
-          gan.load_models(
-                "{}/class_{}_generator.h5".format(res_dir, c),
-                "{}/class_{}_discriminator.h5".format(res_dir, c),
-                "{}/class_{}_reconstructor.h5".format(res_dir, c),
+                                          class_to_prune=c, unbalance=unbalance)
+        gan = bagan.BalancingGAN(target_classes, c, dratio_mode=dratio_mode, gratio_mode=gratio_mode,
+                                     adam_lr=adam_lr, res_dir=res_dir, image_shape=shape, min_latent_res=7)
+        gan.load_models(
+                "{}/class_0_generator.h5".format(res_dir),
+                "{}/class_0_discriminator.h5".format(res_dir),
+                "{}/class_0_reconstructor.h5".format(res_dir),
                 bg_train=bg_train_partial  # This is required to initialize the per-class mean and covariance matrix
             )
 
-
-
-        else:  # GAN pre-trained
-            # Unbalance the training.
-            print("ERROR")    
         # Sample and save images
         img_samples['class_{}'.format(c)] = gan.generate_samples(c=c, samples=300)
         np.save('{}/samples_class_{}.npy'.format(res_dir,c),img_samples['class_{}'.format(c)])
+        save_image_array(np.array([img_samples['class_{}'.format(c)]]), '{}/plot_class_{}.png'.format(res_dir, c))
