@@ -75,9 +75,8 @@ if __name__ == '__main__':
     channels=1
 
     # Result directory
-    res_dir = "./res_{}_dmode_{}_gmode_{}_unbalance_{}_epochs_{}_lr_{:f}_seed_{}".format(
-        dataset_name, dratio_mode, gratio_mode, unbalance, options.epochs, adam_lr, options.seed
-    for c in range(0,10):
+    res_dir = "./res_{}_dmode_{}_gmode_{}_unbalance_{}_epochs_{}_lr_{:f}_seed_{}".format(dataset_name, dratio_mode, gratio_mode, unbalance, options.epochs, adam_lr, options.seed)
+    for c in range(0, 10):
         print("Loading GAN for class {}".format(c))
         bg_train_partial = BatchGenerator(BatchGenerator.TRAIN, batch_size, class_to_prune=c, unbalance=unbalance)
         gan = bagan.BalancingGAN(target_classes, c, dratio_mode=dratio_mode, gratio_mode=gratio_mode, adam_lr=adam_lr, res_dir=res_dir, image_shape=shape, min_latent_res=7)
