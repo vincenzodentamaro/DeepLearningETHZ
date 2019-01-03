@@ -70,7 +70,9 @@ if __name__ == '__main__':
     opt_class = options.target_class
     batch_size = 32
     dataset_name = 'MNIST'
-
+    classes=[0,1,2,3,4,5,6,7,8,9]
+    target_classes = np.array(range(len(classes)))
+    img_samples = defaultdict(list)
     # Set channels for mnist.
     channels=1
 
