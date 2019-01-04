@@ -182,8 +182,8 @@ if augmentation==True:
     print(dataset_x_train_aug.shape)
 
     temp=np.full(int(amount/10), 0)
-    z=np.zeros((amount, 10))
-    z[np.arange(amount), temp] = 1
+    z=np.zeros((amount/10, 10))
+    z[np.arange(amount/10), temp] = 1
     for i in range(1,10):
         temp=np.load('samples_class_'+str(i)+'.npy')
         temp=np.reshape(temp,(amount,784))
@@ -191,8 +191,8 @@ if augmentation==True:
         print(temp.shape)
         
         temp=np.full(int(amount/10),i)
-        temp1=np.zeros((amount, 10))
-        temp1[np.arange(amount), temp] = 1
+        temp1=np.zeros((amount/10, 10))
+        temp1[np.arange(amount/10), temp] = 1
         dataset_x_train_aug=np.concatenate((dataset_x_train_aug,temp), axis=0)
         z=np.concatenate((z,temp1), axis=0)
 
