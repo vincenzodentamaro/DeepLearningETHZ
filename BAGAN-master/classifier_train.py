@@ -207,7 +207,8 @@ dataset_x_train=dataset_x_train[p]
 dataset_y_train=dataset_y_train[p]      
 print(dataset_x_train.shape)
 print(dataset_y_train.shape)
-
+print(dataset_x_train[0])
+print(dataset_y_train[0])
     
 with tf.Graph().as_default():
     session_conf = tf.ConfigProto(
