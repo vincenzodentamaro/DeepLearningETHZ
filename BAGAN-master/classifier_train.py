@@ -177,15 +177,17 @@ dataset_x_train = mnist.train.images[0:amount]
 dataset_y_train = mnist.train.labels[0:amount]
 if augmentation==True:
     dataset_x_train_aug=np.load('samples_class_0.npy')
-    dataset_y_train_aug=np.full(amount, 0)
+    dataset_x_train=np.reshape(dataset_x_train,(amount,784))
+    dataset_x_train_aug=dataset_x_train_aug[0:int(amount/10)]
+    dataset_y_train_aug=np.full(int(amount/10), 0)
     for i in range(1,10):
-        dataset_x_train_aug=np.concatenate((dataset_x_train_aug,np.load('samples_class_'+str(i)+'.npy')), axis=0)
-        dataset_y_train_aug=np.concatenate((dataset_y_train_aug,np.full(amount,i)), axis=0)
+        dataset_x_train_aug=np.concatenate((dataset_x_train_aug,np.load('samples_class_'+str(i)+'.npy'))[0:int(amount/10)], axis=0)
+        dataset_y_train_aug=np.concatenate((dataset_y_train_aug,np.full(int(amount/10),i)), axis=0)
     p = np.random.permutation(len(dataset_x_train_aug))
     dataset_x_train_aug=dataset_x_train_aug[p]
     dataset_y_train_aug=dataset_y_train_aug[p]
-    z=np.zeros((amount*10, 10))
-    z[np.arange(amount*10), dataset_y_train_aug] = 1
+    z=np.zeros((amount, 10))
+    z[np.arange(amount), dataset_y_train_aug] = 1
     dataset_x_train=np.concatenate((dataset_x_train,dataset_x_train_aug),axis=0)
     dataset_y_train=np.concatenate((dataset_y_train,dataset_y_train_aug),axis=0)
 p = np.random.permutation(len(dataset_x_train))
