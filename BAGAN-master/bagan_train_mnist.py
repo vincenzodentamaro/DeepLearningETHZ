@@ -15,7 +15,7 @@ from optparse import OptionParser
 
 import balancing_gan as bagan
 from rw.batch_generator_mnist import MnistBatchGenerator as BatchGenerator
-from utils import save_image_array
+from utils import save_image_array2
 
 import os
 
@@ -175,4 +175,4 @@ if __name__ == '__main__':
             temp =temp/2 +1
             img_samples['class_{}'.format(k)]
             np.save('{}/samples_class_{}.npy'.format(res_dir,k),img_samples['class_{}'.format(k)])
-            save_image_array(np.array([img_samples['class_{}'.format(k)]]), '{}/plot_class_{}.png'.format(res_dir, k))
+            save_image_array2(np.array([img_samples['class_{}'.format(k)]],1000), '{}/plot_class_{}.png'.format(res_dir, k))
