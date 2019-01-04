@@ -169,7 +169,7 @@ print("")
 
 amount=FLAGS.amount
 augmentation=FLAGS.augmentation
-
+print(augmentation)
 chunks=FLAGS.chunks
 mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
 
