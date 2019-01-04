@@ -180,7 +180,7 @@ if augmentation==True:
     dataset_y_train_aug=np.full(amount, 0)
     for i in range(1,10):
         dataset_x_train_aug=np.concatenate((dataset_x_train_aug,np.load('samples_class_'+str(i)+'.npy')), axis=0)
-        dataset_y_train_aug=np.concatenate((dataset_y_train_aug,np.full(amount,i), axis=0)
+        dataset_y_train_aug=np.concatenate((dataset_y_train_aug,np.full(amount,i)), axis=0)
     p = np.random.permutation(len(dataset_x_train_aug))
     dataset_x_train_aug=dataset_x_train_aug[p]
     dataset_y_train_aug=dataset_y_train_aug[p]
