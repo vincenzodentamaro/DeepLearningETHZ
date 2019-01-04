@@ -11,7 +11,7 @@ import numpy as np
 from PIL import Image
 
 
-def save_image_array(img_array, fname):
+def save_image_array(img_array, fname,amount):
     channels = img_array.shape[2]
     resolution = img_array.shape[-1]
     img_rows = img_array.shape[0]
@@ -22,7 +22,7 @@ def save_image_array(img_array, fname):
         for c in range(img_cols):
             img[:,
             (resolution * r): (resolution * (r + 1)),
-            (resolution * (c % 10)): (resolution * ((c % 10) + 1))
+            (resolution * (c % amount)): (resolution * ((c % amount) + 1))
             ] = img_array[r, c]
 
     img = (img * 127.5 + 127.5).astype(np.uint8)
