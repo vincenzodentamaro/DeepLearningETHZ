@@ -182,11 +182,9 @@ if augmentation==True:
     dataset_x_train_aug=dataset_x_train_aug[0:int(amount/10)]
     dataset_y_train_aug=np.full(int(amount/10), 0)
     for i in range(1,10):
-        dataset_x_train_aug=np.concatenate((dataset_x_train_aug,np.load('samples_class_'+str(i)+'.npy'))[0:int(amount/10)], axis=0)
+        dataset_x_train_aug=np.concatenate((dataset_x_train_aug,np.reshape(np.load('samples_class_'+str(i)+'.npy'))[0:int(amount/10)],(int(amount/10),784), axis=0)
         dataset_y_train_aug=np.concatenate((dataset_y_train_aug,np.full(int(amount/10),i)), axis=0)
-    p = np.random.permutation(len(dataset_x_train_aug))
-    dataset_x_train_aug=dataset_x_train_aug[p]
-    dataset_y_train_aug=dataset_y_train_aug[p]
+
     z=np.zeros((amount, 10))
     z[np.arange(amount), dataset_y_train_aug] = 1
     dataset_x_train=np.concatenate((dataset_x_train,dataset_x_train_aug),axis=0)
