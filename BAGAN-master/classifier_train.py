@@ -201,10 +201,12 @@ if augmentation==True:
     print(dataset_y_train.shape)
     print(z.shape)
     dataset_y_train=np.concatenate((dataset_y_train,z),axis=0)
-    z=dataset_y_train_aug
+    dataset_y_train_aug=z
 p = np.random.permutation(len(dataset_x_train))
 dataset_x_train=dataset_x_train[p]
-dataset_y_train=dataset_y_train[p]               
+dataset_y_train=dataset_y_train[p]      
+print(dataset_x_train.shape)
+print(dataset_y_train.shape)
 
     
 with tf.Graph().as_default():
