@@ -177,9 +177,10 @@ dataset_x_train = mnist.train.images[0:amount]
 dataset_y_train = mnist.train.labels[0:amount]
 if augmentation==True:
     dataset_x_train_aug=np.load('samples_class_0.npy')
-    dataset_x_train=np.reshape(dataset_x_train,(amount,784))
-    print(dataset_x_train.shape)
+    dataset_x_train_aug=np.reshape(dataset_x_train,(amount,784))
     dataset_x_train_aug=dataset_x_train_aug[0:int(amount/10)]
+    print(dataset_x_train_aug.shape)
+
     dataset_y_train_aug=np.full(int(amount/10), 0)
     for i in range(1,10):
         temp=np.load('samples_class_'+str(i)+'.npy')
