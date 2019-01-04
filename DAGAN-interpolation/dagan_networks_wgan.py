@@ -261,7 +261,7 @@ class DAGAN:
 
         return opt_ops
 
-    def init_train(self, learning_rate=1e-4, beta1=0.0, beta2=0.9):
+    def init_train(self, learning_rate=1e-7, beta1=0.0, beta2=0.9):
         """
         Initialize training by constructing the summary, loss and ops
         :param learning_rate: The learning rate for the Adam optimizer
