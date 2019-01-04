@@ -186,7 +186,7 @@ if augmentation==True:
     dataset_y_train_aug=dataset_y_train_aug[p]
     z=np.zeros((amount*10, 10))
     z[np.arange(amount*10), dataset_y_train_aug] = 1
-    dataset_y_train=np.concatenate((dataset_y_train,dataset_y_train_aug),axis=0)
+    dataset_x_train=np.concatenate((dataset_x_train,dataset_x_train_aug),axis=0)
     dataset_y_train=np.concatenate((dataset_y_train,dataset_y_train_aug),axis=0)
 p = np.random.permutation(len(dataset_x_train))
 dataset_x_train=dataset_x_train[p]
