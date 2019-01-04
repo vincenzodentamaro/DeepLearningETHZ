@@ -146,6 +146,7 @@ tf.flags.DEFINE_integer("chunks", 20, "Amount of batches in one epoch (default: 
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
 tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
 tf.flags.DEFINE_string("run_name", None, "Suffix for output directory. If None, a timestamp is used instead")
+tf.flags.DEFINE_boolean("augmentation", False, "add BAGAN generated data ")
 
 
 FLAGS = tf.flags.FLAGS
@@ -167,13 +168,31 @@ print("")
 # [55,000, 784] and mnist.train.labels of size [55,000, 10])
 
 amount=FLAGS.amount
+augmentation=FLAGS.augmentation
+
 chunks=FLAGS.chunks
 mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
 
 dataset_x_train = mnist.train.images[0:amount]
 dataset_y_train = mnist.train.labels[0:amount]
+if augmentation==True:
+    dataset_x_train_aug=np.load('samples_class_0.npy')
+    dataset_y_train_aug=np.full(amount, 0)
+    for i in range(0,10):
+        dataset_x_train_aug=np.concatenate((dataset_x_train_aug,np.load('samples_class_'+str(i)+'.npy')),axis=0)
+        dataset_y_train_aug=np.concatenate((dataset_y_train_aug,np.full(amount,i), axis=0)
+    p = np.random.permutation(len(dataset_x_train_aug))
+    dataset_x_train_aug=dataset_x_train_aug[p]
+    dataset_y_train_aug=dataset_y_train_aug[p]
+    z=np.zeros((amount, 10))
+    z[np.arange(amount), dataset_y_train_aug] = 1
+    dataset_y_train=np.concatenate((dataset_y_train,dataset_y_train_aug),axis=0)
+    dataset_y_train=np.concatenate((dataset_y_train,dataset_y_train_aug),axis=0)
+p = np.random.permutation(len(dataset_x_train))
+dataset_x_train=dataset_x_train[p]
+dataset_y_train=dataset_y_train[p]               
 
-
+    
 with tf.Graph().as_default():
     session_conf = tf.ConfigProto(
       allow_soft_placement=FLAGS.allow_soft_placement,
