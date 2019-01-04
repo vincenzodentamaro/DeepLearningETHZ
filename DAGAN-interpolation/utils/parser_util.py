@@ -12,7 +12,7 @@ def get_args():
                         help='Number of inner layers per multi layer in the discriminator')
     parser.add_argument('--generator_inner_layers', nargs="?", type=int, default=1,
                         help='Number of inner layers per multi layer in the generator')
-    parser.add_argument('--experiment_title', nargs="?", type=str, default="omniglot_dagan_experiment",
+    parser.add_argument('--experiment_title', nargs="?", type=str, default="omniglot",
                         help='Experiment name')
     parser.add_argument('--continue_from_epoch', nargs="?", type=int, default=-1,
                         help='continue from checkpoint of epoch')

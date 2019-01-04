@@ -197,6 +197,7 @@ class DAGAN:
             distance_features = tf.sqrt(tf.reduce_sum(tf.square(t_lastlayer_features-d1_features), axis=1))
             CT = tf.reduce_mean(distance_outputs + 0.1*distance_features)
             d_loss += 2*CT
+            tf.check_numerics(d_loss, 'd_loss_contains_nan')
 
             #summaries
 
@@ -207,8 +208,8 @@ class DAGAN:
             tf.summary.scalar('d_gradients', gradient_summary_d)
             tf.summary.histogram('d_slopes_hist', slopes)
             tf.summary.scalar('gradient_penalty', gradient_penalty)
-            tf.summary.scalar('consistency_term',CT)
-            tf.summary.scalar('d_loss_gan')
+            tf.summary.scalar('consistency_term', CT)
+            tf.summary.scalar('d_loss_gan', d_loss_GAN)
 
             tf.summary.scalar('d_loss_real', tf.reduce_mean(d_real))
             tf.summary.scalar('d_loss_fake', tf.reduce_mean(d_fake))
@@ -248,10 +249,15 @@ class DAGAN:
             #                                              colocate_gradients_with_ops=True)
 
             # Save gradients in summary:
-            stacked_gradients_g = concatenate_gradients(gradients_g)
-            stacked_gradients_d = concatenate_gradients(gradients_d)
-            tf.summary.histogram('g_gradients_hist', stacked_gradients_g)
-            tf.summary.histogram('d_gradients_hist', stacked_gradients_d)
+            for g, v in gradients_g:
+                if g is not None:
+                    tf.summary.histogram("{}/grad_g/hist".format(v.name), g)
+                    tf.summary.scalar("{}/grad_g/sparsity".format(v.name), tf.nn.zero_fraction(g))
+
+            for g, v in gradients_d:
+                if g is not None:
+                    tf.summary.histogram("{}/grad_d/hist".format(v.name), g)
+                    tf.summary.scalar("{}/grad_d/sparsity".format(v.name), tf.nn.zero_fraction(g))
 
         return opt_ops
 
@@ -366,8 +372,3 @@ class DAGAN:
         return generated_samples
 
 
-def concatenate_gradients(grad_var_pairs):
-    grad_list = []
-    for (grad, _) in grad_var_pairs:
-        grad_list.append(grad)
-    return tf.stack(grad_list)
