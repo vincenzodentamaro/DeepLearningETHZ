@@ -222,7 +222,7 @@ class DAGAN:
             "d_losses": tf.add_n(tf.get_collection('d_losses'), name='total_d_loss')
         }
 
-    def train(self, opts, losses):
+    def train(self, opts, losses, init=False):
 
         """
         Returns ops for training our DAGAN system.
@@ -249,19 +249,20 @@ class DAGAN:
             #                                              colocate_gradients_with_ops=True)
 
             # Save gradients in summary:
-            for g, v in gradients_g:
-                if g is not None:
-                    tf.summary.histogram("{}/grad_g/hist".format(v.name), g)
-                    tf.summary.scalar("{}/grad_g/sparsity".format(v.name), tf.nn.zero_fraction(g))
+            if not init:
+                for g, v in gradients_g:
+                    if g is not None:
+                        tf.summary.histogram("{}/grad_g/hist".format(v.name), g)
+                        tf.summary.scalar("{}/grad_g/sparsity".format(v.name), tf.nn.zero_fraction(g))
 
-            for g, v in gradients_d:
-                if g is not None:
-                    tf.summary.histogram("{}/grad_d/hist".format(v.name), g)
-                    tf.summary.scalar("{}/grad_d/sparsity".format(v.name), tf.nn.zero_fraction(g))
+                for g, v in gradients_d:
+                    if g is not None:
+                        tf.summary.histogram("{}/grad_d/hist".format(v.name), g)
+                        tf.summary.scalar("{}/grad_d/sparsity".format(v.name), tf.nn.zero_fraction(g))
 
         return opt_ops
 
-    def init_train(self, learning_rate=1e-7, beta1=0.0, beta2=0.9):
+    def init_train(self, learning_rate=1e-4, beta1=0.0, beta2=0.9):
         """
         Initialize training by constructing the summary, loss and ops
         :param learning_rate: The learning rate for the Adam optimizer
@@ -291,7 +292,7 @@ class DAGAN:
             opts[key.replace("losses", "opt")] = tf.train.AdamOptimizer(beta1=beta1, beta2=beta2,
                                                                             learning_rate=learning_rate)
 
-        apply_grads_ops = self.train(opts=opts, losses=losses)
+        apply_grads_ops = self.train(opts=opts, losses=losses, init=True)
         summary = tf.summary.merge_all()
 
         return summary, losses, apply_grads_ops
