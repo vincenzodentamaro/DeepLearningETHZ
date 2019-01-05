@@ -173,8 +173,8 @@ print(augmentation)
 chunks=FLAGS.chunks
 mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
 
-dataset_x_train = mnist.train.images[0:amount]
-dataset_y_train = mnist.train.labels[0:amount]
+dataset_x_train = mnist.train.images[-amount:]
+dataset_y_train = mnist.train.labels[-amount:]
 if augmentation==True:
     dataset_x_train_aug=np.load('samples_class_0.npy')
     dataset_x_train_aug=np.reshape(dataset_x_train,(amount,784))
