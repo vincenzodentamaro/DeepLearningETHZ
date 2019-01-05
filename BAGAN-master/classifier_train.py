@@ -146,7 +146,7 @@ tf.flags.DEFINE_integer("chunks", 20, "Amount of batches in one epoch (default: 
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
 tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
 tf.flags.DEFINE_string("run_name", None, "Suffix for output directory. If None, a timestamp is used instead")
-tf.flags.DEFINE_boolean("augmentation", False, "add BAGAN generated data ")
+tf.flags.DEFINE_integer("augmentation", 0, "add BAGAN generated data ")
 
 
 FLAGS = tf.flags.FLAGS
