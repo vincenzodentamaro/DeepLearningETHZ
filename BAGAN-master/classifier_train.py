@@ -78,7 +78,7 @@ dataset_x_train = mnist.train.images[0:amount]
 dataset_y_train = mnist.train.labels[0:amount]
 if augmentation!=0:
     if augmentation==1:
-        samples='1000_samples_class_'
+        samples='1000_class_'
     if augmentation==2:
         samples='samples_class_'
     if augmentation==3:
