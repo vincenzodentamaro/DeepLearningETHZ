@@ -145,7 +145,9 @@ tf.flags.DEFINE_integer("amount", 1000, "Amount of training samples (default: 10
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
 tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
 tf.flags.DEFINE_string("run_name", None, "Suffix for output directory. If None, a timestamp is used instead")
-tf.flags.DEFINE_integer("augmentation", 0, "add BAGAN generated data: 0 for false, 1 for true ")
+tf.flags.DEFINE_integer("augmentation", 0, "add BAGAN generated data: 0 for false, 1 for BAGAN generated data from the same 1000 samples,
+                        2 for BAGAN generated data from a random 1000 samples, 
+                        3 for BAGAN generated data from the whole set of MNIST")
 tf.flags.DEFINE_integer("fancy_CNN", 1, "Use fancy CNN or not: 0 for false, 1 for true ")
 
 
@@ -162,16 +164,15 @@ num_filters_first_layer=FLAGS.num_filters_first_layer
 num_filters_second_layer=FLAGS.num_filters_second_layer
 
 if FLAGS.fancy_CNN==0:
-    FLAGS.lambda_reg=0
-    FLAGS.keep_prob=1
-    FLAGS.size_fully_connected_layer=256
-    FLAGS.num_filters_first_layer=16
-    FLAGS.num_filters_second_layer=32
+    lambda_reg=0
+    keep_prob=1
+    size_fully_connected_layer=128
+    num_filters_first_layer=8
+    num_filters_second_layer=16
     
-print(FLAGS.lambda_reg)
-print(FLAGS.lambda_reg)
-print(FLAGS.lambda_reg)
-print(FLAGS.lambda_reg)
+print(lambda_reg)
+print(keep_prob)
+
 
 
 #==================== Data Loading and Preparation ===================
@@ -190,8 +191,14 @@ mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
 
 dataset_x_train = mnist.train.images[0:amount]
 dataset_y_train = mnist.train.labels[0:amount]
-if augmentation==True:
-    dataset_x_train_aug=np.load('samples_class_0.npy')
+if augmentation!=0:
+    if augmentation==1:
+        samples='1000_samples_class_'
+    if augmentation==2:
+        samples='samples_class_'
+    if augmentation==3:
+        samples='50000_samples_class_'
+    dataset_x_train_aug=np.load(samples+'0.npy')
     dataset_x_train_aug=np.reshape(dataset_x_train,(amount,784))
     dataset_x_train_aug=dataset_x_train_aug[0:int(amount/10)]
     print(dataset_x_train_aug.shape)
@@ -200,7 +207,7 @@ if augmentation==True:
     z=np.zeros((int(amount/10),10))
     z[np.arange(int(amount/10)), temp] = 1
     for i in range(1,10):
-        temp=np.load('samples_class_'+str(i)+'.npy')
+        temp=np.load(samples+str(i)+'.npy')
         temp=np.reshape(temp,(amount,784))
         temp=temp[0:int(amount/10)]
         print(temp.shape)
