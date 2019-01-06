@@ -5,7 +5,6 @@ import time
 import sys
 import os
 import numpy as np
-from rw.classifier import CNN as C
 
 # ==================== Parameters =====================================
 
@@ -47,12 +46,14 @@ num_filters_first_layer=FLAGS.num_filters_first_layer
 num_filters_second_layer=FLAGS.num_filters_second_layer
 
 if FLAGS.fancy_CNN==0:
+    from rw.classifier import BASIC_CNN as C
     lambda_regs=0
     keep_prob=1
-    size_fully_connected_layer=512
-    num_filters_first_layer=32
-    num_filters_second_layer=64
-    
+    size_fully_connected_layer=64
+    num_filters_first_layer=4
+    num_filters_second_layer=8
+else:
+    from rw.classifier import CNN as C
 print(lambda_regs)
 print(keep_prob)
 
