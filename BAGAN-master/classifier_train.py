@@ -138,15 +138,15 @@ tf.flags.DEFINE_integer("batch_size", 32, "Batch Size (default: 50)")
 tf.flags.DEFINE_integer("num_epochs", 2000, "Number of training epochs (default: 2000)")
 tf.flags.DEFINE_integer("evaluate_every", 10, "Evaluate model on dev set after this many steps (default: 100)")
 tf.flags.DEFINE_integer("checkpoint_every", 50, "Save model after this many steps (default: 100)")
-tf.flags.DEFINE_integer("amount", 200, "Amount of training samples (default: 200)")
-tf.flags.DEFINE_integer("chunks", 20, "Amount of batches in one epoch (default: 20)")
+tf.flags.DEFINE_integer("amount", 1000, "Amount of training samples (default: 1000)")
 
 
 # Misc Parameters
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
 tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
 tf.flags.DEFINE_string("run_name", None, "Suffix for output directory. If None, a timestamp is used instead")
-tf.flags.DEFINE_integer("augmentation", 0, "add BAGAN generated data ")
+tf.flags.DEFINE_integer("augmentation", 0, "add BAGAN generated data: 0 for false, 1 for true ")
+tf.flags.DEFINE_integer("fancy_CNN", 1, "Use fancy CNN or not: 0 for false, 1 for true ")
 
 
 FLAGS = tf.flags.FLAGS
@@ -155,6 +155,15 @@ print("\nParameters:")
 for attr, value in sorted(FLAGS.__flags.items()):
     print("{}={}".format(attr.upper(), value))
 print("")
+
+
+if FLAGS.fancy_CNN==0:
+    FLAGS.lambda_reg=0
+    FLAGS.keep_prob=1
+    FLAGS.size_fully_connected_layer=256
+    FLAGS.num_filters_first_layer=16
+    FLAGS.num_filters_second_layer=32
+    
 
 
 #==================== Data Loading and Preparation ===================
@@ -169,8 +178,6 @@ print("")
 
 amount=FLAGS.amount
 augmentation=FLAGS.augmentation
-print(augmentation)
-chunks=FLAGS.chunks
 mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
 
 dataset_x_train = mnist.train.images[0:amount]
