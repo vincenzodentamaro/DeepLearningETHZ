@@ -82,7 +82,7 @@ if augmentation!=0:
     if augmentation==2:
         samples='samples_class_'
     if augmentation==3:
-        samples='50000_samples_class_'
+        samples='50000samples_class_'
     dataset_x_train_aug=np.load(samples+'0.npy')
     dataset_x_train_aug=np.reshape(dataset_x_train,(amount,784))
     dataset_x_train_aug=dataset_x_train_aug[0:int(amount/10)]
