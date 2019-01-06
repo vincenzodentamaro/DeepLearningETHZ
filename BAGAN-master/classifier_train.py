@@ -249,5 +249,7 @@ with tf.Graph().as_default():
 
         print("test accuracy %g"%cnn.accuracy.eval(feed_dict={
             cnn.x: mnist.test.images, cnn.y_: mnist.test.labels, cnn.keep_prob: 1.0}))
-        return cnn.accuracy.eval(feed_dict={
+        y=cnn.accuracy.eval(feed_dict={
             cnn.x: mnist.test.images, cnn.y_: mnist.test.labels, cnn.keep_prob: 1.0})
+        with open('results.csv', 'a') as f:
+            f.write(y)
