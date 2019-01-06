@@ -155,20 +155,20 @@ print("\nParameters:")
 for attr, value in sorted(FLAGS.__flags.items()):
     print("{}={}".format(attr.upper(), value))
 print("")
-lambda_reg=FLAGS.lambda_reg
+lambda_regs=FLAGS.lambda_reg
 keep_prob=FLAGS.keep_prob
 size_fully_connected_layer=FLAGS.size_fully_connected_layer
 num_filters_first_layer=FLAGS.num_filters_first_layer
 num_filters_second_layer=FLAGS.num_filters_second_layer
 
 if FLAGS.fancy_CNN==0:
-    lambda_reg=0.001
+    lambda_regs=0.001
     keep_prob=1
     size_fully_connected_layer=128
     num_filters_first_layer=8
     num_filters_second_layer=16
     
-print(lambda_reg)
+print(lambda_regs)
 print(keep_prob)
 
 
@@ -240,7 +240,7 @@ with tf.Graph().as_default():
         # Build the graph
         cnn = CNN(patch_size=FLAGS.patch_size, num_filters_first_layer=num_filters_first_layer,
                   num_filters_second_layer=num_filters_second_layer, size_fully_connected_layer=size_fully_connected_layer,
-                  lambda_reg = lambda_reg)
+                  lambda_reg = lambda_regs)
 
         # Define Training procedure
         global_step = tf.Variable(0, name="global_step", trainable=False)
