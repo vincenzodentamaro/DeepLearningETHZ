@@ -253,3 +253,5 @@ with tf.Graph().as_default():
             cnn.x: mnist.test.images, cnn.y_: mnist.test.labels, cnn.keep_prob: 1.0})
         with open('results.csv', 'a') as f:
             f.write(str(y))
+            f.write("\n")
+
