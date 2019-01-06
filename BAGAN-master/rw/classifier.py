@@ -205,10 +205,10 @@ class BASIC_CNN(object):
         
        
         # Create a densely connected layer
-        W_fc1 = weight_variable([7 * 7 * 8, size_fully_connected_layer], "W_fc1")
+        W_fc1 = weight_variable([7 * 7 * 4, size_fully_connected_layer], "W_fc1")
         b_fc1 = bias_variable([size_fully_connected_layer], "b_fc1")
 
-        h_pool2_flat = tf.reshape(h_pool2, [-1, 7 * 7 * 8])
+        h_pool2_flat = tf.reshape(h_pool2, [-1, 7 * 7 * 4])
         h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
         # the shape of h_fc1 is [-1, size_fully_connected_layer]
 
