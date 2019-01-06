@@ -145,9 +145,7 @@ tf.flags.DEFINE_integer("amount", 1000, "Amount of training samples (default: 10
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
 tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
 tf.flags.DEFINE_string("run_name", None, "Suffix for output directory. If None, a timestamp is used instead")
-tf.flags.DEFINE_integer("augmentation", 0, "add BAGAN generated data: 0 for false, 1 for BAGAN generated data from the same 1000 samples,
-                        2 for BAGAN generated data from a random 1000 samples, 
-                        3 for BAGAN generated data from the whole set of MNIST")
+tf.flags.DEFINE_integer("augmentation", 0, "add BAGAN generated data: 0 for false 1 for BAGAN generated data from the same 1000 sample 2 for BAGAN generated data from a random 1000 samples 3 for BAGAN generated data from the whole set of MNIST)
 tf.flags.DEFINE_integer("fancy_CNN", 1, "Use fancy CNN or not: 0 for false, 1 for true ")
 
 
