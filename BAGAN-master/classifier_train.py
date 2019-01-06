@@ -164,6 +164,10 @@ if FLAGS.fancy_CNN==0:
     FLAGS.num_filters_first_layer=16
     FLAGS.num_filters_second_layer=32
     
+print(FLAGS.lambda_reg)
+print(FLAGS.lambda_reg)
+print(FLAGS.lambda_reg)
+print(FLAGS.lambda_reg)
 
 
 #==================== Data Loading and Preparation ===================
