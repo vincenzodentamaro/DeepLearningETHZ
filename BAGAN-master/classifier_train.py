@@ -162,11 +162,11 @@ num_filters_first_layer=FLAGS.num_filters_first_layer
 num_filters_second_layer=FLAGS.num_filters_second_layer
 
 if FLAGS.fancy_CNN==0:
-    lambda_regs=0.001
+    lambda_regs=0
     keep_prob=1
-    size_fully_connected_layer=128
-    num_filters_first_layer=8
-    num_filters_second_layer=16
+    size_fully_connected_layer=512
+    num_filters_first_layer=32
+    num_filters_second_layer=64
     
 print(lambda_regs)
 print(keep_prob)
