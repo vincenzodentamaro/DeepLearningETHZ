@@ -19,7 +19,7 @@ tf.flags.DEFINE_float("lambda_reg", 0.001, "Regularization strength for L2 regul
 
 # Training parameters
 tf.flags.DEFINE_integer("batch_size", 32, "Batch Size (default: 50)")
-tf.flags.DEFINE_integer("num_epochs", 2000, "Number of training epochs (default: 2000)")
+tf.flags.DEFINE_integer("num_epochs", 3000, "Number of training epochs (default: 2000)")
 tf.flags.DEFINE_integer("evaluate_every", 10, "Evaluate model on dev set after this many steps (default: 100)")
 tf.flags.DEFINE_integer("checkpoint_every", 50, "Save model after this many steps (default: 100)")
 tf.flags.DEFINE_integer("amount", 1000, "Amount of training samples (default: 1000)")
@@ -48,9 +48,9 @@ num_filters_second_layer=FLAGS.num_filters_second_layer
 if FLAGS.fancy_CNN==0:
     from rw.classifier import BASIC_CNN as C
     lambda_regs=0.001
-    keep_prob=0.8
+    keep_prob=0.95
     size_fully_connected_layer=10
-    num_filters_first_layer=1
+    num_filters_first_layer=2
     num_filters_second_layer=2
 else:
     from rw.classifier import CNN as C
