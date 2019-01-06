@@ -56,7 +56,7 @@ else:
     from rw.classifier import CNN as C
 print(lambda_regs)
 print(keep_prob)
-print(num_filters_frist_layer)
+print(num_filters_first_layer)
 
 
 
