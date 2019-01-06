@@ -155,7 +155,11 @@ print("\nParameters:")
 for attr, value in sorted(FLAGS.__flags.items()):
     print("{}={}".format(attr.upper(), value))
 print("")
-
+lambda_reg=FLAGS.lambda_reg
+keep_prob=FLAGS.keep_prob
+size_fully_connected_layer=FLAGS.size_fully_connected_layer
+num_filters_first_layer=FLAGS.num_filters_first_layer
+num_filters_second_layer=FLAGS.num_filters_second_layer
 
 if FLAGS.fancy_CNN==0:
     FLAGS.lambda_reg=0
@@ -229,9 +233,9 @@ with tf.Graph().as_default():
     sess = tf.Session(config=session_conf)
     with sess.as_default():
         # Build the graph
-        cnn = CNN(patch_size=FLAGS.patch_size, num_filters_first_layer=FLAGS.num_filters_first_layer,
-                  num_filters_second_layer=FLAGS.num_filters_second_layer, size_fully_connected_layer=FLAGS.size_fully_connected_layer,
-                  lambda_reg = FLAGS.lambda_reg)
+        cnn = CNN(patch_size=FLAGS.patch_size, num_filters_first_layer=num_filters_first_layer,
+                  num_filters_second_layer=num_filters_second_layer, size_fully_connected_layer=size_fully_connected_layer,
+                  lambda_reg = lambda_reg)
 
         # Define Training procedure
         global_step = tf.Variable(0, name="global_step", trainable=False)
@@ -301,7 +305,7 @@ with tf.Graph().as_default():
                 cnn.x: x_batch,
                 cnn.y_: y_batch,
                 step_time_placeholder : last_step_time,
-                cnn.keep_prob : FLAGS.keep_prob
+                cnn.keep_prob : keep_prob
             }
             _, step, summaries, loss, accuracy = sess.run(
                 [train_op, global_step, train_summary_op, cnn.cross_entropy, cnn.accuracy],
