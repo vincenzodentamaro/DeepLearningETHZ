@@ -252,4 +252,4 @@ with tf.Graph().as_default():
         y=cnn.accuracy.eval(feed_dict={
             cnn.x: mnist.test.images, cnn.y_: mnist.test.labels, cnn.keep_prob: 1.0})
         with open('results.csv', 'a') as f:
-            f.write(y)
+            f.write(str(y))
