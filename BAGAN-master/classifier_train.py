@@ -120,20 +120,19 @@ print(dataset_x_train[0])
 print(dataset_y_train[0])
 
 if easy_task==1:
+    ll=[[0]]
     if dataset_y_train[0][0]==0:
-        temp=np.array([1,0])
+        ll[0]=[1,0]
     else:
-        temp=np.array([0,1])
+        ll[0]=[0,1]
     for i in range(1,len(dataset_y_train)):
         if dataset_y_train[i][0]!=0:
-            print(temp.shape)
-            print(np.array([1,0]).shape)
-            temp=np.vstack((temp,np.array([1,0])))
+
+            ll.append([1,0])
         else:
-            print(temp.shape)
-            print(np.array([1,0]).shape)
-            temp=np.vstack((temp,np.array([0,1])))
-    dataset_y_train=temp
+
+            ll.append([0,1])
+    dataset_y_train=np.asarray(ll)
 
 print(dataset_y_train.shape)
 print(dataset_y_train[0:10])
