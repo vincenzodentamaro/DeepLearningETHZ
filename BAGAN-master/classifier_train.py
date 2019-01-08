@@ -125,17 +125,20 @@ if easy_task==1:
         ll[0]=[1,0]
     else:
         ll[0]=[0,1]
-    for i in range(1,len(dataset_y_train)):
-        if dataset_y_train[i][0]!=0:
+    for i in range(0,len(dataset_y_train)):
+        for j in range(0,10):
+            if dataset_y_train[i][j]==1 and j!=0:
+                dataset_y_train[i][j]=0
+                dataset_y_train[i][1]=1
+                
 
-            ll.append([1,0])
-        else:
-
-            ll.append([0,1])
-    dataset_y_train=np.asarray(ll)
 
 print(dataset_y_train.shape)
-print(dataset_y_train[0:10])
+print(dataset_y_train[0])
+print(dataset_y_train[1])
+print(dataset_y_train[2])
+
+
 with tf.Graph().as_default():
     session_conf = tf.ConfigProto(
       allow_soft_placement=FLAGS.allow_soft_placement,
