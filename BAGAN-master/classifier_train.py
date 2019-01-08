@@ -122,9 +122,9 @@ print(dataset_y_train[0])
 if easy_task==1:
     for i in range(0,len(dataset_y_train)):
         for j in range(0,10):
-            if dataset_y_train[i][j]==1 and j!=0:
+            if dataset_y_train[i][j]==1 and j!=0 and j!=1:
                 dataset_y_train[i][j]=0
-                dataset_y_train[i][1]=1
+                dataset_y_train[i][2]=1
                 
 
 
@@ -267,9 +267,9 @@ with tf.Graph().as_default():
         if easy_task==1:
             for i in range(0,len(a)):
                 for j in range(0,10):
-                    if a[i][j]==1 and j!=0:
+                    if a[i][j]==1 and j!=0 and j!=1:
                         a[i][j]=0
-                        a[i][1]=1
+                        a[i][2]=1
         print("test accuracy %g"%cnn.accuracy.eval(feed_dict={
             cnn.x: mnist.test.images, cnn.y_: a, cnn.keep_prob: 1.0}))
         y=cnn.accuracy.eval(feed_dict={
