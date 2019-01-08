@@ -31,6 +31,7 @@ tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on 
 tf.flags.DEFINE_string("run_name", None, "Suffix for output directory. If None, a timestamp is used instead")
 tf.flags.DEFINE_integer("augmentation", 0, "add BAGAN generated data: 0 for false 1 for BAGAN generated data from the same 1000 sample 2 for BAGAN generated data from a random 1000 samples 3 for BAGAN generated data from the whole set of MNIST")
 tf.flags.DEFINE_integer("fancy_CNN", 1, "Use fancy CNN or not: 0 for false, 1 for true ")
+tf.flags.DEFINE_integer("easy_task", 0, "Do easy task: 0 for false, 1 for true ")
 
 
 FLAGS = tf.flags.FLAGS
@@ -39,6 +40,7 @@ print("\nParameters:")
 for attr, value in sorted(FLAGS.__flags.items()):
     print("{}={}".format(attr.upper(), value))
 print("")
+easy_task=FLAGS.easy_task
 lambda_regs=FLAGS.lambda_reg
 keep_prob=FLAGS.keep_prob
 size_fully_connected_layer=FLAGS.size_fully_connected_layer
@@ -116,7 +118,15 @@ print(dataset_x_train.shape)
 print(dataset_y_train.shape)
 print(dataset_x_train[0])
 print(dataset_y_train[0])
-    
+
+if easy_task==1:
+    for i in range(0,len(dataset_y_train)):
+        if dataset_y_train[i][0]!=0:
+            dataset_y_train[i]=np.array([1,0])
+        else:
+            dataset_y_train[i]=np.array([0,1])
+                 
+print(dataset_y_train[0:10])
 with tf.Graph().as_default():
     session_conf = tf.ConfigProto(
       allow_soft_placement=FLAGS.allow_soft_placement,
