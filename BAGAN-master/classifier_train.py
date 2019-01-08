@@ -120,12 +120,18 @@ print(dataset_x_train[0])
 print(dataset_y_train[0])
 
 if easy_task==1:
-    for i in range(0,len(dataset_y_train)):
+    if dataset_y_train[0][0]!=0:
+        temp=np.array([1,0])
+    else:
+        temp=np.array([0,1])
+    for i in range(1,len(dataset_y_train)):
         if dataset_y_train[i][0]!=0:
-            dataset_y_train[i]=np.array([1,0])
+            temp=np.concatenate((temp,np.array([1,0])),axis=0)
         else:
-            dataset_y_train[i]=np.array([0,1])
-                 
+            temp=np.concatenate((temp,np.array([0,1])),axis=0)
+    dataset_y_train=temp
+
+print(dataset_y_train.shape)
 print(dataset_y_train[0:10])
 with tf.Graph().as_default():
     session_conf = tf.ConfigProto(
