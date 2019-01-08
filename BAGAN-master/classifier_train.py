@@ -121,18 +121,18 @@ print(dataset_y_train[0])
 
 if easy_task==1:
     if dataset_y_train[0][0]==0:
-        temp=np.asarray([1,0])
+        temp=np.array([1,0])
     else:
-        temp=[0,1]
+        temp=np.array([0,1])
     for i in range(1,len(dataset_y_train)):
         if dataset_y_train[i][0]!=0:
             print(temp.shape)
             print(np.array([1,0]).shape)
-            temp=np.concatenate((temp,np.asarray([1,0])),axis=0)
+            temp=np.stack((temp,np.array([1,0])))
         else:
             print(temp.shape)
             print(np.array([1,0]).shape)
-            temp=np.concatenate((temp,np.asarray([0,1])),axis=0)
+            temp=np.stack((temp,np.array([0,1])))
     dataset_y_train=temp
 
 print(dataset_y_train.shape)
