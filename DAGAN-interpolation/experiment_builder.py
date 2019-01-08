@@ -110,7 +110,7 @@ class ExperimentBuilder(object):
                 fine_tune(sess)
 
             self.iter_done = 0
-            self.disc_iter = 5
+            self.disc_iter = 8
             self.gen_iter = 1
             best_d_val_loss = np.inf
 
