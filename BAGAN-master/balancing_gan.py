@@ -509,6 +509,7 @@ class BalancingGAN:
                         self.generate_samples(crt_c, 10, bg_train)
                     ]
                 ])
+                print(img_samples.shape, new_samples.shape)
                 img_samples = np.concatenate((img_samples, new_samples), axis=0)
                 print(img_samples.shape)
                 print(new_samples.shape)
