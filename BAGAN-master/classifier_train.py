@@ -120,11 +120,6 @@ print(dataset_x_train[0])
 print(dataset_y_train[0])
 
 if easy_task==1:
-    ll=[[0]]
-    if dataset_y_train[0][0]==0:
-        ll[0]=[1,0]
-    else:
-        ll[0]=[0,1]
     for i in range(0,len(dataset_y_train)):
         for j in range(0,10):
             if dataset_y_train[i][j]==1 and j!=0:
@@ -268,11 +263,17 @@ with tf.Graph().as_default():
             if current_step % FLAGS.checkpoint_every == 0:
                 path = saver.save(sess, checkpoint_prefix, global_step=current_step)
                 print("Saved model checkpoint to {}\n".format(path))
-
+        a=mnist.test.labels
+        if easy_task==1:
+            for i in range(0,len(a)):
+                for j in range(0,10):
+                    if a[i][j]==1 and j!=0:
+                        a[i][j]=0
+                        a[i][1]=1
         print("test accuracy %g"%cnn.accuracy.eval(feed_dict={
-            cnn.x: mnist.test.images, cnn.y_: mnist.test.labels, cnn.keep_prob: 1.0}))
+            cnn.x: mnist.test.images, cnn.y_: a, cnn.keep_prob: 1.0}))
         y=cnn.accuracy.eval(feed_dict={
-            cnn.x: mnist.test.images, cnn.y_: mnist.test.labels, cnn.keep_prob: 1.0})
+            cnn.x: mnist.test.images, cnn.y_: a, cnn.keep_prob: 1.0})
         with open('results.csv', 'a') as f:
             f.write(str(y))
             f.write("\n")
