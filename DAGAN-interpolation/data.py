@@ -17,12 +17,13 @@ class Dataset(object):
         """
         self.info_file = pd.read_csv(csv_file)
         self.root_dir = root_dir
-        self.image_size = (224, 224, 3)
+        self.image_size = (64, 64, 3)
         maxval = 255
         if transform == None:
             self.transform = T.Compose([
                 T.ToPILImage(),
-                T.RandomCrop(224),
+                T.RandomResizedCrop(64,scale=(0.5,1.0)),
+                T.RandomHorizontalFlip(),
                 ToNumpy(),
                 Normalize(maxval)
             ])
@@ -231,12 +232,13 @@ class MultiClassDataset(object):
         self.info_file_classes = self.split_info_file_in_classes()
         self.nb_classes = len(self.classes)
         self.class_lengths = [len(self.info_file_classes[i]) for i in range(self.nb_classes)]
-        self.image_size = (224,224,3)
+        self.image_size = (64,64,3)
         maxval = 255
         if transform == None:
             self.transform = T.Compose([
                 T.ToPILImage(),
-                T.RandomCrop(224),
+                T.RandomResizedCrop(64, scale=(0.5, 1.0)),
+                T.RandomHorizontalFlip(),
                 ToNumpy(),
                 Normalize(maxval)
             ])

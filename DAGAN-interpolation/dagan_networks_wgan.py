@@ -153,8 +153,9 @@ class DAGAN:
             input_a, input_b = self.data_augment_batch(self.input_x_i[gpu_id], self.input_x_j[gpu_id])
             x_g = self.generate(input_a)
 
-            g_same_class_outputs, g_discr_features = self.d(x_g, input_a, training=self.training_phase,
-                                          dropout_rate=self.dropout_rate)
+            g_same_class_outputs, g_discr_features, g_lastlayer_features = self.d(x_g, input_a,
+                                                                                  training=self.training_phase,
+                                          dropout_rate=self.dropout_rate, extended_output=True)
 
             t_same_class_outputs, t_discr_features, t_lastlayer_features = self.d(input_b, input_a,
                                                                                   training=self.training_phase,
@@ -190,11 +191,13 @@ class DAGAN:
             d_loss += 10 * gradient_penalty
 
             #improving improved WGAN training
-            d1, _, d1_features = self.d(input_b, input_a, training=self.training_phase, dropout_rate=self.dropout_rate,
+            d1, _, d1_features = self.d(input_b, input_a, training=True, dropout_rate=self.dropout_rate,
                                         extended_output=True)
             # for d2, t_same_class_outputs is reused, as it is also computed with dropout
-            distance_outputs = tf.abs(t_same_class_outputs - d1)
-            distance_features = tf.sqrt(tf.reduce_sum(tf.square(t_lastlayer_features-d1_features), axis=1))
+            # distance_outputs = tf.abs(tf.subtract(t_same_class_outputs, d1))
+            distance_outputs = tf.sqrt(tf.reduce_sum(tf.square(tf.subtract(t_same_class_outputs, d1)), axis=1))
+            distance_features = tf.sqrt(tf.reduce_sum(tf.square(tf.subtract(t_lastlayer_features, d1_features)),
+                                                      axis=1))
             CT = tf.reduce_mean(distance_outputs + 0.1*distance_features)
             d_loss += 2*CT
             tf.check_numerics(d_loss, 'd_loss_contains_nan')
@@ -222,7 +225,7 @@ class DAGAN:
             "d_losses": tf.add_n(tf.get_collection('d_losses'), name='total_d_loss')
         }
 
-    def train(self, opts, losses, init=False):
+    def train(self, opts, losses):
 
         """
         Returns ops for training our DAGAN system.
@@ -249,16 +252,15 @@ class DAGAN:
             #                                              colocate_gradients_with_ops=True)
 
             # Save gradients in summary:
-            if not init:
-                for g, v in gradients_g:
-                    if g is not None:
-                        tf.summary.histogram("{}/grad_g/hist".format(v.name), g)
-                        tf.summary.scalar("{}/grad_g/sparsity".format(v.name), tf.nn.zero_fraction(g))
+            for g, v in gradients_g:
+                if g is not None:
+                    tf.summary.histogram("{}/grad_g/hist".format(v.name), g)
+                    tf.summary.scalar("{}/grad_g/sparsity".format(v.name), tf.nn.zero_fraction(g))
 
-                for g, v in gradients_d:
-                    if g is not None:
-                        tf.summary.histogram("{}/grad_d/hist".format(v.name), g)
-                        tf.summary.scalar("{}/grad_d/sparsity".format(v.name), tf.nn.zero_fraction(g))
+            for g, v in gradients_d:
+                if g is not None:
+                    tf.summary.histogram("{}/grad_d/hist".format(v.name), g)
+                    tf.summary.scalar("{}/grad_d/sparsity".format(v.name), tf.nn.zero_fraction(g))
 
         return opt_ops
 
@@ -292,7 +294,7 @@ class DAGAN:
             opts[key.replace("losses", "opt")] = tf.train.AdamOptimizer(beta1=beta1, beta2=beta2,
                                                                             learning_rate=learning_rate)
 
-        apply_grads_ops = self.train(opts=opts, losses=losses, init=True)
+        apply_grads_ops = self.train(opts=opts, losses=losses)
         summary = tf.summary.merge_all()
 
         return summary, losses, apply_grads_ops
