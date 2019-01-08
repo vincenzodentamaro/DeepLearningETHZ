@@ -126,8 +126,8 @@ if easy_task==1:
         temp=np.array([0,1])
     for i in range(1,len(dataset_y_train)):
         if dataset_y_train[i][0]!=0:
-            print(shape.temp)
-            print(shape.np.array([1,0]))
+            print(temp.shape)
+            print(np.array([1,0]).shape)
             temp=np.stack((temp,np.array([1,0])),axis=0)
         else:
             temp=np.stack((temp,np.array([0,1])),axis=0)
