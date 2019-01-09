@@ -51,9 +51,9 @@ if FLAGS.fancy_CNN==0:
     from rw.classifier import BASIC_CNN as C
     lambda_regs=0.001
     keep_prob=0.95
-    size_fully_connected_layer=5
-    num_filters_first_layer=1
-    num_filters_second_layer=2
+    size_fully_connected_layer=20
+    num_filters_first_layer=2
+    num_filters_second_layer=4
 else:
     from rw.classifier import CNN as C
 print(lambda_regs)
