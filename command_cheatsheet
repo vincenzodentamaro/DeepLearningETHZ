@@ -39,3 +39,5 @@ bsub -n 20 -W 4:00 -R "rusage[mem=4500, ngpus_excl_p=1]" python train_painting_s
 
 vpn.ini.uzh.ch
 ssh -p 38383 alexanderm@172.19.11.215
+
+bsub -n 20 -W 4:00 -R "rusage[mem=4500, ngpus_excl_p=1]" python train_painting_styles.py --batch_size 8 --generator_inner_layers 3 --discriminator_inner_layers 5 --num_generations 64 --experiment_title paintingstylesResNet2 --num_of_gpus 1 --z_dim 300 --dropout_rate_value 0.5 --infofile ../data_info_files/final_train_info.csv --data_dir ../train_reduced

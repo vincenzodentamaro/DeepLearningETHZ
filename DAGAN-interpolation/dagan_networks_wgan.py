@@ -257,10 +257,10 @@ class DAGAN:
                     tf.summary.histogram("{}/grad_g/hist".format(v.name), g)
                     tf.summary.scalar("{}/grad_g/sparsity".format(v.name), tf.nn.zero_fraction(g))
 
-            for g, v in gradients_d:
-                if g is not None:
-                    tf.summary.histogram("{}/grad_d/hist".format(v.name), g)
-                    tf.summary.scalar("{}/grad_d/sparsity".format(v.name), tf.nn.zero_fraction(g))
+            # for g, v in gradients_d:
+            #     if g is not None:
+            #         tf.summary.histogram("{}/grad_d/hist".format(v.name), g)
+            #         tf.summary.scalar("{}/grad_d/sparsity".format(v.name), tf.nn.zero_fraction(g))
 
         return opt_ops
 
