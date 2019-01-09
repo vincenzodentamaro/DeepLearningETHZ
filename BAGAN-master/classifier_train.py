@@ -51,9 +51,9 @@ if FLAGS.fancy_CNN==0:
     from rw.classifier import BASIC_CNN as C
     lambda_regs=0.001
     keep_prob=0.95
-    size_fully_connected_layer=5
-    num_filters_first_layer=1
-    num_filters_second_layer=2
+    size_fully_connected_layer=20
+    num_filters_first_layer=2
+    num_filters_second_layer=4
 else:
     from rw.classifier import CNN as C
 print(lambda_regs)
@@ -121,12 +121,19 @@ print(dataset_y_train[0])
 
 if easy_task==1:
     for i in range(0,len(dataset_y_train)):
-        if dataset_y_train[i][0]!=0:
-            dataset_y_train[i]=np.array([1,0])
-        else:
-            dataset_y_train[i]=np.array([0,1])
-                 
-print(dataset_y_train[0:10])
+        for j in range(0,10):
+            if dataset_y_train[i][j]==1 and j!=0 and j!=1:
+                dataset_y_train[i][j]=0
+                dataset_y_train[i][2]=1
+                
+
+
+print(dataset_y_train.shape)
+print(dataset_y_train[0])
+print(dataset_y_train[1])
+print(dataset_y_train[2])
+
+
 with tf.Graph().as_default():
     session_conf = tf.ConfigProto(
       allow_soft_placement=FLAGS.allow_soft_placement,
@@ -256,11 +263,17 @@ with tf.Graph().as_default():
             if current_step % FLAGS.checkpoint_every == 0:
                 path = saver.save(sess, checkpoint_prefix, global_step=current_step)
                 print("Saved model checkpoint to {}\n".format(path))
-
+        a=mnist.test.labels
+        if easy_task==1:
+            for i in range(0,len(a)):
+                for j in range(0,10):
+                    if a[i][j]==1 and j!=0 and j!=1:
+                        a[i][j]=0
+                        a[i][2]=1
         print("test accuracy %g"%cnn.accuracy.eval(feed_dict={
-            cnn.x: mnist.test.images, cnn.y_: mnist.test.labels, cnn.keep_prob: 1.0}))
+            cnn.x: mnist.test.images, cnn.y_: a, cnn.keep_prob: 1.0}))
         y=cnn.accuracy.eval(feed_dict={
-            cnn.x: mnist.test.images, cnn.y_: mnist.test.labels, cnn.keep_prob: 1.0})
+            cnn.x: mnist.test.images, cnn.y_: a, cnn.keep_prob: 1.0})
         with open('results.csv', 'a') as f:
             f.write(str(y))
             f.write("\n")
