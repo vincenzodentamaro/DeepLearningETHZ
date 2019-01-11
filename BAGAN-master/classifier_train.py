@@ -22,16 +22,19 @@ tf.flags.DEFINE_integer("batch_size", 32, "Batch Size (default: 50)")
 tf.flags.DEFINE_integer("num_epochs", 3000, "Number of training epochs (default: 2000)")
 tf.flags.DEFINE_integer("evaluate_every", 10, "Evaluate model on dev set after this many steps (default: 100)")
 tf.flags.DEFINE_integer("checkpoint_every", 50, "Save model after this many steps (default: 100)")
-tf.flags.DEFINE_integer("amount", 1000, "Amount of training samples (default: 1000)")
 
 
 # Misc Parameters
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
 tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
 tf.flags.DEFINE_string("run_name", None, "Suffix for output directory. If None, a timestamp is used instead")
-tf.flags.DEFINE_integer("augmentation", 0, "add BAGAN generated data: 0 for false 1 for BAGAN generated data from the same 1000 sample 2 for BAGAN generated data from a random 1000 samples 3 for BAGAN generated data from the whole set of MNIST 4 for classical data augmentation.")
+
+
+#New parameters for the task at hand
+tf.flags.DEFINE_integer("amount", 1000, "Amount of training samples (default: 1000)")
+tf.flags.DEFINE_integer("augmentation", 0, "add BAGAN generated data: 0 for false; 1 for a 1000 BAGAN generated data made from the same 1000 sample; 2 for a 1000 BAGAN generated data from a random 1000 samples; 3 for a 1000 BAGAN generated data from the whole set of MNIST; 4 for adding the same 1000 samples but with noise (classical data augmentation).")
 tf.flags.DEFINE_integer("fancy_CNN", 1, "Use fancy CNN or not: 0 for false, 1 for true ")
-tf.flags.DEFINE_integer("easy_task", 0, "Do easy task: 0 for false, 1 for true ")
+tf.flags.DEFINE_integer("easy_task", 0, "Do easy task (classify 0, 1 from the rest): 0 for false, 1 for true ")
 
 
 FLAGS = tf.flags.FLAGS
@@ -47,6 +50,7 @@ size_fully_connected_layer=FLAGS.size_fully_connected_layer
 num_filters_first_layer=FLAGS.num_filters_first_layer
 num_filters_second_layer=FLAGS.num_filters_second_layer
 
+#we have 2 CNN's, one "fancy" taken from Deep Learning course Exercise 5, and one basic with very limited regularization, 20 nodes, and only 6 filters.
 if FLAGS.fancy_CNN==0:
     from rw.classifier import BASIC_CNN as C
     lambda_regs=0.001
@@ -56,9 +60,7 @@ if FLAGS.fancy_CNN==0:
     num_filters_second_layer=4
 else:
     from rw.classifier import CNN as C
-print(lambda_regs)
-print(keep_prob)
-print(num_filters_first_layer)
+
 
 
 
@@ -76,8 +78,11 @@ amount=FLAGS.amount
 augmentation=FLAGS.augmentation
 mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
 
+#import only a limited amount of data
 dataset_x_train = mnist.train.images[0:amount]
 dataset_y_train = mnist.train.labels[0:amount]
+
+#depending on what augmentation option we choose, import different BAGAN generated images
 if augmentation==1 or augmentation==2 or augmentation==3:
     if augmentation==1:
         samples='1000_class_'
@@ -85,10 +90,10 @@ if augmentation==1 or augmentation==2 or augmentation==3:
         samples='samples_class_'
     if augmentation==3:
         samples='50000samples_class_'
+    #formatting the BAGAN generated data in the right format
     dataset_x_train_aug=np.load(samples+'0.npy')
     dataset_x_train_aug=np.reshape(dataset_x_train,(amount,784))
     dataset_x_train_aug=dataset_x_train_aug[0:int(amount/10)]
-    print(dataset_x_train_aug.shape)
 
     temp=np.full(int(amount/10), 0)
     z=np.zeros((int(amount/10),10))
@@ -97,7 +102,6 @@ if augmentation==1 or augmentation==2 or augmentation==3:
         temp=np.load(samples+str(i)+'.npy')
         temp=np.reshape(temp,(amount,784))
         temp=temp[0:int(amount/10)]
-        print(temp.shape)
         
         temp3=np.full(int(amount/10),i)
         temp1=np.zeros((int(amount/10), 10))
@@ -105,12 +109,11 @@ if augmentation==1 or augmentation==2 or augmentation==3:
         dataset_x_train_aug=np.concatenate((dataset_x_train_aug,temp), axis=0)
         z=np.concatenate((z,temp1), axis=0)
 
-    
+    #adding the normal MNIST data to the BAGAN generated data
     dataset_x_train=np.concatenate((dataset_x_train,dataset_x_train_aug),axis=0)
-    print(dataset_y_train.shape)
-    print(z.shape)
     dataset_y_train=np.concatenate((dataset_y_train,z),axis=0)
     dataset_y_train_aug=z
+#add the same 1000 samples but with noise
 if augmentation==4:
     dataset_x_train_aug = mnist.train.images[0:amount]
     dataset_y_train_aug = mnist.train.labels[0:amount]
@@ -121,15 +124,12 @@ if augmentation==4:
 
 
     
-    
+#shuffle data before training    
 p = np.random.permutation(len(dataset_x_train))
 dataset_x_train=dataset_x_train[p]
 dataset_y_train=dataset_y_train[p]      
-print(dataset_x_train.shape)
-print(dataset_y_train.shape)
-print(dataset_x_train[0])
-print(dataset_y_train[0])
 
+#the easy task is classifying 0 from 1 from the rest, so we must change the training set accordingly
 if easy_task==1:
     for i in range(0,len(dataset_y_train)):
         for j in range(0,10):
@@ -138,11 +138,6 @@ if easy_task==1:
                 dataset_y_train[i][2]=1
                 
 
-
-print(dataset_y_train.shape)
-print(dataset_y_train[0])
-print(dataset_y_train[1])
-print(dataset_y_train[2])
 
 
 with tf.Graph().as_default():
@@ -275,6 +270,7 @@ with tf.Graph().as_default():
                 path = saver.save(sess, checkpoint_prefix, global_step=current_step)
                 print("Saved model checkpoint to {}\n".format(path))
         a=mnist.test.labels
+        #if the classification task is "easy", we need to change also the test set
         if easy_task==1:
             for i in range(0,len(a)):
                 for j in range(0,10):
@@ -285,6 +281,7 @@ with tf.Graph().as_default():
             cnn.x: mnist.test.images, cnn.y_: a, cnn.keep_prob: 1.0}))
         y=cnn.accuracy.eval(feed_dict={
             cnn.x: mnist.test.images, cnn.y_: a, cnn.keep_prob: 1.0})
+        #write the results on a csv file
         with open('results.csv', 'a') as f:
             f.write(str(y))
             f.write("\n")
