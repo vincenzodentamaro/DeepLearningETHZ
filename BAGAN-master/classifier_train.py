@@ -115,7 +115,7 @@ if augmentation==4:
     dataset_x_train_aug = mnist.train.images[0:amount]
     dataset_y_train_aug = mnist.train.labels[0:amount]
     for i in range(0,len(dataset_x_train_aug)):
-        dataset_x_train_aug[i]=dataset_x_train_aug[i]+np.random.normal(loc=0.0, scale=0.01, size=784)
+        dataset_x_train_aug[i]=dataset_x_train_aug[i]+np.random.normal(loc=0.0, scale=0.005, size=784)
     dataset_x_train=np.concatenate((dataset_x_train,dataset_x_train_aug),axis=0)
     dataset_y_train=np.concatenate((dataset_y_train,dataset_y_train_aug),axis=0)
 
