@@ -1,8 +1,0 @@
-#!/bin/bash
-counter=1
-while [ $counter -le 5 ]
-do
-bsub -I -n 20 -R "rusage[mem=8000, ngpus_excl_p=1]" python classifier_train.py --amount 1000 --augmentation 4 --fancy_CNN 1
-	((counter++))
-done
-echo All done
