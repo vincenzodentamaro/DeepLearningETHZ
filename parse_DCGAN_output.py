@@ -4,7 +4,7 @@ import math
 from glob import glob
 import scipy.misc
 
-crop_size = 224
+crop_size = 64
 number_test_images = 100
 
 for h in range(number_test_images):
@@ -14,4 +14,4 @@ for h in range(number_test_images):
       i = idx1*crop_size
       j = idx2*crop_size    				 
       image = x[i:i+crop_size, j:j+crop_size]
-      scipy.misc.imsave('./augmented_dataset/test_arange_%s_%s.png' % (idx1, idx2), image)
+      scipy.misc.imsave('./augmented_dataset/test_arange_%s_%s_%s.png' % (h, idx1, idx2), image)

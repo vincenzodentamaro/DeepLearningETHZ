@@ -17,7 +17,7 @@ outputfile = args.outputfile
 inputfile = args.inputfile
 
 # Create reduced datafile
-look_for = ['Realism', 'Romanticism', 'Impressionism']
+look_for = ['Realism', 'Impressionism']
 
 with open('./'+inputfile,'r',encoding='utf-8') as inf, open('./'+outputfile,'w', newline='') as outf:
     incsv = csv.reader(inf, delimiter=',')
