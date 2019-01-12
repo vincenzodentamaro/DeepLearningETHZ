@@ -82,12 +82,11 @@ def random_cropped_image(img):
 def apply_transforms(image_path):
     img = Image.open( image_path )
     height, width = img.size
-    #data = four_crop_and_rescale_images(img)
-    #data = [flip_and_rescale_image(img)]
-    data = [rescale_image(img)]
-    #data.append(rescale_image(img))
-    #if min(height,width) >=224:
-    #    data.append(random_cropped_image(img))
+    data = four_crop_and_rescale_images(img)
+    data.append(flip_and_rescale_image(img))
+    data.append(rescale_image(img))
+    if min(height,width) >=224:
+        data.append(random_cropped_image(img))
     return(data)
 
 
