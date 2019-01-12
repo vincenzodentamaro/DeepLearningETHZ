@@ -85,11 +85,11 @@ dataset_y_train = mnist.train.labels[0:amount]
 #depending on what augmentation option we choose, import different BAGAN generated images
 if augmentation==1 or augmentation==2 or augmentation==3:
     if augmentation==1:
-        samples='1000_class_'
+        samples='GAN-generated_DATA/1000_class_'
     if augmentation==2:
-        samples='samples_class_'
+        samples='GAN-generated_DATA/samples_class_'
     if augmentation==3:
-        samples='50000samples_class_'
+        samples='GAN-generated_DATA/50000samples_class_'
     #formatting the BAGAN generated data in the right format
     dataset_x_train_aug=np.load(samples+'0.npy')
     dataset_x_train_aug=np.reshape(dataset_x_train,(amount,784))
