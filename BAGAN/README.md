@@ -1,5 +1,5 @@
 # BAGAN
-Keras implementation of [Balancing GAN (BAGAN)](https://arxiv.org/abs/1803.09655). This implementation was largely taken from https://github.com/IBM/BAGAN. Specific changes were applied to acoomodate different datasets.
+Keras implementation of [Balancing GAN (BAGAN)](https://arxiv.org/abs/1803.09655). This implementation was largely taken from https://github.com/IBM/BAGAN. Specific changes were applied to accomodate our specific tasks.
 
 # To run BAGAN on painting dataset:
 
