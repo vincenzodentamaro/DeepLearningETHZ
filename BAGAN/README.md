@@ -1,49 +1,34 @@
 # BAGAN
-Keras implementation of [Balancing GAN (BAGAN)](https://arxiv.org/abs/1803.09655) applied to the MNIST example.
+Keras implementation of [Balancing GAN (BAGAN)](https://arxiv.org/abs/1803.09655). This implementation was largely taken from https://github.com/IBM/BAGAN. Specific changes were applied to acoomodate different datasets.
 
-The framework is meant as a tool for data augmentation for imbalanced image-classification datasets where some classes are under represented.
-The generative model applied to sample new images for the minority class is trained in three steps: a) training a preliminary autoencoder, b) initialization of the generative adversarial framework by means of the pre-trained autoencoder modules, and c) fine tuning of the generative model in adversarial mode.
+# To run BAGAN on painting dataset:
 
+python bagan_train_paint.py -u 1 -e 150
 
-
-Along these steps, the generative model learns from all available data including minority and majority classes. This enables the model to automatically figuring out if and which features from over-represented classes can be used to draw new images for under-represented classes.
-For example, when considering a traffic sign recognition problem, all warning signs share the same external triangular shape.
-BAGAN can easily learn the triangular shape from any warning sign in the majority classes and reuse this pattern to draw other under-represented warning signs.
-
-The application of this approach toward fairness enhancement and bias mitigation in deep-learning AI systems is currently an active research topic.
-
-## Example results
-
-The [German Traffic Sign Recognition benchmark](http://benchmark.ini.rub.de/) is an example of imbalanced dataset composed of 43 classes, where the minority class appears 210 times, whereas the majority class 2250 times.
-
-Here we show representative sample images generated with BAGAN for the three least represented classes.
-
-![alt text](Figures/bagan_x5_minority.png)
-
-Refer to the original work (https://arxiv.org/abs/1803.09655) for a comparison to other state of the art approaches.
+IMPORTANT: the training painting dataset should be located a directory "../working_directory_andreas/train_reduced1/"
+the testing painting dataset should be located in a directory "../working_directory_andreas/test_reduced/"
+Furthermore both of these datasets should be furnished with a csv file, respectively          "../working_directory_andreas/final_reduced_train_info.csv" and "../working_directory_andreas/final_reduced_test_info.csv"
+These csv files must contain at least two columns "new_filename", denoting the file names of all the paintings in our dataset and "style", denoting the style aka the class of the corresponding painting.
+The actual implementation is one based on 3 classes: Romanticism, Realism and Impressionism. But can be easily accomodated to more classes, by making some changes in the file "./rw/batch_generator_paint.py"
 
 
-The code in this repository executes on the [MNIST dataset](http://yann.lecun.com/exdb/mnist/). The dataset is originally balanced and, before to train BAGAN, we force class imbalance by selecting a target class and removing from the training dataset a significant portion of its instances.
-The following figure shows 0-image samples generated when dropping 97.5\% of 0-images from the training set before training.
-
-![alt text](Figures/plot_class_0.png)
+The trained architectures with some example pictures can afterwards be found in a result folder.
 
 
+# To run BAGAN on mnist dataset:
 
-## Running the MNIST example
+python bagan_train_mnist.py -u 1 -a 1000 -e 5
 
-This software has been tested on `tensorflow-1.5.0`.
+This will train the BAGAN on the first 1000 MNIST samples, but the "a" flag can be changed according to the task .
 
-To execute BAGAN for the MNIST example, run the command:
-`./run.sh`
+The trained architectures with some example pictures can afterwards be found in a result folder.
 
-A directory named: `res_MNIST_dmode_uniform_gmode_uniform_unbalance_0.05_epochs_150_lr_0.000050_seed_0` will be generated and results will be stored there.
+The MNIST1000_GAN1000_full, MNIST1000_GAN1000_random, MNIST1000_GAN1000_same folders contain these architectures for the three GAN's that were considered in our report. 
 
-After the training, you will find in that directory a set of `h5` files stroging the model weights, a set of `csv` files storing the loss functions measured for each epoch, a set of `npy` files storing means and covariances distributions for the class-conditional latent-vector generator, a set of `cmp_class_<X>_epoch_<Y>.png` showing example images obtained during training.
+# To generate samples from one of these GAN's use:
 
-The file `cmp_class_<X>_epoch_<Y>.png` shows images obtained when training the GAN for Y epochs and considering class X as minority class. There are three row per class: 1) real samples, 2) autoencoded reconstructed samples, 3) randomly-generated samples.
-Note that in BAGAN, after the initial autoencored training, the generative model is trained in adversarial mode and the autoencoder loss is no longer taken into account. Thus, during the adversarial training the autoencoded images may start to deteriorate (row 2 may no longer match row 1), whereas the generated images (row 3) will improve quality.
+python generate_samples.py -f MNIST1000_GAN1000_full -e 0
 
-For more information about available execution options:
-`python ./bagan_train.py --help`
+the samples will be generated in the same folder as both pictures and numpy arrays.
 
+For reference, 1000 gan generated samples for each of these 3 GAN's are saved in the GAN-generated_DATA	folder.
