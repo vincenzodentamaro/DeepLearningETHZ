@@ -21,7 +21,9 @@ import os
 if __name__ == '__main__':
     # Collect arguments
     argParser = OptionParser()
-                  
+    argParser.add_option("-f", "--file", default=0.2,
+                  action="store", type="string", dest="res",
+                  help="Unbalance factor u. The minority class has at most u * otherClassSamples instances.")              
     argParser.add_option("-u", "--unbalance", default=0.2,
                   action="store", type="float", dest="unbalance",
                   help="Unbalance factor u. The minority class has at most u * otherClassSamples instances.")
@@ -67,6 +69,7 @@ if __name__ == '__main__':
     dratio_mode = options.dratio_mode
     gan_epochs = options.epochs
     adam_lr = options.adam_lr
+    res_dir=options.res
     opt_class = options.target_class
     batch_size = 32
     dataset_name = 'MNIST'
@@ -104,7 +107,7 @@ if __name__ == '__main__':
         min_classes = target_classes
 
     # Result directory
-    res_dir = "./res_{}_dmode_{}_gmode_{}_unbalance_{}_epochs_{}_lr_{:f}_seed_{}".format(dataset_name, dratio_mode, gratio_mode, unbalance, options.epochs, adam_lr, options.seed)
+    #res_dir = "./res_{}_dmode_{}_gmode_{}_unbalance_{}_epochs_{}_lr_{:f}_seed_{}".format(dataset_name, dratio_mode, gratio_mode, unbalance, options.epochs, adam_lr, options.seed)
     for c in range(0, 10):
         print("Loading GAN for class {}".format(c))
         bg_train_partial = BatchGenerator(BatchGenerator.TRAIN, batch_size, class_to_prune=c, unbalance=unbalance)
