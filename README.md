@@ -54,10 +54,10 @@ Plots of the losses and gradients are saved to the logs folder in the experimant
 
 ### Contributions to the code
 For the implementation of the DAGAN, we started from the github implementation of Antreas Antoniou https://github.com/AntreasAntoniou/DAGAN
-First we made an interface between our painting dataset and their implementation of the DAGAN. This newly made interface is located in data.py (compare with their implementation data_old.py to see that we made a substantial effort to make an easy-to-work-with interface)
-Then we added a consistency term in the loss method of the DAGAN object (dagan_networks_wgan.py)
-We also added various extra summaries to visualize the training
-For the interpolation, we added the following methods to the DAGAN object: encode, interpolate_inter_class and interpolate_intra_class. We added various helpfunctions, such as create_interpolation_interval (which uses spherical sampling) in utils/interpolations.py and interpolation_generator in utils/sampling to visualize the results. 
-Various other small adjustments to the code were made.
+1. First we made an interface between our painting dataset and their implementation of the DAGAN. This newly made interface is located in data.py (compare with their implementation data_old.py to see that we made a substantial effort to make an easy-to-work-with interface)
+2. Then we added a consistency term in the loss method of the DAGAN object (dagan_networks_wgan.py)
+3. We also added various extra summaries to visualize the training
+4. For the interpolation, we added the following methods to the DAGAN object: encode, interpolate_inter_class and interpolate_intra_class. We added various helpfunctions, such as create_interpolation_interval (which uses spherical sampling) in utils/interpolations.py and interpolation_generator in utils/sampling to visualize the results. 
+5. Various other small adjustments to the code were made.
 
 
