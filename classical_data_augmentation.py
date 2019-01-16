@@ -46,7 +46,7 @@ def four_crop_and_rescale_images(img):
     left2, top2, right2, bottom2 = w/2, h/2, w, h
     left3, top3, right3, bottom3 = w/2, 0, w, h/2
     left4, top4, right4, bottom4 = 0, h/2, w/2, h
-    rescale_width, rescale_height = 224, 224
+    rescale_width, rescale_height = 64, 64
     first_cropped_image = img.crop((left1, top1, right1, bottom1))
     second_cropped_image = img.crop((left2, top2, right2, bottom2))
     third_cropped_image = img.crop((left3, top3, right3, bottom3))
@@ -58,24 +58,26 @@ def four_crop_and_rescale_images(img):
     return [first_rescaled_image,second_rescaled_image,third_rescaled_image,fourth_rescaled_image]
 
 def flip_and_rescale_image(img):
-    rescale_width, rescale_height = 224, 224
+    rescale_width, rescale_height = 64, 64
     flipped_img = img.transpose(Image.FLIP_LEFT_RIGHT)
     rescaled_flipped_image = flipped_img.resize((rescale_width, rescale_height), Image.ANTIALIAS)
     return rescaled_flipped_image 
 
 def rescale_image(img):
-    rescale_width, rescale_height = 224, 224
+    rescale_width, rescale_height = 64, 64
     rescaled_image = img.resize((rescale_width, rescale_height), Image.ANTIALIAS)
     return rescaled_image
 
 def random_cropped_image(img):
     height, width = img.size
     crop_width, crop_height = 224, 224
+    rescale_width, rescale_height = 64, 64
     i = int(np.random.uniform(0,int(width-crop_width)))
     j = int(np.random.uniform(0,int(height-crop_height)))
     left, top, right, bottom = i, j, i+crop_width, j+crop_height
     cropped_img = img.crop((left, top, right, bottom))
-    return cropped_img
+    resized_img = cropped_img.resize((rescale_width, rescale_height), Image.ANTIALIAS)
+    return resized_img
 
 def apply_transforms(image_path):
     img = Image.open( image_path )

@@ -317,7 +317,7 @@ class UResNetGenerator:
                                                                  .format(i, j), training=training,
                                                                  layer_to_skip_connect=current_layers,
                                                                  num_features=num_features,
-                                                                 dim_upscale=False, #todo: I changed this from false to true
+                                                                 dim_upscale=False,
                                                                  local_inner_layers=decoder_inner_layers,
                                                                  w_size=upscale_shape[1],
                                                                  h_size=upscale_shape[2],

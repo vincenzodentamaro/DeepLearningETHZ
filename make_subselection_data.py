@@ -43,7 +43,8 @@ for f in files:
                 tt= io.imread(file_input)
                 if len(tt.shape)==3:
                     if tt.shape[2] == 3:
-                        shutil.copy2(file_input, file_output)
+                        if min(tt.shape[0], tt.shape[1])>=124:
+                            shutil.copy2(file_input, file_output)
                     else:
                         print('{} has {} channels and is thus removed'.format(file_input, tt.shape[2]))
                         with open('./data_info_files/removed_files.csv', 'a') as removed_file:
