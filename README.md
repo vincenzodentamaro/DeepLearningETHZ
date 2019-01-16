@@ -4,7 +4,7 @@ This repository contains 6 programs all of which were used for our project:
 
 -DCGAN: contains the program to generate new paintings according the DCGAN architecture based on https://github.com/carpedm20/DCGAN-tensorflow
 
--ResNet-18: contains the program to classify the painting dataset augmented with GAN generated data
+-ResNet-18: contains the program to classify the painting dataset augmented with GAN generated data based on https://github.com/Genoc/cs231n-final
 
 -DAGAN-interpolation: contains the implementation of the DAGAN based on  https://github.com/AntreasAntoniou/DAGAN and an extension of the DAGAN architecture making interpolation between classes possible as was suggested in the feedback of our proposal
 
