@@ -1,7 +1,8 @@
 # Data augmentation GAN (DAGAN)
 
 ## Data
-Make sure that the data is situated in the folder './DeepLearningETHZ/train_reduced/
+Make sure that the painting data is situated in the folder './DeepLearningETHZ/train_reduced/
+The omniglot dataset should be in the folder './DeepLearningETHZ/DAGAN-interpolation/datasets/' and can be downloaded from here: https://drive.google.com/drive/folders/15x2C11OrNeKLMzBDHrv8NPOwyre6H3O5
 
 ## Dependencies
 tqdm 4.11.2
