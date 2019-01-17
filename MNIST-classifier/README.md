@@ -1,8 +1,8 @@
 # MNIST-classifier
-This file contains the necessary code to run our experiment on MNIST, in which we tried to grasp why GAN generated data may not also be 
-useful for classification. 
+This file contains the necessary code to run our classification task on MNIST, in which we tried to grasp why GAN generated data may not be useful for classification. 
 
 The GAN-generated_DATA folder contains a 1000 samples for each class in the form of numpy arrays from our 3 differently trained GANs.
+For how these samples can be obtained, take a look at the BAGAN folder
 
 # To run the classifier
 
