@@ -1,5 +1,5 @@
 # BAGAN
-Keras implementation of [Balancing GAN (BAGAN)](https://arxiv.org/abs/1803.09655). This implementation was largely taken from https://github.com/IBM/BAGAN. Specific changes were applied to accomodate our specific tasks.
+Keras implementation of [Balancing GAN (BAGAN)](https://arxiv.org/abs/1803.09655). This implementation was largely taken from https://github.com/IBM/BAGAN. See below for our contributions.
 
 # To run BAGAN on painting dataset:
 
@@ -32,3 +32,10 @@ python generate_samples.py -f MNIST1000_GAN1000_full -e 0
 the samples will be generated in the same folder as both pictures and numpy arrays.
 
 To test these samples on a classifier, 1000 gan generated samples for each of these 3 GAN's are saved in the GAN-generated_DATA	folder.
+
+
+# Contributions to the code:
+
+1. Created the file rw/batch_generator_paint.py to apply the BAGAN on a painting dataset, generalizing the MNIST file
+2. Created the file generate_samples.py to easily generate samples from a certain input GAN architecture
+3. Various other small adjustments to the code were made.
