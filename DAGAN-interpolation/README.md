@@ -1,102 +1,42 @@
-# DAGAN
-Implementation of DAGAN: Data Augmentation Generative Adversarial Networks
+# Data augmentation GAN (DAGAN)
 
-## Introduction
+## Data
+Make sure that the data is situated in the folder './DeepLearningETHZ/train_reduced/
 
-This is an implementation of DAGAN as described in https://arxiv.org/abs/1711.04340. The implementation provides data loaders, model builders, model trainers, and synthetic data generators for the Omniglot and VGG-Face datasets.
+## Dependencies
+tqdm 4.11.2
+tensorflow-gpu 1.6.0
+tensorboard 1.6.0
+scipy 1.1.0
+scikit-image 0.14.0
+pillow 4.3.0
+numpy 1.14.1
+imageio 2.4.1
 
-## Installation
-
-To use the DAGAN repository you must first install the project dependencies. This can be done by install miniconda3 from <a href="https://conda.io/miniconda.html">here</a> 
- with python 3 and running:
-
-```pip install -r requirements.txt```
-
-## Datasets
-
-The Omniglot and VGG-Face datasets can be obtained in numpy format <a href="https://drive.google.com/drive/folders/15x2C11OrNeKLMzBDHrv8NPOwyre6H3O5?usp=sharing" target="_blank">here</a>. They should then be placed in the `datasets` folder.
-
-## Training a DAGAN
-
-After the datasets are downloaded and the dependencies are installed, a DAGAN can be trained by running:
-
+## Run experiments on leonhard cluster
+all experiments were run on the leonhard cluster with the python_gpu/3.6.4 module and imagio installed
+Move to the folder DAGAN-interpolation, where all the files are situated
+For generating figures 3.2a and 3.2b (Resnet structure of generator) run the following command
 ```
-python train_omniglot_dagan.py --batch_size 32 --generator_inner_layers 3 --discriminator_inner_layers 5 --num_generations 64 --experiment_title omniglot_dagan_experiment_default --num_of_gpus 1 --z_dim 100 --dropout_rate_value 0.5
+bsub -n 20 -W 120:00 -R "rusage[mem=4500, ngpus_excl_p=1]" python train_painting_styles.py --batch_size 8 --generator_inner_layers 3 --discriminator_inner_layers 5 --num_generations 64 --experiment_title paintingstylesResNet2 --num_of_gpus 1 --z_dim 300 --dropout_rate_value 0.5 --infofile ../data_info_files/final_train_info.csv --data_dir ../train_reduced
 ```
-
-Here, `generator_inner_layers` and `discriminator_inner_layers` refer to the number of inner layers per MultiLayer in the generator and discriminator respectively. `num_generations` refers to the number of samples generated for use in the spherical interpolations at the end of each epoch.
-
-## Multi-GPU Usage
-
-Our implementation supports multi-GPU training. Simply pass `--num_of_gpus <x>` to the script to train on  x GPUs (note that this only works if the GPUs are on the same machine).
-
-## Defining a new task for the DAGAN
-
-If you want to train your own DAGAN on a new dataset you need to do the following:
-
-1. Edit data.py and define a new data loader class that inherits from either DAGANDataset or DAGANImblancedDataset. The first class is used when a dataset is balanced (i.e. every class has the same number of samples), the latter is for when this is not the case.
-
-An example class for a balanced dataset is:
-
+For genreating figures 3.2c and 3.2d (UResnet structure of generator) first uncomment line 297 and 343 in dagan_architectures.py and then run the same command as above.
+For generating the interpolations on the omniglot dataset, run the following command
 ```
-class OmniglotDAGANDataset(DAGANDataset):
-    def __init__(self, batch_size, gan_training_index, reverse_channels, num_of_gpus, gen_batches):
-        super(OmniglotDAGANDataset, self).__init__(batch_size, gan_training_index, reverse_channels, num_of_gpus,
-                                                   gen_batches)
-
-    def load_dataset(self, gan_training_index):
-
-        self.x = np.load("datasets/omniglot_data.npy")
-        x_train, x_test, x_val = self.x[:1200], self.x[1200:1600], self.x[1600:]
-        x_train = x_train[:gan_training_index]
-
-        return x_train, x_test, x_val
- ```
- 
- An example for an imbalanced dataset is:
- 
- ```
- class OmniglotImbalancedDAGANDataset(DAGANImbalancedDataset):
-    def __init__(self, batch_size, gan_training_index, reverse_channels, num_of_gpus, gen_batches):
-        super(OmniglotImbalancedDAGANDataset, self).__init__(batch_size, gan_training_index, reverse_channels,
-                                                             num_of_gpus, gen_batches)
-
-    def load_dataset(self, gan_training_index):
-
-        x = np.load("datasets/omniglot_data.npy")
-        x_temp = []
-        for i in range(x.shape[0]):
-            choose_samples = np.random.choice([i for i in range(1, 15)])
-            x_temp.append(x[i, :choose_samples])
-        self.x = np.array(x_temp)
-        x_train, x_test, x_val = self.x[:1200], self.x[1200:1600], self.x[1600:]
-        x_train = x_train[:gan_training_index]
-
-        return x_train, x_test, x_val
- ```
-
-In short, you need to define your own load_dataset function. This function should load your dataset in the form [num_classes, num_samples, im_height, im_width, im_channels]. Make sure your data values lie within the 0.0 to 1.0 range otherwise the system will fail to model them. Then you need to choose which classes go to each of your training, validation and test sets.
-
-2. Once your data loader is ready, use a template such as train_omniglot_dagan.py and change the data loader that is being passed. This should be sufficient to run experiments on any new image dataset.
-
-## To Generate Data
-
-The model training automatically uses unseen data to produce generations at the end of each epoch. However, once you have trained a model to satisfication you can generate samples for the whole of the validation set using the following command:
-
+bsub -n 20 -W 24:00 -R "rusage[mem=4500, ngpus_excl_p=1]" python train_omniglot_dagan.py --batch_size 32 --generator_inner_layers 3 --discriminator_inner_layers 5 --num_generations 64 --experiment_title omniglot --num_of_gpus 1 --z_dim 100 --dropout_rate_value 0.5
 ```
-python gen_omniglot_dagan.py -batch_size 32 --generator_inner_layers 3 --discriminator_inner_layers 5 --num_generations 64 --experiment_title omniglot_dagan_experiment_default --num_of_gpus 1 --z_dim 100 --dropout_rate_value 0.5 --continue_from_epoch 38
-```
-All the arguments must match the trained network's arguments and the `continue_from_epoch` argument must correspond to the epoch the trained model was at.
+Plots of the losses and gradients are saved to the logs folder in the experimant folder (which is automatically generated). These plots can be checked in tensorboard.
 
-## Additional generated data not shown in the paper
+## Extra information on the files
+1. The experiments are run by first calling train_painting_styles.py. This file generates a dataset object (object class defined in data.py), creates an experiment object and runs the experiment.
+2. The experiment object is defined in experiment_builder.py. When creating the experiment, the graph of the DAGAN is initialized by making the DAGAN object. When running the experiment, the graph is executed repeatedly on the input batches.
+3. The DAGAN object is defined in dagan_networks_wgan.py, which makes use of the generator and discriminator objects defined in dagan_architectures.py
+4. Various util functions are situated in the utils folder
 
-For further generated data please visit 
-<a href="https://drive.google.com/drive/folders/1IqdhiQzxHysSSnfSrGA9_jKTWzp9gl0k?usp=sharing" target="_blank">my Google Drive folder</a>.
-
-## Acknowledgements
-
-Special thanks to the CDT in Data Science at the University of Edinburgh for providing the funding and resources for this project.
-Furthermore, special thanks to my colleagues James Owers, Todor Davchev, Elliot Crowley, and Gavin Gray for reviewing this code and providing improvements and suggestions.
-
-Furthermore, the interpolations used in this project are a result of the <a href="https://arxiv.org/abs/1609.04468" target="_blank">Sampling Generative Networks paper</a> by Tom White. 
-The code itself was found at https://github.com/dribnet/plat.
+## Contributions to the code
+For the implementation of the DAGAN, we started from the github implementation of Antreas Antoniou https://github.com/AntreasAntoniou/DAGAN
+1. First we made an interface between our painting dataset and their implementation of the DAGAN. This newly made interface is located in data.py (compare with their implementation data_old.py to see that we made a substantial effort to make an easy-to-work-with interface)
+2. Then we added a consistency term in the loss method of the DAGAN object (dagan_networks_wgan.py)
+3. We also added various extra summaries to visualize the training
+4. For the interpolation, we added the following methods to the DAGAN object: encode, interpolate_inter_class and interpolate_intra_class. We added various helpfunctions, such as create_interpolation_interval (which uses spherical sampling) in utils/interpolations.py and interpolation_generator in utils/sampling to visualize the results. 
+5. Various other small adjustments to the code were made.
