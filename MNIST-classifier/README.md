@@ -1,6 +1,8 @@
 # MNIST-classifier
 This file contains the necessary code to run our classification task on MNIST, in which we tried to grasp why GAN generated data may not be useful for classification. 
 
+The MNIST classifier was largely taken from the Deep Learning Exercise 5. Our contribution was adapting this code to feed different MNIST construced datasets into the classifier.
+
 The GAN-generated_DATA folder contains a 1000 samples for each class in the form of numpy arrays from our 3 differently trained GANs.
 For how these samples can be obtained, take a look at the BAGAN folder
 
