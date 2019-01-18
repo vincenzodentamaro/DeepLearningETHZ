@@ -1,5 +1,5 @@
 
-Provided files: the full dataset from https://www.kaggle.com/c/painter-by-numbers/data and the corresponding csv file with labels train_info
+Provided files: the full dataset from https://www.kaggle.com/c/painter-by-numbers/data. The csv file containing all the artist names, styles and file names for Impressionism, Realism and Romanticism (the last style will not be needed for this code) is named final_train_info_modified.csv and can be found in the folder data_info_files in our submission.
 
 1)
 The aim of the following two files is to select specific style images with their corresponding labels in csv format

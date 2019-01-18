@@ -19,11 +19,11 @@ inputfile = args.inputfile
 # Create reduced datafile
 look_for = ['Impressionism']
 
-with open('./'+inputfile,'r',encoding='utf-8') as inf, open('./'+outputfile,'w', newline='') as outf:
+with open(inputfile,'r',encoding='utf-8') as inf, open(outputfile,'w', newline='') as outf:
     incsv = csv.reader(inf, delimiter=',')
     outcsv = csv.writer(outf, delimiter=',')
     outf.write("artist,style,new_filename\n")
-    outcsv.writerows([row[1], row[-3], row[0]] for row in incsv if row[-3] in look_for)
+    outcsv.writerows([row[0], row[1], row[2]] for row in incsv if row[1] in look_for)
 
 
 
