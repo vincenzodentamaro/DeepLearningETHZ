@@ -1,3 +1,4 @@
+*.npy
 **/DAGAN-master/omniglot
 **/image_folder_test
 *.xml

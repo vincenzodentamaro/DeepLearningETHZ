@@ -41,3 +41,4 @@ For the implementation of the DAGAN, we started from the github implementation o
 3. We also added various extra summaries to visualize the training
 4. For the interpolation, we added the following methods to the DAGAN object: encode, interpolate_inter_class and interpolate_intra_class. We added various helpfunctions, such as create_interpolation_interval (which uses spherical sampling) in utils/interpolations.py and interpolation_generator in utils/sampling to visualize the results. 
 5. Various other small adjustments to the code were made.
+All these detailed contributions to the code make clear that we thoroughly understand the implementation of the code.
