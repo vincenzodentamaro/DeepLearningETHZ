@@ -38,9 +38,8 @@ In order to generate samples from these in the form of numpy arrays, you have to
 ```
 python generate_samples.py -f "name of the result folder containing the weights" -e 0
 ```
-The samples will be generated in the same folder with both pictures and numpy arrays.
-
-To test these samples on a classifier, 1000 gan generated samples for each of these 3 GAN's (MNIST1000_GAN1000_full, MNIST1000_GAN1000_random, MNIST1000_GAN1000_same) are saved in the GAN-generated_DATA	folder.
+A 1000 GAN samples will be generated in the same folder with both pictures and numpy arrays. These samples in the form of numpy arrays
+can be later used to augment the dataset. In the repository ../MNIST-classifier, we use these numpy arrays on an MNIST classifier (In this repository we already give these numpy arrays to run the code more easily)
 
 
 # Contributions to the code:
