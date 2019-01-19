@@ -1,10 +1,20 @@
 # MNIST-classifier
 This file contains the necessary code to run our classification task on MNIST, in which we tried to grasp why GAN generated data may not be useful for classification. 
 
-The MNIST classifier was largely taken from the Deep Learning Exercise 5. Our contribution was adapting this code to feed different MNIST construced datasets into the classifier.
+The MNIST classifier was taken from the Deep Learning Exercise 5. Our contribution was adapting this code to feed different MNIST construced datasets (MNIST1000_GAN1000_same,MNIST1000_GAN1000_random,MNIST1000_GAN1000_full, look at the report for the differences between these datasets) into the classifier and various other little changes.
 
-The GAN-generated_DATA folder contains a 1000 samples for each class in the form of numpy arrays from our 3 differently trained GANs.
-For how these samples can be obtained, take a look at the BAGAN folder
+The GAN-generated_DATA folder already contains 200 samples for each class in the form of numpy arrays from our 3 differently trained GANs:
+
+-1000_class_i.npy: contains 200 samples of the number "i" from the MNIST1000_GAN1000_same GAN
+-samples_class_i.npy: contains 200 samples of the number "i" from the MNIST1000_GAN1000_random GAN
+-50000samples_class_i.npy: contains 200 samples of the number "i" from the MNIST1000_GAN1000_full GAN
+
+
+For how these samples can be obtained, take a look at the ../BAGAN folder.
+
+# Packages:
+
+To run it on the cluster, make sure to load python_gpu/3.6.6 and hdf5
 
 # To run the classifier
 ```
