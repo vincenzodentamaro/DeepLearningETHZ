@@ -1,6 +1,11 @@
 # BAGAN
 Keras implementation of [Balancing GAN (BAGAN)](https://arxiv.org/abs/1803.09655). This implementation was largely taken from https://github.com/IBM/BAGAN. See below for our contributions.
 
+# Packages:
+
+To run it on the cluster, make sure to load python_gpu/3.6.6 and hdf5
+
+
 # To run BAGAN on painting dataset:
 ```
 python bagan_train_paint.py -u 1 -e 150
