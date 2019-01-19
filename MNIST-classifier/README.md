@@ -6,7 +6,9 @@ The MNIST classifier was taken from the Deep Learning Exercise 5. Our contributi
 The GAN-generated_DATA folder already contains 200 samples for each class in the form of numpy arrays from our 3 differently trained GANs:
 
 -1000_class_i.npy: contains 200 samples of the number "i" from the MNIST1000_GAN1000_same GAN
+
 -samples_class_i.npy: contains 200 samples of the number "i" from the MNIST1000_GAN1000_random GAN
+
 -50000samples_class_i.npy: contains 200 samples of the number "i" from the MNIST1000_GAN1000_full GAN
 
 
