@@ -10,13 +10,12 @@ To run it on the cluster, make sure to load python_gpu/3.6.6 and hdf5
 ```
 python bagan_train_paint.py -u 1 -e 150
 ```
-IMPORTANT: the training painting dataset should be located a directory "/train_reduced/"
-the testing painting dataset should be located in a directory "/test_reduced"
-Furthermore both of these datasets should be furnished with a csv file, respectively "/final_reduced_train_info.csv" and "/final_reduced_test_info.csv"
-These csv files must contain at least two columns "new_filename", denoting the file names of all the paintings in our dataset and "style", denoting the style aka the class of the corresponding painting. These files can be constructed from the data csv file in ../data_info_files/final_train_info_modified.csv .
-
-The actual implementation is one based on 3 classes: Romanticism, Realism and Impressionism. But can be easily accomodated to more classes, by making some changes in the file "./rw/batch_generator_paint.py"
-
+IMPORTANT: 
+-The training painting dataset should be located a directory "/train_reduced/" 
+-The testing painting dataset should be located in a directory "/test_reduced"
+Furthermore both of these datasets should be furnished with a csv file, respectively "/final_reduced_train_info.csv" and "/final_reduced_test_info.csv". These csv files must contain at least two columns "new_filename", denoting the file names of all the paintings in our dataset and "style", denoting the style aka the class of the corresponding painting. These files can be constructed from the data csv file in ../data_info_files/final_train_info_modified.csv.
+-The actual implementation is one based on 3 classes: Romanticism, Realism and Impressionism. But can be easily accomodated to more classes, by making some changes in the file "./rw/batch_generator_paint.py"
+-As stated in the report, this GAN gives bad results when it's run on the painting dataset. This GAN was used to generate MNIST samples, see next section.
 
 The trained architectures with some example pictures can afterwards be found in a result folder.
 
