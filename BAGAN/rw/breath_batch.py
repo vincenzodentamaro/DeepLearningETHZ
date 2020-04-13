@@ -65,6 +65,7 @@ class MnistBatchGenerator:
         for key in self.dic2.keys():
             img=load_img(self.folderimages+"/"+key)
             x=img_to_array(img)
+            x = x.reshape((3,512,512))
             xwidth=x.shape[1]
             xlength=x.shape[2]
             xrandw=randint(0,xwidth-512)
@@ -101,12 +102,13 @@ class MnistBatchGenerator:
         for s in range(0,samples):
             img=load_img(self.folderimages+"/"+samples_names[s])
             x=img_to_array(img)
+            x = x.reshape((3,512,512))
             x=np.rollaxis(x, 2, 0)
             xwidth=x.shape[1]
             xlength=x.shape[2]
-            xrandw=randint(0,xwidth-160)
-            xrandl=randint(0,xlength-160)
-            x=x[:,xrandw:xrandw+160,xrandl:xrandl+160]
+            xrandw=randint(0,xwidth-512)
+            xrandl=randint(0,xlength-512)
+            x=x[:,xrandw:xrandw+512,xrandl:xrandl+512]
             x=(x-128)/128
             xreturn.append(x)
         return np.stack(xreturn,axis=0)
@@ -135,11 +137,12 @@ class MnistBatchGenerator:
             for i in s:
                 img=load_img(self.folderimages+"/"+str(i)+'.png')
                 x=img_to_array(img)
+                x = x.reshape((3,512,512))
                 xwidth=x.shape[1]
                 xlength=x.shape[2]
-                xrandw=randint(0,xwidth-160)
-                xrandl=randint(0,xlength-160)
-                x=x[:,xrandw:xrandw+160,xrandl:xrandl+160]
+                xrandw=randint(0,xwidth-512)
+                xrandl=randint(0,xlength-512)
+                x=x[:,xrandw:xrandw+512,xrandl:xrandl+512]
                 x=(x-128)/128
                 xreturn.append(x)
                 y.append(self.dic2[str(i)+".png"])
