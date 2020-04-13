@@ -18,7 +18,7 @@ class MnistBatchGenerator:
     TRAIN = 1
     TEST = 0
 
-    def __init__(self, data_src, batch_size=32, class_to_prune=None, unbalance=0):
+    def __init__(self, data_src, batch_size=4, class_to_prune=None, unbalance=0):
         self.batch_size = batch_size
         self.data_src = data_src
 
@@ -104,9 +104,9 @@ class MnistBatchGenerator:
             x=np.rollaxis(x, 2, 0)
             xwidth=x.shape[1]
             xlength=x.shape[2]
-            xrandw=randint(0,xwidth-512)
-            xrandl=randint(0,xlength-512)
-            x=x[:,xrandw:xrandw+512,xrandl:xrandl+512]
+            xrandw=randint(0,xwidth-160)
+            xrandl=randint(0,xlength-160)
+            x=x[:,xrandw:xrandw+160,xrandl:xrandl+160]
             x=(x-128)/128
             xreturn.append(x)
         return np.stack(xreturn,axis=0)
@@ -137,9 +137,9 @@ class MnistBatchGenerator:
                 x=img_to_array(img)
                 xwidth=x.shape[1]
                 xlength=x.shape[2]
-                xrandw=randint(0,xwidth-512)
-                xrandl=randint(0,xlength-512)
-                x=x[:,xrandw:xrandw+512,xrandl:xrandl+512]
+                xrandw=randint(0,xwidth-160)
+                xrandl=randint(0,xlength-160)
+                x=x[:,xrandw:xrandw+160,xrandl:xrandl+160]
                 x=(x-128)/128
                 xreturn.append(x)
                 y.append(self.dic2[str(i)+".png"])
