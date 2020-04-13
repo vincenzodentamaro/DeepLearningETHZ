@@ -71,7 +71,7 @@ if __name__ == '__main__':
     adam_lr = options.adam_lr
     res_dir=options.res
     opt_class = options.target_class
-    batch_size = 32
+    batch_size = 2
     dataset_name = 'MNIST'
     # Set channels for mnist.
     channels=1
