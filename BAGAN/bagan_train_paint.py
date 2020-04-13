@@ -68,7 +68,7 @@ if __name__ == '__main__':
     gan_epochs = options.epochs
     adam_lr = options.adam_lr
     opt_class = options.target_class
-    batch_size = 4
+    batch_size = 2
     dataset_name = 'MNIST'
 
     # Set channels for mnist.
