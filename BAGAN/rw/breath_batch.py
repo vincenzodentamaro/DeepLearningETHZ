@@ -27,11 +27,11 @@ class MnistBatchGenerator:
         assert self.batch_size > 0, 'Batch size has to be a positive integer!'
 
         if self.data_src == self.TEST:
-            self.folderimages="/test_reduced"
-            self.csvfile="/final_reduced_test_info.csv"
+            self.folderimages="/content/diseasedata/test_reduced"
+            self.csvfile="/content/final_reduced_test_info.csv"
         else:
-            self.folderimages="/train_reduced"
-            self.csvfile="/final_reduced_train_info.csv"
+            self.folderimages="/content/diseasedata/train_reduced"
+            self.csvfile="/content/final_reduced_train_info.csv"
 
         self.dic={"bronchiectasis": 0, "bronchiolitis": 1, "copd": 2, "healthy":3, "urti":4}
 
