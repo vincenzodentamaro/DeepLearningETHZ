@@ -87,7 +87,7 @@ class MnistBatchGenerator:
         if samples is None:
             samples = self.batch_size
         keys=self.dic2.keys()
-        shuffle(keys)
+        #shuffle(keys)
         counter=0
         samples_names=list()
         for key in keys:
